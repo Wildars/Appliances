@@ -10,4 +10,5 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TovarCategoryRequest {
+    String name;
 }

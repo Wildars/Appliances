@@ -20,4 +20,6 @@ public class Filial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
+
+    String filCode;
 }

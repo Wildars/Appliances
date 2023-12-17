@@ -13,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
-                FilialsMapper.class,
+                FilialMapper.class,
                 RoleMapper.class
         }
 )

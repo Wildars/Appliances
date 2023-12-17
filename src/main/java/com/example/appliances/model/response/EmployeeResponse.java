@@ -10,4 +10,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmployeeResponse {
+    Long id;
+    String name;
 }

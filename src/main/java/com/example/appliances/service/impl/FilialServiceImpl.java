@@ -1,4 +1,145 @@
 package com.example.appliances.service.impl;
 
-public class FilialServiceImpl {
+import com.example.appliances.entity.Filial;
+import com.example.appliances.entity.User;
+import com.example.appliances.exception.CustomError;
+import com.example.appliances.exception.CustomException;
+import com.example.appliances.exception.RecordNotFoundException;
+import com.example.appliances.mapper.FilialMapper;
+import com.example.appliances.model.request.FilialRequest;
+import com.example.appliances.model.response.FilialResponse;
+import com.example.appliances.repository.FilialRepository;
+import com.example.appliances.repository.UserRepository;
+import com.example.appliances.service.FilialService;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
+@Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class FilialServiceImpl implements FilialService {
+    UserRepository userRepository;
+    FilialRepository organizationsRepository;
+    PasswordEncoder passwordEncoder;
+
+    FilialMapper filialMapper;
+
+    @Autowired
+    public FilialServiceImpl(UserRepository userRepository,
+                             FilialRepository organizationsRepository,
+                             PasswordEncoder passwordEncoder, FilialMapper filialMapper) {
+        this.userRepository = userRepository;
+        this.organizationsRepository = organizationsRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.filialMapper = filialMapper;
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FilialResponse> getAllUserOrganizations(String pin, String password) {
+        User user = userRepository.getUserByPinQuery(pin);
+        if (user == null)
+            throw new CustomException(CustomError.USER_NOT_FOUND);
+
+        if (!passwordEncoder.matches(password, user.getPassword()))
+            throw new CustomException(CustomError.USER_NOT_AUTHENTICATE);
+
+        List<Filial> organizations = new ArrayList<>();
+        if (user.getFilials().isEmpty())
+            throw new CustomException(CustomError.USER_NOT_HAVE_ANY_ORGANISATION);
+
+        for (Filial organizationId : user.getFilials()) {
+            Filial organization = organizationsRepository.findById(organizationId.getId())
+                    .orElseThrow(() -> new CustomException(CustomError.ORGANISATION_NOT_FOUND));
+            organizations.add(organization);
+        }
+
+        return organizations.stream().map(filialMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public FilialResponse saveOrganization(FilialRequest organizationModel) {
+        Filial organization = filialMapper.requestToEntity(organizationModel);
+        try {
+            Filial savedOrganization = organizationsRepository.save(organization);
+            return filialMapper.entityToResponse(savedOrganization);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Не удалось сохранить Организацию в базе данных", e);
+        }
+    }
+
+    public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()) {
+            Sort.Direction direction = sortOrder.get() ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+
+        Page<Filial> filialsPage = this.organizationsRepository.findAll(paging);
+        return filialsPage.map(filialMapper::entityToResponse);
+    }
+
+    @Override
+    public FilialResponse getOrganizationById(Long id) {
+        Filial organizations = this.organizationsRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));
+        return filialMapper.entityToResponse(organizations);
+    }
+
+    @Override
+    public void deleteOrganizationById(Long id) {
+        Filial organizations = this.organizationsRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));
+        organizationsRepository.deleteById(organizations.getId());
+    }
+
+    @Override
+    public FilialResponse updateOrganization(FilialRequest organizationModel, Long id) {
+        Filial organization = this.organizationsRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));
+
+        filialMapper.update(organization,organizationModel);
+
+        Filial savedFilial = organizationsRepository.save(organization);
+        return filialMapper.entityToResponse(savedFilial);
+    }
+
+//    @Transactional(readOnly = true)
+//    public List<Organization> getOrganizationsForExpert(User expert) {
+//        return userRepository.findOrganizationsByExpert(expert);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public List<Organization> getOrganizationsWithExpert(User expertAll) {
+//        return userRepository.findOrganizationsByExpert(expertAll);
+//    }
+
+
+//    @JsonIgnore
+//    private OrganizationModel organizationToModel(Organization organizations) {
+//        return this.modelMapper.map(organizations, OrganizationModel.class);
+//    }
+//
+//    @JsonIgnore
+//    private Organization modelToOrganization(OrganizationModel organizationModel) {
+//        return this.modelMapper.map(organizationModel, Organization.class);
+//    }
 }

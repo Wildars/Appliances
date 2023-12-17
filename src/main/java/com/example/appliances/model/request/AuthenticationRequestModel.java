@@ -1,7 +1,8 @@
-package com.example.appliances.model.response;
+package com.example.appliances.model.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 
 @Getter
 @Setter
@@ -9,7 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TypeContactsResponse {
-    Long id;
-    String name;
+public class AuthenticationRequestModel {
+    String pin;
+    String password;
+    String filCode;
 }

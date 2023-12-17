@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FilialRepository extends JpaRepository<Filial, Long> {
+    Filial findByFilCode(String filCode);
 }
