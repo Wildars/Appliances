@@ -1,9 +1,7 @@
 package com.example.appliances.mapper;
 
 
-import com.example.appliances.entity.Filial;
-import com.example.appliances.entity.Permission;
-import com.example.appliances.entity.Role;
+import com.example.appliances.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 
@@ -17,7 +15,45 @@ import java.util.UUID;
 public interface DefaultMapper {
 
 
+    @Named("setProductCategory")
+    default ProductCategory setProductCategory(Long id) {
+        if (id == null)
+            return null;
+        else
+            return ProductCategory.builder().id(id).build();
+    }
 
+    @Named("setUser")
+    default User setUser(Long id) {
+        if (id == null)
+            return null;
+        else
+            return User.builder().id(id).build();
+    }
+
+    @Named("setFilial")
+    default Filial setFilial(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Filial.builder().id(id).build();
+    }
+
+    @Named("setSale")
+    default Sale setSale(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Sale.builder().id(id).build();
+    }
+
+    @Named("setProduct")
+    default Product setProduct(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Product.builder().id(id).build();
+    }
 
     @Named("setOrganizations")
     default List<Filial> setOrganizations(List<Long> ids) {

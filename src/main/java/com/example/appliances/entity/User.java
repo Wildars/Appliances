@@ -46,6 +46,12 @@ public class User extends Audit<String> implements Serializable {
     @Column(columnDefinition = "boolean default true")
     Boolean isActive;
 
+    String address;
+    @Column(name = "procent_skidki")
+    Integer procentSkidki;
+    @Column(name = "type_client")
+    Boolean typeClient;
+
 
 
     public String getFIO() {
