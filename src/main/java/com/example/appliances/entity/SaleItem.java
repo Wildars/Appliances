@@ -23,13 +23,17 @@ public class SaleItem extends Audit<String> implements Serializable {
     @JoinColumn
     Product product;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    Sale sale;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+//    Sale sale;
+
+
+    Integer numberNakladnoy;
+    String address;
 
     Integer quantity;
 
-    Double price;
+    Double totalPrice;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn

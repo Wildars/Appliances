@@ -24,6 +24,7 @@ public class SaleRequest {
 
 
     Long userId;
+    String address;
 
 
     Long filialId;

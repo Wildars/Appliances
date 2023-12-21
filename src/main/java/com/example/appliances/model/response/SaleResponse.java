@@ -19,6 +19,7 @@ public class SaleResponse {
     Long id;
     String name;
 
+    String address;
     LocalDateTime dateProdajy;
     String comments;
     Integer numberNakladnoy;

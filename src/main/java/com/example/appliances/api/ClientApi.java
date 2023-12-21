@@ -25,31 +25,31 @@ public class ClientApi {
 
 
     @PostMapping
-    public ResponseEntity<ClientResponse> createProduct(@RequestBody ClientRequest clientRequest) {
+    public ResponseEntity<ClientResponse> createClient(@RequestBody ClientRequest clientRequest) {
         ClientResponse createdProduct = clientService.create(clientRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
         ClientResponse product = clientService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponse> updateProduct(@RequestBody ClientRequest clientRequest, @PathVariable Long id) {
+    public ResponseEntity<ClientResponse> updateClient(@RequestBody ClientRequest clientRequest, @PathVariable Long id) {
         ClientResponse updatedProduct = clientService.update(clientRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<ClientResponse>> getAllProducts() {
+    public ResponseEntity<List<ClientResponse>> getAllClients() {
         List<ClientResponse> products = clientService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         clientService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

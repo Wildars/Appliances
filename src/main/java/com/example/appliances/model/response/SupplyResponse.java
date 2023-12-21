@@ -3,29 +3,18 @@ package com.example.appliances.model.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SaleItemResponse {
+public class SupplyResponse {
     Long id;
-
     String name;
+    List<SupplyItemResponse> supplyItems;
 
-    ProductResponse product;
-    Integer numberNakladnoy;
-    String address;
-
-//    SaleResponse sale;
-
-    Integer quantity;
-
-    Double totalPrice;
-
-
-    UserResponse user;
-
-
+    StorageResponse storage;
 }

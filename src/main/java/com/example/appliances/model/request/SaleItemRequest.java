@@ -1,7 +1,6 @@
 package com.example.appliances.model.request;
 
 import com.example.appliances.entity.Product;
-import com.example.appliances.entity.Sale;
 import com.example.appliances.entity.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,13 +20,14 @@ public class SaleItemRequest {
     Long productId;
 
 
-    Long saleId;
+//    Long saleId;
 
     Integer quantity;
 
-    Double price;
+    Double totalPrice;
 
-
+    Integer numberNakladnoy;
+    String address;
     Long userId;
 
 

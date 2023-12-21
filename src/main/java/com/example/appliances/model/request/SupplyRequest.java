@@ -1,7 +1,9 @@
-package com.example.appliances.model.response;
+package com.example.appliances.model.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -9,9 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FilialResponse {
-    Long id;
+public class SupplyRequest {
     String name;
 
-    String filCode;
+     List<SupplyItemRequest> supplyItems;
+
+     Long storageId;
 }

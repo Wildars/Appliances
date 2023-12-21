@@ -39,13 +39,29 @@ public interface DefaultMapper {
             return Filial.builder().id(id).build();
     }
 
-    @Named("setSale")
-    default Sale setSale(Long id) {
+    @Named("setSupply")
+    default Supply setSupply(Long id) {
         if (id == null)
             return null;
         else
-            return Sale.builder().id(id).build();
+            return Supply.builder().id(id).build();
     }
+
+    @Named("setStorage")
+    default Storage setStorage(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Storage.builder().id(id).build();
+    }
+
+//    @Named("setSale")
+//    default Sale setSale(Long id) {
+//        if (id == null)
+//            return null;
+//        else
+//            return Sale.builder().id(id).build();
+//    }
 
     @Named("setProduct")
     default Product setProduct(Long id) {

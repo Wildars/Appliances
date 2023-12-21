@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     @Transactional
-    public ProductResponse findById(Long id) {
+    public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует!"));
         return productMapper.entityToResponse(product);
@@ -61,5 +61,20 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteById(Long id) {
         productRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует"));
+
+        int updatedStock = product.getStock() + quantity;
+        if (updatedStock < 0) {
+            throw new RuntimeException("Недостаточно товара на складе");
+        }
+
+        product.setStock(updatedStock);
+        productRepository.save(product);
     }
 }

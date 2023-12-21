@@ -25,31 +25,31 @@ public class ProductCategoryApi {
     }
 
     @PostMapping
-    public ResponseEntity<ProductCategoryResponse> createProduct(@RequestBody ProductCategoryRequest productRequest) {
+    public ResponseEntity<ProductCategoryResponse> createProductCategory(@RequestBody ProductCategoryRequest productRequest) {
         ProductCategoryResponse createdProduct = productCategoryService.create(productRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductCategoryResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductCategoryResponse> getProductCategoryById(@PathVariable Long id) {
         ProductCategoryResponse product = productCategoryService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductCategoryResponse> updateProduct(@RequestBody ProductCategoryRequest productRequest, @PathVariable Long id) {
+    public ResponseEntity<ProductCategoryResponse> updateProductCategory(@RequestBody ProductCategoryRequest productRequest, @PathVariable Long id) {
         ProductCategoryResponse updatedProduct = productCategoryService.update(productRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductCategoryResponse>> getAllProducts() {
+    public ResponseEntity<List<ProductCategoryResponse>> getAllProductsCategory() {
         List<ProductCategoryResponse> products = productCategoryService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProductCategory(@PathVariable Long id) {
         productCategoryService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -1,10 +1,9 @@
 package com.example.appliances.repository;
 
-
-import com.example.appliances.entity.SaleItem;
+import com.example.appliances.entity.Storage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
+public interface StorageRepository extends JpaRepository<Storage,Long> {
 }

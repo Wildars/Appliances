@@ -1,4 +1,4 @@
-package com.example.appliances.model.response;
+package com.example.appliances.model.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,9 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FilialResponse {
-    Long id;
-    String name;
-
-    String filCode;
+public class StorageItemRequest {
+     Long productId;
+     Long storageId;
+     int quantity;
 }

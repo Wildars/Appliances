@@ -9,9 +9,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FilialResponse {
-    Long id;
-    String name;
+public class StorageItemResponse {
+     Long id;
+     ProductResponse product;
+     StorageResponse storageResponse;
+     int quantity;
 
-    String filCode;
 }

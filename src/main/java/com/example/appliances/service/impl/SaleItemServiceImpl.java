@@ -7,7 +7,6 @@ import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.SaleItemRepository;
 import com.example.appliances.service.SaleItemService;
-import com.example.appliances.service.SaleService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

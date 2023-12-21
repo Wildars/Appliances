@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Getter
@@ -13,15 +12,18 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Filial extends Audit<String> implements Serializable {
+public class SupplyItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
+     Long id;
 
-    String filCode;
+    @ManyToOne
+    @JoinColumn(name = "supply_id")
+    Supply supply;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "storage_id", referencedColumnName = "id")
-    Storage storage;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+     Product product;
+
+     int quantity;
 }
