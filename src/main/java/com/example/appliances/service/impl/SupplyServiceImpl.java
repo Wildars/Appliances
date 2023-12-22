@@ -53,7 +53,7 @@ ProductService productService;
 
             supplyItems.add(supplyItem);
 
-            // Обновляем количество товара на складе
+            // Обновляю количество товара на складе
             storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
         }
 

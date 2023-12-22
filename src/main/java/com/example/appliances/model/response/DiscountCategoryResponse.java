@@ -9,12 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClientResponse {
+public class DiscountCategoryResponse {
     Long id;
     String name;
-    String surname;
-    String patronymic;
-    String address;
-    DiscountCategoryResponse discountCategory;
-    ClientTypeResponse clientTypeId;
+    Double percentage;
 }

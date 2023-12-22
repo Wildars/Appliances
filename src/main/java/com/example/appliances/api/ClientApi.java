@@ -1,5 +1,6 @@
 package com.example.appliances.api;
 
+import com.example.appliances.entity.Client;
 import com.example.appliances.model.request.ClientRequest;
 import com.example.appliances.model.request.ProductRequest;
 import com.example.appliances.model.response.ClientResponse;
@@ -31,8 +32,8 @@ public class ClientApi {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) {
-        ClientResponse product = clientService.findById(id);
+    public ResponseEntity<Client> getClientById(@PathVariable Long id) {
+        Client product = clientService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 

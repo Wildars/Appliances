@@ -23,6 +23,8 @@ public interface DefaultMapper {
             return ProductCategory.builder().id(id).build();
     }
 
+
+
     @Named("setUser")
     default User setUser(Long id) {
         if (id == null)
@@ -37,6 +39,14 @@ public interface DefaultMapper {
             return null;
         else
             return Filial.builder().id(id).build();
+    }
+
+    @Named("setDiscountCategory")
+    default DiscountCategory setDiscountCategory(Long id) {
+        if (id == null)
+            return null;
+        else
+            return DiscountCategory.builder().id(id).build();
     }
 
     @Named("setClientType")

@@ -21,7 +21,10 @@ public class Client {
     String surname;
     String patronymic;
     String address;
-    Double procentSkidki;
+
+    @ManyToOne
+    @JoinColumn(name = "discount_category_id")
+    DiscountCategory discountCategory;
 
     @ManyToOne
     @JoinColumn

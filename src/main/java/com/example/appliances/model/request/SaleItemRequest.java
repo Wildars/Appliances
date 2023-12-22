@@ -23,6 +23,7 @@ public class SaleItemRequest {
 //    Long saleId;
 
     Integer quantity;
+    Long clientId;
 
     Double totalPrice;
 

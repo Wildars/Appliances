@@ -1,14 +1,18 @@
 package com.example.appliances.service.impl;
 
+import com.example.appliances.entity.Client;
+import com.example.appliances.entity.DiscountCategory;
 import com.example.appliances.entity.Product;
 import com.example.appliances.entity.SaleItem;
 import com.example.appliances.exception.ProductNotAvailableException;
 import com.example.appliances.exception.RecordNotFoundException;
+import com.example.appliances.mapper.ClientMapper;
 import com.example.appliances.mapper.SaleItemMapper;
 import com.example.appliances.model.request.SaleItemRequest;
-import com.example.appliances.model.response.ProductResponse;
+import com.example.appliances.model.response.ClientResponse;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.SaleItemRepository;
+import com.example.appliances.service.ClientService;
 import com.example.appliances.service.ProductService;
 import com.example.appliances.service.SaleItemService;
 import com.example.appliances.service.StorageService;
@@ -25,12 +29,17 @@ import java.util.stream.Collectors;
 public class SaleItemServiceImpl implements SaleItemService {
     ProductService productService;
 
+    ClientService clientService;
+
+    ClientMapper clientMapper;
     StorageService storageService;
     SaleItemRepository saleItemRepository;
     SaleItemMapper saleItemMapper;
 
-    public SaleItemServiceImpl(ProductService productService, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+    public SaleItemServiceImpl(ProductService productService, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
         this.productService = productService;
+        this.clientService = clientService;
+        this.clientMapper = clientMapper;
         this.storageService = storageService;
         this.saleItemRepository = saleItemRepository;
         this.saleItemMapper = saleItemMapper;
@@ -39,23 +48,46 @@ public class SaleItemServiceImpl implements SaleItemService {
     @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
         SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
-
-        // Получаем информацию о товаре из склада
+        // Очень надеюсь что комменты помогут понять тебе код
+        // Получаю информацию о товаре из склада
         Product product = storageService.getProductById(saleItemRequest.getProductId());
 
-        // Проверяем наличие товара на складе
+        // Проверяю наличие товара на складе
         storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
 
-        // Обновляем количество товара на складе (уменьшаем)
+        // Обновляю количество товара на складе (уменьшаем)
         storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
 
-        // Вычисляем totalPrice
+        // Получаю информацию о клиенте и его скидке
+        Client client = clientService.findById(saleItemRequest.getClientId());
+
+        // Присваиваю клиента к SaleItem
+        saleItem.setClient(client);
+
+        // Вычисляю totalPrice
         double totalPrice = product.getPrice() * saleItemRequest.getQuantity();
         saleItem.setTotalPrice(totalPrice);
 
+        // Вычисляю итоговую стоимость с учетом скидки
+        double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
+        saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
+
         SaleItem savedSaleItem = saleItemRepository.save(saleItem);
+
+        // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
         return saleItemMapper.entityToResponse(savedSaleItem);
     }
+
+    private double calculateTotalPriceWithDiscount(SaleItem saleItem) {
+        Client client = saleItem.getClient();
+        DiscountCategory discountCategory = client.getDiscountCategory();
+
+        double discountPercentage = (discountCategory != null) ? discountCategory.getPercentage() : 0.0;
+        double discount = saleItem.getTotalPrice() * (discountPercentage / 100.0);
+
+        return saleItem.getTotalPrice() - discount;
+    }
+
 
     private void checkProductAvailability(Long productId, int quantity) {
         int availableQuantity = storageService.getAvailableQuantity(productId);

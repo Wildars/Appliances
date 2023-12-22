@@ -35,10 +35,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientResponse findById(Long id) {
-        Client client = clientRepository.findById(id)
+    public Client findById(Long id) {
+        return clientRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует!"));
-        return clientMapper.entityToResponse(client);
     }
 
     @Override
