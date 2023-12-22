@@ -13,6 +13,9 @@ public interface StorageService {
 
      StorageResponse findById(Long id);
 
+    public int getAvailableQuantity(Long productId);
+
+    public void updateStockByProductId(Long productId, int quantity);
      StorageResponse update(StorageRequest storageRequest, Long id);
 
      List<StorageResponse> findAll();
@@ -20,7 +23,9 @@ public interface StorageService {
      void deleteById(Long id);
 
 
+    public void checkProductAvailability(Long productId, int requestedQuantity) ;
+
 
     public void updateStock(Long productId, Long storageId, int quantity) ;
-    public ProductResponse getProductById(Long storageId, Long productId);
+    public Product getProductById(Long productId);
 }

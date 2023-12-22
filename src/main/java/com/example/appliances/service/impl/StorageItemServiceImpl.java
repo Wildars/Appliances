@@ -1,6 +1,7 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.StorageItem;
+import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.StorageItemMapper;
 import com.example.appliances.model.request.StorageItemRequest;
@@ -59,6 +60,25 @@ public class StorageItemServiceImpl implements StorageItemService {
     public void updateStock(Long productId, Long storageId, int quantity) {
         StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
                 .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+
+        int newQuantity = storageItem.getQuantity() + quantity;
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
+
+    @Override
+    @Transactional
+    public void updateStockByProductId(Long productId, int quantity) {
+        // Получаем информацию о товаре на складе по productId (если нужно)
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+        }
 
         int newQuantity = storageItem.getQuantity() + quantity;
         if (newQuantity < 0) {

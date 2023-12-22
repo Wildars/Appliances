@@ -7,6 +7,7 @@ import com.example.appliances.model.request.FilialRequest;
 import com.example.appliances.model.response.ClientResponse;
 import com.example.appliances.model.response.FilialResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -14,14 +15,15 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
-                DefaultMapper.class
+                DefaultMapper.class,
+                ClientTypeMapper.class
 
         }
 )
 public interface ClientMapper {
     ClientResponse entityToResponse(Client entity);
 
-
+    @Mapping(target = "clientType", source = "clientTypeId", qualifiedByName = "setClientType")
     Client requestToEntity(ClientRequest request);
 
 

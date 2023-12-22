@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class SupplyItemResponse {
      Long id;
      ProductResponse product;
-//     SupplyResponse supply;
+     SupplyResponse supply;
      int quantity;
 }

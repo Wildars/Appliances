@@ -35,9 +35,9 @@ public class SaleItem extends Audit<String> implements Serializable {
 
     Double totalPrice;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    User user;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+//    User user;
 
 
 }

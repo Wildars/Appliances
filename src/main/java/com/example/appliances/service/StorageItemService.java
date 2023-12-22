@@ -16,4 +16,6 @@ public interface StorageItemService {
     public void deleteStorageItemById(Long id);
 
     void updateStock(Long productId, Long storageId, int quantity);
+
+    public void updateStockByProductId(Long productId, int quantity);
 }

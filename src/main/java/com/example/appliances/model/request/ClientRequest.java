@@ -11,4 +11,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClientRequest {
     String name;
+    String surname;
+    String patronymic;
+    String address;
+    Double procentSkidki;
+    Long clientTypeId;
 }

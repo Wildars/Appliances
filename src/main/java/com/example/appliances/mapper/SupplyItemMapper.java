@@ -24,7 +24,7 @@ public interface SupplyItemMapper {
 
     SupplyItemResponse entityToResponse(SupplyItem entity);
     @Mapping(target = "product", source = "productId", qualifiedByName = "setProduct")
-//    @Mapping(target = "supply", source = "supplyId", qualifiedByName = "setSupply")
+    @Mapping(target = "supply", source = "supplyId", qualifiedByName = "setSupply")
     SupplyItem requestToEntity(SupplyItemRequest request);
 
     void update(@MappingTarget SupplyItem entity, SupplyItemRequest request);

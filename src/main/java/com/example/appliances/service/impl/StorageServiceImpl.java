@@ -3,11 +3,15 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Product;
 import com.example.appliances.entity.Storage;
+import com.example.appliances.entity.StorageItem;
+import com.example.appliances.exception.ProductNotAvailableException;
+import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.StorageMapper;
 import com.example.appliances.model.request.StorageRequest;
-import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.repository.ProductRepository;
+import com.example.appliances.repository.StorageItemRepository;
 import com.example.appliances.repository.StorageRepository;
 import com.example.appliances.service.ProductService;
 import com.example.appliances.service.StorageItemService;
@@ -31,11 +35,17 @@ public class StorageServiceImpl implements StorageService {
 
     ProductService productService;
 
-    public StorageServiceImpl(StorageMapper storageMapper, StorageRepository storageRepository, StorageItemService storageItemService, ProductService productService) {
+    ProductRepository productRepository;
+
+    StorageItemRepository storageItemRepository;
+
+    public StorageServiceImpl(StorageMapper storageMapper, StorageRepository storageRepository, StorageItemService storageItemService, ProductService productService, ProductRepository productRepository, StorageItemRepository storageItemRepository) {
         this.storageMapper = storageMapper;
         this.storageRepository = storageRepository;
         this.storageItemService = storageItemService;
         this.productService = productService;
+        this.productRepository = productRepository;
+        this.storageItemRepository = storageItemRepository;
     }
 
     @Override
@@ -73,7 +83,42 @@ public class StorageServiceImpl implements StorageService {
         storageRepository.deleteById(id);
     }
 
+    @Override
+    @Transactional
+    public void checkProductAvailability(Long productId, int requestedQuantity) {
+        Product product = getProductById(productId);
 
+        if (product.getStock() < requestedQuantity) {
+            throw new ProductNotAvailableException("Недостаточно товара на складе. Доступное количество: " + product.getStock());
+        }
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public int getAvailableQuantity(Long productId) {
+        // Получаем информацию о товаре на складе
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        // Если информация не найдена, считаем количество равным нулю
+        return storageItem != null ? storageItem.getQuantity() : 0;
+    }
+    @Override
+    @Transactional
+    public void updateStockByProductId(Long productId, int quantity) {
+        // Получаем информацию о товаре на складе по productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+        }
+
+        int newQuantity = storageItem.getQuantity() - quantity;
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
     @Override
     @Transactional
     public void updateStock(Long productId, Long storageId, int quantity) {
@@ -83,10 +128,8 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     @Transactional
-    public ProductResponse getProductById(Long storageId, Long productId) {
-        Storage storage = storageRepository.findById(storageId)
-                .orElseThrow(() -> new RecordNotFoundException("Склад с таким id не существует"));
-
-        return productService.getProductById(productId);
+    public Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Товар с ID " + productId + " не найден"));
     }
 }

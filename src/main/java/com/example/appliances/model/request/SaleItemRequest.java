@@ -28,7 +28,7 @@ public class SaleItemRequest {
 
     Integer numberNakladnoy;
     String address;
-    Long userId;
+//    Long userId;
 
 
 

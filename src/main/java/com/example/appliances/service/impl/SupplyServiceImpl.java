@@ -49,7 +49,7 @@ ProductService productService;
 
         for (SupplyItemRequest itemRequest : supplyRequest.getSupplyItems()) {
             SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
-            supplyItem.setSupply(supply);
+//            supplyItem.setSupply(supply);
 
             supplyItems.add(supplyItem);
 
@@ -82,8 +82,8 @@ ProductService productService;
     @Override
     @Transactional
     public List<SupplyResponse> findAll() {
-        List<Supply> saleItems = supplyRepository.findAll();
-        return saleItems.stream().map(supplyMapper::entityToResponse).collect(Collectors.toList());
+        List<Supply> supplies = supplyRepository.findAll();
+        return supplies.stream().map(supplyMapper::entityToResponse).collect(Collectors.toList());
     }
     @Override
     @Transactional

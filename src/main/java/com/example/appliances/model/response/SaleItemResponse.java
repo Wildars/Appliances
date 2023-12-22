@@ -25,7 +25,7 @@ public class SaleItemResponse {
     Double totalPrice;
 
 
-    UserResponse user;
+//    UserResponse user;
 
 
 }

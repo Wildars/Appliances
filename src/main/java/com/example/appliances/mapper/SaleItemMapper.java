@@ -22,7 +22,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 )
 public interface SaleItemMapper {
     SaleItemResponse entityToResponse(SaleItem entity);
-    @Mapping(target = "user", source = "userId", qualifiedByName = "setUser")
+//    @Mapping(target = "user", source = "userId", qualifiedByName = "setUser")
 //    @Mapping(target = "sale", source = "saleId", qualifiedByName = "setSale")
     @Mapping(target = "product", source = "productId", qualifiedByName = "setProduct")
     SaleItem requestToEntity(SaleItemRequest request);

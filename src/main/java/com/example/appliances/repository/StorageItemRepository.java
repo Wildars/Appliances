@@ -11,5 +11,7 @@ public interface StorageItemRepository extends JpaRepository<StorageItem,Long> {
 
     Optional<StorageItem> findByStorageIdAndProductId(Long storageId, Long productId);
 
+    StorageItem findByProductId(Long productId);
+
     Optional<StorageItem> findByProductIdAndStorageId(Long productId, Long storageId);
 }

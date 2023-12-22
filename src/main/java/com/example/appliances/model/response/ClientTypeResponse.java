@@ -1,5 +1,6 @@
 package com.example.appliances.model.response;
 
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,12 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClientResponse {
+public class ClientTypeResponse {
     Long id;
     String name;
-    String surname;
-    String patronymic;
-    String address;
-    Double procentSkidki;
-    ClientTypeResponse clientType;
 }

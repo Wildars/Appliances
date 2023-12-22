@@ -39,6 +39,14 @@ public interface DefaultMapper {
             return Filial.builder().id(id).build();
     }
 
+    @Named("setClientType")
+    default ClientType setClientType(Long id) {
+        if (id == null)
+            return null;
+        else
+            return ClientType.builder().id(id).build();
+    }
+
     @Named("setSupply")
     default Supply setSupply(Long id) {
         if (id == null)
