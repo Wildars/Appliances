@@ -1,17 +1,15 @@
 package com.example.appliances.service.impl;
 
-import com.example.appliances.entity.Client;
-import com.example.appliances.entity.DiscountCategory;
-import com.example.appliances.entity.Product;
-import com.example.appliances.entity.SaleItem;
+import com.example.appliances.entity.*;
+import com.example.appliances.enums.SaleStatusEnum;
 import com.example.appliances.exception.ProductNotAvailableException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ClientMapper;
 import com.example.appliances.mapper.SaleItemMapper;
 import com.example.appliances.model.request.SaleItemRequest;
-import com.example.appliances.model.response.ClientResponse;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.SaleItemRepository;
+import com.example.appliances.repository.SaleStatusRepository;
 import com.example.appliances.service.ClientService;
 import com.example.appliances.service.ProductService;
 import com.example.appliances.service.SaleItemService;
@@ -29,15 +27,19 @@ import java.util.stream.Collectors;
 public class SaleItemServiceImpl implements SaleItemService {
     ProductService productService;
 
+    SaleStatusRepository saleStatusRepository;
     ClientService clientService;
+
+
 
     ClientMapper clientMapper;
     StorageService storageService;
     SaleItemRepository saleItemRepository;
     SaleItemMapper saleItemMapper;
 
-    public SaleItemServiceImpl(ProductService productService, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+    public SaleItemServiceImpl(ProductService productService, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
         this.productService = productService;
+        this.saleStatusRepository = saleStatusRepository;
         this.clientService = clientService;
         this.clientMapper = clientMapper;
         this.storageService = storageService;
@@ -48,6 +50,11 @@ public class SaleItemServiceImpl implements SaleItemService {
     @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
         SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
+
+        // Присваиваю статусы
+        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).get();
+        saleItem.setSaleStatus(saleStatus);
+
         // Очень надеюсь что комменты помогут понять тебе код
         // Получаю информацию о товаре из склада
         Product product = storageService.getProductById(saleItemRequest.getProductId());
