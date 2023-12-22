@@ -2,15 +2,18 @@ package com.example.appliances.api;
 
 import com.example.appliances.model.request.SaleRequest;
 import com.example.appliances.model.request.StorageRequest;
+import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.model.response.SaleResponse;
 import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/storage")
@@ -29,6 +32,14 @@ public class StorageApi {
         return new ResponseEntity<>(createdSale, HttpStatus.CREATED);
     }
 
+
+    @GetMapping("/list")
+    public Page<StorageResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
+                                                         @RequestParam(required = false, defaultValue = "25") int size,
+                                                         @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                         @RequestParam(required = false) String sortBy) {
+        return storageService.getAllStorage(page, size, sortOrder, sortBy);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<StorageResponse> getStorageById(@PathVariable Long id) {
         StorageResponse sale = storageService.findById(id);

@@ -1,9 +1,13 @@
 package com.example.appliances.service;
 
+import com.example.appliances.entity.Supply;
 import com.example.appliances.model.request.SupplyRequest;
+import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SupplyService {
      SupplyResponse create(SupplyRequest supplyRequest);
@@ -12,7 +16,13 @@ public interface SupplyService {
 
      SupplyResponse update(SupplyRequest supplyRequest, Long id);
 
-     List<SupplyResponse> findAll();
+     List<SupplyItemResponse> findAll();
+     public List<Supply> findAlls();
+
+     public Page<SupplyResponse> getAllSuppliers(int page,
+                                                 int size,
+                                                 Optional<Boolean> sortOrder,
+                                                 String sortBy);
 
      void deleteById(Long id);
 }

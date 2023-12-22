@@ -2,6 +2,7 @@ package com.example.appliances.service.impl;
 
 
 import com.example.appliances.entity.Product;
+import com.example.appliances.entity.SaleItem;
 import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.StorageItem;
 import com.example.appliances.exception.ProductNotAvailableException;
@@ -9,6 +10,7 @@ import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.StorageMapper;
 import com.example.appliances.model.request.StorageRequest;
+import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.StorageItemRepository;
@@ -18,10 +20,15 @@ import com.example.appliances.service.StorageItemService;
 import com.example.appliances.service.StorageService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +53,25 @@ public class StorageServiceImpl implements StorageService {
         this.productService = productService;
         this.productRepository = productRepository;
         this.storageItemRepository = storageItemRepository;
+    }
+
+    @Override
+    @Transactional
+    public Page<StorageResponse> getAllStorage(int page,
+                                                  int size,
+                                                  Optional<Boolean> sortOrder,
+                                                  String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<Storage> saleItemsPage = storageRepository.findAll(paging);
+
+        return saleItemsPage.map(storageMapper::entityToResponse);
     }
 
     @Override

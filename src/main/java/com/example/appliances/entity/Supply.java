@@ -20,7 +20,7 @@ public class Supply extends Audit<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    @OneToMany(mappedBy = "supply", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "supply", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<SupplyItem> supplyItems = new ArrayList<>();
 
     @ManyToOne

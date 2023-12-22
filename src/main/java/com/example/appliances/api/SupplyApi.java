@@ -1,14 +1,19 @@
 package com.example.appliances.api;
 
+import com.example.appliances.entity.Supply;
 import com.example.appliances.model.request.SupplyRequest;
+import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
 import com.example.appliances.service.SupplyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/providers")
@@ -39,9 +44,21 @@ public class SupplyApi {
         return new ResponseEntity<>(updatedSaleItem, HttpStatus.OK);
     }
 
+    @GetMapping("/list")
+    public Page<SupplyResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
+                                                        @RequestParam(required = false, defaultValue = "25") int size,
+                                                        @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                        @RequestParam(required = false) String sortBy) {
+        return supplyService.getAllSuppliers(page, size, sortOrder, sortBy);
+    }
+    @GetMapping("/alls")
+    public List<Supply> getAllSupplies() {
+        return supplyService.findAlls();
+    }
+
     @GetMapping
-    public ResponseEntity<List<SupplyResponse>> getAllProviders() {
-        List<SupplyResponse> saleItems = supplyService.findAll();
+    public ResponseEntity<List<SupplyItemResponse>> getAllProviders() {
+        List<SupplyItemResponse> saleItems = supplyService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
 

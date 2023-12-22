@@ -13,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
-                StorageMapper.class
+                StorageMapper.class,
         }
 )
 public interface SupplyMapper {
@@ -21,7 +21,6 @@ public interface SupplyMapper {
     SupplyResponse entityToResponse(Supply entity);
 
     @Mapping(target = "storage", source = "storageId", qualifiedByName = "setStorage")
-
     Supply requestToEntity(SupplyRequest request);
 
     void update(@MappingTarget Supply entity, SupplyRequest request);

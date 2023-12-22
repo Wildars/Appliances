@@ -15,10 +15,15 @@ import com.example.appliances.service.ProductCategoryService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +37,24 @@ public class ProductCategoryImpl implements ProductCategoryService {
         this.productCategoryRepository = productCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
     }
+    @Override
+    public Page<ProductCategoryResponse> getAllProductCategory(int page,
+                                                         int size,
+                                                         Optional<Boolean> sortOrder,
+                                                         String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<ProductCategory> saleItemsPage = productCategoryRepository.findAll(paging);
+
+        return saleItemsPage.map(productCategoryMapper::entityToResponse);
+    }
+
     @Override
     @Transactional
     public ProductCategoryResponse create(ProductCategoryRequest productRequest) {

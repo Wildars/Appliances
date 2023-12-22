@@ -1,19 +1,26 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Product;
+import com.example.appliances.entity.ProductCategory;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ProductMapper;
 import com.example.appliances.model.request.ProductRequest;
+import com.example.appliances.model.response.ProductCategoryResponse;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.service.ProductService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +35,25 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
     }
+
+    @Override
+    public Page<ProductResponse> getAllProduct(int page,
+                                                               int size,
+                                                               Optional<Boolean> sortOrder,
+                                                               String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<Product> saleItemsPage = productRepository.findAll(paging);
+
+        return saleItemsPage.map(productMapper::entityToResponse);
+    }
+
     @Override
     @Transactional
     public ProductResponse create(ProductRequest productRequest) {

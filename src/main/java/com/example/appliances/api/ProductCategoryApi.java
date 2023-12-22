@@ -7,11 +7,13 @@ import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.service.ProductCategoryService;
 import com.example.appliances.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products/category")
@@ -24,6 +26,14 @@ public class ProductCategoryApi {
         this.productCategoryService = productCategoryService;
     }
 
+
+    @GetMapping("/list")
+    public Page<ProductCategoryResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
+                                                                @RequestParam(required = false, defaultValue = "25") int size,
+                                                                @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                                @RequestParam(required = false) String sortBy) {
+        return productCategoryService.getAllProductCategory(page, size, sortOrder, sortBy);
+    }
     @PostMapping
     public ResponseEntity<ProductCategoryResponse> createProductCategory(@RequestBody ProductCategoryRequest productRequest) {
         ProductCategoryResponse createdProduct = productCategoryService.create(productRequest);

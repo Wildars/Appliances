@@ -4,14 +4,21 @@ import com.example.appliances.entity.Product;
 import com.example.appliances.model.request.StorageRequest;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.model.response.StorageResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StorageService {
 
     StorageResponse create(StorageRequest storageRequest);
 
      StorageResponse findById(Long id);
+
+    public Page<StorageResponse> getAllStorage(int page,
+                                                 int size,
+                                                 Optional<Boolean> sortOrder,
+                                                 String sortBy);
 
     public int getAvailableQuantity(Long productId);
 

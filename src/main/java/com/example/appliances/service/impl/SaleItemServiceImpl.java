@@ -2,10 +2,13 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.*;
 import com.example.appliances.enums.SaleStatusEnum;
+import com.example.appliances.exception.CustomError;
+import com.example.appliances.exception.CustomException;
 import com.example.appliances.exception.ProductNotAvailableException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ClientMapper;
 import com.example.appliances.mapper.SaleItemMapper;
+import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.SaleItemRepository;
@@ -16,10 +19,16 @@ import com.example.appliances.service.SaleItemService;
 import com.example.appliances.service.StorageService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +55,72 @@ public class SaleItemServiceImpl implements SaleItemService {
         this.saleItemRepository = saleItemRepository;
         this.saleItemMapper = saleItemMapper;
     }
+
+
+    @Override
+    public Page<SaleItemResponse> getAllSaleItems(int page,
+                                                  int size,
+                                                  Optional<Boolean> sortOrder,
+                                                  String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<SaleItem> saleItemsPage = saleItemRepository.findAll(paging);
+
+        return saleItemsPage.map(saleItemMapper::entityToResponse);
+    }
+
+//    private Pageable createPageable(int page, int size, Optional<Boolean> sortOrder, String sortBy) {
+//        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+//        return PageRequest.of(page, size, direction, sortBy);
+//    }
+
+
+
+
+
+    @Override
+    @Transactional
+    public void sendSaleItem(Long saleItemId, SaleItemElementRequest request) {
+
+        updateQueueEntryStatus(saleItemId, SaleStatusEnum.SENDET, null);
+    }
+    @Override
+    @Transactional
+    public void doneSaleItem(Long saleItemId, SaleItemElementRequest request) {
+
+        updateQueueEntryStatus(saleItemId, SaleStatusEnum.DONE, null);
+    }
+    @Override
+    @Transactional
+    public void rejectSaleItem(Long queueEntryId, SaleItemElementRequest request) {
+
+        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
+    }
+
+    private void updateQueueEntryStatus(Long queueEntryId, SaleStatusEnum status, String description) {
+        SaleItem queueEntry = saleItemRepository.findById(queueEntryId)
+                .orElseThrow(() -> new CustomException(CustomError.ENTITY_NOT_FOUND));
+
+        SaleStatus queueEntryStatus = saleStatusRepository.findById(status.getId())
+                .orElseThrow(() -> new EntityNotFoundException("QueueEntryStatus with id " + status.getId() + " not found"));
+
+        queueEntry.setSaleStatus(queueEntryStatus);
+
+        if (status == SaleStatusEnum.REJECTED) {
+            queueEntry.setComments(description);
+        }
+
+        saleItemRepository.save(queueEntry);
+    }
+
+
+
     @Override
     @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
