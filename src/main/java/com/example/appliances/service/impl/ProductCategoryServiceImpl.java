@@ -1,16 +1,11 @@
 package com.example.appliances.service.impl;
 
-import com.example.appliances.entity.Product;
 import com.example.appliances.entity.ProductCategory;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ProductCategoryMapper;
-import com.example.appliances.mapper.ProductMapper;
 import com.example.appliances.model.request.ProductCategoryRequest;
-import com.example.appliances.model.request.ProductRequest;
 import com.example.appliances.model.response.ProductCategoryResponse;
-import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.repository.ProductCategoryRepository;
-import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.service.ProductCategoryService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -28,12 +23,12 @@ import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ProductCategoryImpl implements ProductCategoryService {
+public class ProductCategoryServiceImpl implements ProductCategoryService {
     ProductCategoryRepository productCategoryRepository;
     ProductCategoryMapper productCategoryMapper;
 
     @Autowired
-    public ProductCategoryImpl(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper) {
+    public ProductCategoryServiceImpl(ProductCategoryRepository productCategoryRepository, ProductCategoryMapper productCategoryMapper) {
         this.productCategoryRepository = productCategoryRepository;
         this.productCategoryMapper = productCategoryMapper;
     }

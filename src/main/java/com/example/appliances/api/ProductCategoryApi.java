@@ -27,7 +27,7 @@ public class ProductCategoryApi {
     }
 
 
-    @GetMapping("/list")
+    @GetMapping("/page")
     public Page<ProductCategoryResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                                 @RequestParam(required = false, defaultValue = "25") int size,
                                                                 @RequestParam(required = false) Optional<Boolean> sortOrder,
@@ -52,7 +52,7 @@ public class ProductCategoryApi {
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<ProductCategoryResponse>> getAllProductsCategory() {
         List<ProductCategoryResponse> products = productCategoryService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);

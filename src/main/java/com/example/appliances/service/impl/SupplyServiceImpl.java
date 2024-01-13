@@ -3,16 +3,20 @@ package com.example.appliances.service.impl;
 import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.Supply;
 import com.example.appliances.entity.SupplyItem;
+import com.example.appliances.entity.WishList;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.SupplyItemMapper;
 import com.example.appliances.mapper.SupplyMapper;
+import com.example.appliances.mapper.WishListMapper;
 import com.example.appliances.model.request.SupplyItemRequest;
 import com.example.appliances.model.request.SupplyRequest;
 import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
+import com.example.appliances.model.response.WishListResponse;
 import com.example.appliances.repository.SupplyItemRepository;
 import com.example.appliances.repository.SupplyRepository;
+import com.example.appliances.repository.WishListRepository;
 import com.example.appliances.service.ProductService;
 import com.example.appliances.service.SupplyService;
 import com.example.appliances.service.StorageService;
@@ -39,15 +43,19 @@ public class SupplyServiceImpl implements SupplyService {
     SupplyItemRepository supplyItemRepository;
     SupplyMapper supplyMapper;
 
+    WishListMapper wishListMapper;
 
+    WishListRepository wishListRepository;
 ProductService productService;
     StorageService storageService;
 
-    public SupplyServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, SupplyItemRepository supplyItemRepository, SupplyMapper supplyMapper, ProductService productService, StorageService storageService) {
+    public SupplyServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, SupplyItemRepository supplyItemRepository, SupplyMapper supplyMapper, WishListMapper wishListMapper, WishListRepository wishListRepository, ProductService productService, StorageService storageService) {
         this.supplyRepository = supplyRepository;
         this.supplyItemMapper = supplyItemMapper;
         this.supplyItemRepository = supplyItemRepository;
         this.supplyMapper = supplyMapper;
+        this.wishListMapper = wishListMapper;
+        this.wishListRepository = wishListRepository;
         this.productService = productService;
         this.storageService = storageService;
     }
@@ -125,4 +133,49 @@ ProductService productService;
     public void deleteById(Long id) {
         supplyRepository.deleteById(id);
     }
+
+
+
+
+
+
+
+    @Override
+    @Transactional
+    public List<WishListResponse> getAllWishListItems() {
+        List<WishList> wishListItems = wishListRepository.findAll();
+        return wishListItems.stream().map(wishListMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+
+
+
+    @Override
+    @Transactional
+    public Page<WishListResponse> getAllWishListItemsPaged(int page,
+                                                int size,
+                                                Optional<Boolean> sortOrder,
+                                                String sortBy) {
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<WishList> wishListItemsPage = wishListRepository.findAll(paging);
+
+        return wishListItemsPage.map(wishListMapper::entityToResponse);
+    }
+
+
+
+
+
+
+
+
+
+
 }

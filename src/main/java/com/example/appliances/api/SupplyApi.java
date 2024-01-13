@@ -5,6 +5,7 @@ import com.example.appliances.model.request.SupplyRequest;
 import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
+import com.example.appliances.model.response.WishListResponse;
 import com.example.appliances.service.SupplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,5 +67,23 @@ public class SupplyApi {
     public ResponseEntity<Void> deleteProvider(@PathVariable Long id) {
         supplyService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
+
+    @GetMapping("/wishlist")
+    public ResponseEntity<List<WishListResponse>> getAllWishListItems() {
+        List<WishListResponse> wishListItems = supplyService.getAllWishListItems();
+        return new ResponseEntity<>(wishListItems, HttpStatus.OK);
+    }
+
+    @GetMapping("/wishlist/paged")
+    public ResponseEntity<Page<WishListResponse>> getAllWishListItemsPaged(@RequestParam(required = false, defaultValue = "0") int page,
+                                                                           @RequestParam(required = false, defaultValue = "25") int size,
+                                                                           @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                                           @RequestParam(required = false) String sortBy) {
+        Page<WishListResponse> wishListItems = supplyService.getAllWishListItemsPaged(page, size, sortOrder, sortBy);
+        return new ResponseEntity<>(wishListItems, HttpStatus.OK);
     }
 }
