@@ -44,7 +44,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client findById(Long id) {
         return clientRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует!"));
+                .orElseThrow(() -> new RecordNotFoundException("Клиент с таким id не существует!"));
     }
 
     @Override

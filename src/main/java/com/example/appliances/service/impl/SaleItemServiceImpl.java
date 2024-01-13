@@ -2,10 +2,7 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.*;
 import com.example.appliances.enums.SaleStatusEnum;
-import com.example.appliances.exception.CustomError;
-import com.example.appliances.exception.CustomException;
-import com.example.appliances.exception.ProductNotAvailableException;
-import com.example.appliances.exception.RecordNotFoundException;
+import com.example.appliances.exception.*;
 import com.example.appliances.mapper.ClientMapper;
 import com.example.appliances.mapper.SaleItemMapper;
 import com.example.appliances.model.request.SaleItemElementRequest;
@@ -100,6 +97,16 @@ public class SaleItemServiceImpl implements SaleItemService {
     @Transactional
     public void rejectSaleItem(Long queueEntryId, SaleItemElementRequest request) {
 
+        SaleItem saleItem = saleItemRepository.findById(queueEntryId)
+                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
+
+        // Получить информацию о товаре, который был куплен
+        Product product = saleItem.getProduct();
+
+        // Увеличить количество этого товара на складе
+        storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
+
+        // Обновить статус покупки на "REJECTED" и добавить комментарии
         updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
     }
 

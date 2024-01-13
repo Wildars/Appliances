@@ -92,15 +92,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void updateStock(Long productId, int quantity) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует"));
-
-        int updatedStock = product.getStock() + quantity;
-        if (updatedStock < 0) {
-            throw new RuntimeException("Недостаточно товара на складе");
-        }
-
-        product.setStock(updatedStock);
-        productRepository.save(product);
+//        Product product = productRepository.findById(productId)
+//                .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует"));
+//
+//        int updatedStock = product.getStock() + quantity;
+//        if (updatedStock < 0) {
+//            throw new RuntimeException("Недостаточно товара на складе");
+//        }
+//
+//        product.setStock(updatedStock);
+//        productRepository.save(product);
     }
 }

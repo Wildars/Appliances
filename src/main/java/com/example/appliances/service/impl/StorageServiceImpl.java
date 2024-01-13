@@ -112,10 +112,17 @@ public class StorageServiceImpl implements StorageService {
     @Override
     @Transactional
     public void checkProductAvailability(Long productId, int requestedQuantity) {
-        Product product = getProductById(productId);
+        // Найдем запись StorageItem для заданного productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
 
-        if (product.getStock() < requestedQuantity) {
-            throw new ProductNotAvailableException("Недостаточно товара на складе. Доступное количество: " + product.getStock());
+        // Проверим, найден ли StorageItem
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Продукт с ID " + productId + " не найден");
+        }
+
+        // Проверим доступное количество
+        if (storageItem.getQuantity() < requestedQuantity) {
+            throw new ProductNotAvailableException("Недостаточно товара на складе. Доступное количество: " + storageItem.getQuantity());
         }
     }
     @Override
@@ -127,6 +134,21 @@ public class StorageServiceImpl implements StorageService {
         // Если информация не найдена, считаем количество равным нулю
         return storageItem != null ? storageItem.getQuantity() : 0;
     }
+    @Transactional
+    @Override
+    public void returnStockByProductId(Long productId, int quantity) {
+        // Получаем информацию о товаре на складе по productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+        }
+
+        int newQuantity = storageItem.getQuantity() + quantity;
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
+
     @Override
     @Transactional
     public void updateStockByProductId(Long productId, int quantity) {

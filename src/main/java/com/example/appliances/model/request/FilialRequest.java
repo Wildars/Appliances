@@ -12,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class FilialRequest {
     String name;
 
-    String filCode;
+
 }

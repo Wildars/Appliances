@@ -20,7 +20,7 @@ public class Product extends Audit<String> implements Serializable {
     String name;
 
     Double price;
-    Integer stock;
+//    Integer stock;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     ProductCategory productCategory;

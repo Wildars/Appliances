@@ -3,6 +3,8 @@ package com.example.appliances.model.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -17,6 +19,7 @@ public class SaleItemResponse {
     ProductResponse product;
     Integer numberNakladnoy;
     String address;
+    LocalDateTime schedule;
 
 //    SaleResponse sale;
 

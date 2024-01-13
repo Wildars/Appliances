@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class SaleItemRequest {
 
 
 //    Long saleId;
-
+LocalDateTime schedule;
     Integer quantity;
     Long clientId;
 

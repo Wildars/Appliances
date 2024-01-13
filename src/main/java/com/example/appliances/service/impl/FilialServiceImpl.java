@@ -75,12 +75,35 @@ public class FilialServiceImpl implements FilialService {
     @Override
     public FilialResponse saveOrganization(FilialRequest organizationModel) {
         Filial organization = filialMapper.requestToEntity(organizationModel);
+        String newFilCode = generateNextFilCode();
+        organization.setFilCode(newFilCode);
         try {
             Filial savedOrganization = organizationsRepository.save(organization);
             return filialMapper.entityToResponse(savedOrganization);
         } catch (RuntimeException e) {
             throw new RuntimeException("Не удалось сохранить Организацию в базе данных", e);
         }
+    }
+
+
+    private String generateNextFilCode() {
+        String minFilialCode = "00001";
+
+
+        List<String> existingScreens = organizationsRepository.findAllFilCodes();
+
+        if (!existingScreens.isEmpty()) {
+            //мин значение с бд
+            for (int i = 1; i < Integer.MAX_VALUE; i++) {
+                String nextScreenValue = String.format("%05d", i);
+                if (!existingScreens.contains(nextScreenValue)) {
+                    minFilialCode = nextScreenValue;
+                    break;
+                }
+            }
+        }
+
+        return minFilialCode;
     }
 
     public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy) {

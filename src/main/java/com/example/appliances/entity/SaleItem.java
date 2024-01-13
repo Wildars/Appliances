@@ -23,9 +23,7 @@ public class SaleItem extends Audit<String> implements Serializable {
     @JoinColumn
     Product product;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn
-//    Sale sale;
+    LocalDateTime schedule;
     String comments;
 
     Integer numberNakladnoy;
@@ -43,9 +41,6 @@ public class SaleItem extends Audit<String> implements Serializable {
 
     Double totalPrice;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn
-//    User user;
 
 
 }

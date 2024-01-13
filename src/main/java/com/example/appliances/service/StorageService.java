@@ -23,7 +23,8 @@ public interface StorageService {
     public int getAvailableQuantity(Long productId);
 
     public void updateStockByProductId(Long productId, int quantity);
-     StorageResponse update(StorageRequest storageRequest, Long id);
+    public void returnStockByProductId(Long productId, int quantity);
+    StorageResponse update(StorageRequest storageRequest, Long id);
 
      List<StorageResponse> findAll();
 
