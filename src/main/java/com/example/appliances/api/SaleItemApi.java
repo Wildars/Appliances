@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,12 +27,14 @@ public class SaleItemApi {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<SaleItemResponse> createSaleItem(@RequestBody SaleItemRequest saleItemRequest) {
         SaleItemResponse createdSaleItem = saleItemService.create(saleItemRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
     @GetMapping("/list")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public Page<SaleItemResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                      @RequestParam(required = false, defaultValue = "25") int size,
                                                      @RequestParam(required = false) Optional<Boolean> sortOrder,
@@ -40,24 +43,28 @@ public class SaleItemApi {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<SaleItemResponse> getSaleItemById(@PathVariable Long id) {
         SaleItemResponse saleItem = saleItemService.findById(id);
         return new ResponseEntity<>(saleItem, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<SaleItemResponse> updateSaleItem(@RequestBody SaleItemRequest saleItemRequest, @PathVariable Long id) {
         SaleItemResponse updatedSaleItem = saleItemService.update(saleItemRequest, id);
         return new ResponseEntity<>(updatedSaleItem, HttpStatus.OK);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<List<SaleItemResponse>> getAllSaleItems() {
         List<SaleItemResponse> saleItems = saleItemService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<Void> deleteSaleItem(@PathVariable Long id) {
         saleItemService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -66,6 +73,7 @@ public class SaleItemApi {
 
 
     @PutMapping("/{saleItemId}/sendet")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<Void> sendetSaleItem(
             @PathVariable Long saleItemId,
             @RequestBody SaleItemElementRequest request) {
@@ -75,6 +83,7 @@ public class SaleItemApi {
 
 
     @PutMapping("/{saleItemId}/done")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<Void> doneSaleItem(
             @PathVariable Long saleItemId,
             @RequestBody SaleItemElementRequest request) {
@@ -82,6 +91,7 @@ public class SaleItemApi {
         return ResponseEntity.ok().build();
     }
     @PutMapping("/{saleItemId}/reject")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<Void> rejectSaleItem(
             @PathVariable Long saleItemId,
             @RequestBody SaleItemElementRequest request) {

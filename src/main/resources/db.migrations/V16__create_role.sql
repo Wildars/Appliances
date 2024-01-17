@@ -28,4 +28,6 @@ ALTER TABLE role_permissions
     ADD CONSTRAINT fk_rolper_on_role FOREIGN KEY (role_id) REFERENCES role (id);
 
 
-INSERT INTO public.role (id, created_by, created_date, deleted, deleted_by, deleted_date, last_modified_by, last_modified_date, name) VALUES (1, null, null, false, null, null, null, null, 'ROLE_ADMIN');
+INSERT INTO public.role (id, created_by, created_date, last_modified_by, last_modified_date, deleted_date, deleted_by, deleted, name) VALUES (1, null, null, null, null, null, null, false, 'ROLE_ADMIN');
+INSERT INTO public.role (id, created_by, created_date, last_modified_by, last_modified_date, deleted_date, deleted_by, deleted, name) VALUES (2, null, null, null, null, null, null, false, 'ROLE_SALEMAN');
+INSERT INTO public.role (id, created_by, created_date, last_modified_by, last_modified_date, deleted_date, deleted_by, deleted, name) VALUES (3, null, null, null, null, null, null, false, 'ROLE_SUPPLIER');
