@@ -5,3 +5,7 @@ CREATE TABLE discount_category
     percentage DOUBLE PRECISION,
     CONSTRAINT pk_discountcategory PRIMARY KEY (id)
 );
+
+INSERT INTO public.discount_category (id, name, percentage) VALUES (1, 'bronze', 5);
+INSERT INTO public.discount_category (id, name, percentage) VALUES (2, 'silver', 10);
+INSERT INTO public.discount_category (id, name, percentage) VALUES (3, 'gold', 15);

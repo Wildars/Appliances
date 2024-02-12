@@ -4,3 +4,6 @@ CREATE TABLE client_type
     name VARCHAR(255),
     CONSTRAINT pk_clienttype PRIMARY KEY (id)
 );
+
+INSERT INTO public.client_type (id, name) VALUES (1, 'физическое лицо');
+INSERT INTO public.client_type (id, name) VALUES (2, 'юридическое лицо');
