@@ -11,6 +11,7 @@ CREATE TABLE product
     name                VARCHAR(255),
     price               DOUBLE PRECISION,
     description         VARCHAR(255),
+    status_id           BIGINT,
     product_category_id BIGINT,
     image_id            BIGINT,
     CONSTRAINT pk_product PRIMARY KEY (id)
@@ -24,3 +25,6 @@ ALTER TABLE product
 
 ALTER TABLE product
     ADD CONSTRAINT FK_PRODUCT_ON_PRODUCT_CATEGORY FOREIGN KEY (product_category_id) REFERENCES product_category (id);
+
+ALTER TABLE product
+    ADD CONSTRAINT FK_PRODUCT_ON_STATUS FOREIGN KEY (status_id) REFERENCES status (id);
