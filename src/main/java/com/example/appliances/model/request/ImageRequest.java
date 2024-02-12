@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ImageDto {
+public class ImageRequest {
 
     @JsonProperty("imageName")
     String imageName;

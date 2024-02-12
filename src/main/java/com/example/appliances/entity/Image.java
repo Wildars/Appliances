@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Image {
     @Id

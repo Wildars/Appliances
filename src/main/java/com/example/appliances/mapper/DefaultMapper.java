@@ -90,6 +90,13 @@ public interface DefaultMapper {
 //            return Sale.builder().id(id).build();
 //    }
 
+    @Named("setImage")
+    default Image setImage(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Image.builder().id(id).build();
+    }
     @Named("setProduct")
     default Product setProduct(Long id) {
         if (id == null)

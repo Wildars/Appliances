@@ -16,12 +16,14 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
-                ProductCategoryMapper.class
+                ProductCategoryMapper.class,
+                ImageMapper.class
         }
 )
 public interface ProductMapper {
     ProductResponse entityToResponse(Product entity);
     @Mapping(target = "productCategory", source = "productCategoryId", qualifiedByName = "setProductCategory")
+    @Mapping(target = "image", source = "imageId", qualifiedByName = "setImage")
     @Mapping(target = "status", source = "statusId", qualifiedByName = "setStatus")
     Product requestToEntity(ProductRequest request);
 

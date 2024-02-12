@@ -18,9 +18,6 @@ CREATE TABLE product
 );
 
 ALTER TABLE product
-    ADD CONSTRAINT uc_product_image UNIQUE (image_id);
-
-ALTER TABLE product
     ADD CONSTRAINT FK_PRODUCT_ON_IMAGE FOREIGN KEY (image_id) REFERENCES image (id);
 
 ALTER TABLE product

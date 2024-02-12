@@ -2,7 +2,7 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Image;
 import com.example.appliances.mapper.ImageMapper;
-import com.example.appliances.model.request.ImageDto;
+import com.example.appliances.model.request.ImageRequest;
 import com.example.appliances.repository.ImageRepo;
 import com.example.appliances.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,9 @@ public class ImageServiceImpl implements ImageService {
     private final ImageMapper imageMapper;
 
     @Override
-    public Long uploadPhoto(ImageDto imageDto) {
+    public Long uploadPhoto(ImageRequest imageRequest) {
 
-        Image image = imageMapper.toEntity(imageDto);
+        Image image = imageMapper.toEntity(imageRequest);
 
         Long id = imageRepo.save(image).getId();
 

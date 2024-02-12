@@ -1,8 +1,8 @@
 package com.example.appliances.service;
 
 
-import com.example.appliances.model.request.ImageDto;
+import com.example.appliances.model.request.ImageRequest;
 
 public interface ImageService {
-    Long uploadPhoto( ImageDto imageDto);
+    Long uploadPhoto( ImageRequest imageRequest);
 }

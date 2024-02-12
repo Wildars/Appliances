@@ -1,6 +1,6 @@
 package com.example.appliances.api;
 
-import com.example.appliances.model.request.ImageDto;
+import com.example.appliances.model.request.ImageRequest;
 import com.example.appliances.model.request.ProductRequest;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.service.ImageService;
@@ -46,8 +46,8 @@ public class ProductApi {
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public Long uploadPhoto(@RequestBody ImageDto imageDto){
-        return imageService.uploadPhoto(imageDto);
+    public Long uploadPhoto(@RequestBody ImageRequest imageRequest){
+        return imageService.uploadPhoto(imageRequest);
     }
 
     @GetMapping("/{id}")

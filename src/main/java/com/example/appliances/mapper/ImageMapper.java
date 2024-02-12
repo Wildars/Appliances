@@ -1,7 +1,8 @@
 package com.example.appliances.mapper;
 
 import com.example.appliances.entity.Image;
-import com.example.appliances.model.request.ImageDto;
+import com.example.appliances.model.request.ImageRequest;
+import com.example.appliances.model.response.ImageResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,9 +17,9 @@ public interface ImageMapper {
     @Mapping(target = "name", source = "imageName")
     @Mapping(target = "image", source = "imageData", qualifiedByName = "wtf")
     @Mapping(target = "type", source = "imageExtension")
-    Image toEntity(ImageDto imageDto);
+    Image toEntity(ImageRequest imageRequest);
 
-    ImageDto toDTO(Image image);
+    ImageResponse toDTO(Image image);
 
     @Named("wtf")
     static byte[] wtf(String dtoDate){

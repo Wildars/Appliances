@@ -31,7 +31,7 @@ public class Product extends Audit<String> implements Serializable {
     @JoinColumn
     ProductCategory productCategory;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     Image image;
 
