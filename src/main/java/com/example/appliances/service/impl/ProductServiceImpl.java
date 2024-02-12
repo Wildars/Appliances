@@ -38,9 +38,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductResponse> getAllProduct(int page,
-                                                               int size,
-                                                               Optional<Boolean> sortOrder,
-                                                               String sortBy) {
+                                               int size,
+                                               Optional<Boolean> sortOrder,
+                                               String sortBy) {
         Pageable paging = null;
 
         if (sortOrder.isPresent()){

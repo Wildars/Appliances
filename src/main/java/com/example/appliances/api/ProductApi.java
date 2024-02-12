@@ -1,8 +1,9 @@
 package com.example.appliances.api;
 
+import com.example.appliances.model.request.ImageDto;
 import com.example.appliances.model.request.ProductRequest;
-import com.example.appliances.model.response.ProductCategoryResponse;
 import com.example.appliances.model.response.ProductResponse;
+import com.example.appliances.service.ImageService;
 import com.example.appliances.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -18,16 +18,18 @@ import java.util.Optional;
 @RequestMapping("/api/products")
 public class ProductApi {
 
+    private final ImageService imageService;
     private final ProductService productService;
 
     @Autowired
-    public ProductApi(ProductService productService) {
+    public ProductApi(ImageService imageService, ProductService productService) {
+        this.imageService = imageService;
         this.productService = productService;
     }
 
 
     @GetMapping("/list")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")
     public Page<ProductResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                                 @RequestParam(required = false, defaultValue = "25") int size,
                                                                 @RequestParam(required = false) Optional<Boolean> sortOrder,
@@ -39,6 +41,13 @@ public class ProductApi {
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
         ProductResponse createdProduct = productService.create(productRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/upload")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+    public Long uploadPhoto(@RequestBody ImageDto imageDto){
+        return imageService.uploadPhoto(imageDto);
     }
 
     @GetMapping("/{id}")

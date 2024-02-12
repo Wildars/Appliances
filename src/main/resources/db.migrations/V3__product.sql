@@ -10,9 +10,17 @@ CREATE TABLE product
     deleted             BOOLEAN                                 NOT NULL,
     name                VARCHAR(255),
     price               DOUBLE PRECISION,
+    description         VARCHAR(255),
     product_category_id BIGINT,
+    image_id            BIGINT,
     CONSTRAINT pk_product PRIMARY KEY (id)
 );
+
+ALTER TABLE product
+    ADD CONSTRAINT uc_product_image UNIQUE (image_id);
+
+ALTER TABLE product
+    ADD CONSTRAINT FK_PRODUCT_ON_IMAGE FOREIGN KEY (image_id) REFERENCES image (id);
 
 ALTER TABLE product
     ADD CONSTRAINT FK_PRODUCT_ON_PRODUCT_CATEGORY FOREIGN KEY (product_category_id) REFERENCES product_category (id);

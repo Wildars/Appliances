@@ -14,5 +14,7 @@ public class ProductRequest {
 
     Long productCategoryId;
     Double price;
-    Integer stock;
+
+    String description;
+    Long imageId;
 }

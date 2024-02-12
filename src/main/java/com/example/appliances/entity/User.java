@@ -32,9 +32,9 @@ public class User extends Audit<String> implements Serializable {
     String position;
 
     @ManyToMany
-    @JoinTable(name = "use_organizations",
+    @JoinTable(name = "use_filials",
             joinColumns = @JoinColumn(name = "use_id"),
-            inverseJoinColumns = @JoinColumn(name = "organizations_id"))
+            inverseJoinColumns = @JoinColumn(name = "filial_id"))
     List<Filial> filials;
     @Column(nullable = false)
     String phone;

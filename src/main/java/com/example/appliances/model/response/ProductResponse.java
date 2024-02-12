@@ -1,5 +1,6 @@
 package com.example.appliances.model.response;
 
+import com.example.appliances.entity.Image;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +14,8 @@ public class ProductResponse {
     Long id;
     String name;
     Double price;
-    Integer stock;
+
+    String description;
+    Image image;
     ProductResponse productCategory;
 }

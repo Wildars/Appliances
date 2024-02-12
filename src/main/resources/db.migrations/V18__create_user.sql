@@ -23,10 +23,10 @@ CREATE TABLE use
     CONSTRAINT pk_use PRIMARY KEY (id)
 );
 
-CREATE TABLE use_organizations
+CREATE TABLE use_filials
 (
-    organizations_id BIGINT NOT NULL,
-    use_id           BIGINT NOT NULL
+    filial_id BIGINT NOT NULL,
+    use_id    BIGINT NOT NULL
 );
 
 CREATE TABLE use_roles
@@ -44,13 +44,13 @@ ALTER TABLE use_roles
 ALTER TABLE use_roles
     ADD CONSTRAINT fk_use_roles_on_user FOREIGN KEY (user_id) REFERENCES use (id);
 
-ALTER TABLE use_organizations
-    ADD CONSTRAINT fk_useorg_on_filial FOREIGN KEY (organizations_id) REFERENCES filial (id);
+ALTER TABLE use_filials
+    ADD CONSTRAINT fk_usefil_on_filial FOREIGN KEY (filial_id) REFERENCES filial (id);
 
-ALTER TABLE use_organizations
-    ADD CONSTRAINT fk_useorg_on_user FOREIGN KEY (use_id) REFERENCES use (id);
+ALTER TABLE use_filials
+    ADD CONSTRAINT fk_usefil_on_user FOREIGN KEY (use_id) REFERENCES use (id);
 
 
 INSERT INTO public.use (id, created_by, created_date, deleted, deleted_by, deleted_date, last_modified_by, last_modified_date, address, email, is_active, name, password, patronymic, phone, pin, position, procent_skidki, surname, type_client) VALUES (1, 'admin', '2023-07-11 14:03:29.000000', false, null, null, null, null, 'test@mail.ru', 'true', true, 'wfqwfq', '$2a$12$Zpp44g2ozOmVsJiynrAe.uayARURRxBfqxGgKNJb5Kg86qWZXPw5G', 'test', 'admin', 'admin', 'test', null, 'vdev', null);
-INSERT INTO public.use_organizations (use_id, organizations_id) VALUES (1, 1);
+INSERT INTO public.use_filials (use_id, filial_id) VALUES (1, 1);
 INSERT INTO public.use_roles (user_id, roles_id) VALUES (1, 1);
