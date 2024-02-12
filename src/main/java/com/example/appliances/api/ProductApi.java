@@ -64,7 +64,7 @@ public class ProductApi {
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("findAll")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.findAll();
