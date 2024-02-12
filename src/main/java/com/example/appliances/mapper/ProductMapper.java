@@ -11,6 +11,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.List;
+
 @Mapper(
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -27,5 +29,6 @@ public interface ProductMapper {
     @Mapping(target = "status", source = "statusId", qualifiedByName = "setStatus")
     Product requestToEntity(ProductRequest request);
 
+    List<ProductResponse> toResponseList(List<Product> productList);
     void update(@MappingTarget Product entity, ProductRequest request);
 }

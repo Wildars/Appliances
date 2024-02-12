@@ -54,6 +54,11 @@ public class ProductServiceImpl implements ProductService {
         return saleItemsPage.map(productMapper::entityToResponse);
     }
 
+
+    @Override
+    public List<ProductResponse> findAllProduct() {
+        return productMapper.toResponseList(productRepository.findAll());
+    }
     @Override
     @Transactional
     public ProductResponse create(ProductRequest productRequest) {

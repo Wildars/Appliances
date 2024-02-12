@@ -24,5 +24,7 @@ public interface ProductService {
 
      List<ProductResponse> findAll();
 
+     public List<ProductResponse> findAllProduct();
+
      void deleteById(Long id) ;
 }

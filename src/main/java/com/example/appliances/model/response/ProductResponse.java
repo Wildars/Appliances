@@ -18,6 +18,6 @@ public class ProductResponse {
 
     String description;
     Status status;
-    ImageResponse image;
+    Image image;
     ProductResponse productCategory;
 }
