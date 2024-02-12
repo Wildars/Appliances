@@ -13,7 +13,7 @@ public class ClientRequest {
     String name;
     String surname;
     String patronymic;
-    String address;
+
     Long discountCategoryId;
     Long clientTypeId;
 }

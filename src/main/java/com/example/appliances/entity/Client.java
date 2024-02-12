@@ -20,7 +20,6 @@ public class Client {
     String name;
     String surname;
     String patronymic;
-    String address;
 
     @ManyToOne
     @JoinColumn(name = "discount_category_id")

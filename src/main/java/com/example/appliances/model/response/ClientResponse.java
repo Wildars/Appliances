@@ -14,7 +14,7 @@ public class ClientResponse {
     String name;
     String surname;
     String patronymic;
-    String address;
+
     DiscountCategoryResponse discountCategory;
     ClientTypeResponse clientTypeId;
 }

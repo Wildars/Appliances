@@ -4,7 +4,7 @@ CREATE TABLE client
     name                 VARCHAR(255),
     surname              VARCHAR(255),
     patronymic           VARCHAR(255),
-    address              VARCHAR(255),
+
     discount_category_id BIGINT,
     client_type_id       BIGINT,
     CONSTRAINT pk_client PRIMARY KEY (id)
