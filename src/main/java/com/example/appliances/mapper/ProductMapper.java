@@ -22,7 +22,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface ProductMapper {
     ProductResponse entityToResponse(Product entity);
     @Mapping(target = "productCategory", source = "productCategoryId", qualifiedByName = "setProductCategory")
-
+    @Mapping(target = "status", source = "statusId", qualifiedByName = "setStatus")
     Product requestToEntity(ProductRequest request);
 
     void update(@MappingTarget Product entity, ProductRequest request);

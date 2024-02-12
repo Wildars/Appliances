@@ -17,4 +17,5 @@ public class ProductRequest {
 
     String description;
     Long imageId;
+    Long statusId;
 }

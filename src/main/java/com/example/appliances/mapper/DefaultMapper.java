@@ -23,6 +23,15 @@ public interface DefaultMapper {
             return ProductCategory.builder().id(id).build();
     }
 
+    @Named("setStatus")
+    default Status setStatus(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Status.builder().id(id).build();
+    }
+
+
 
 
     @Named("setUser")
