@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StorageResponse {
+    Long id;
     private String name;
     private String storageCode;
     private String address;

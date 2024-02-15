@@ -1,11 +1,13 @@
 package com.example.appliances.service.impl;
 
+import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.StorageItem;
 import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.StorageItemMapper;
 import com.example.appliances.model.request.StorageItemRequest;
 import com.example.appliances.model.response.StorageItemResponse;
+import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.repository.StorageItemRepository;
 import com.example.appliances.service.StorageItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,14 @@ public class StorageItemServiceImpl implements StorageItemService {
     @Transactional
     public void deleteStorageItemById(Long id) {
         storageItemRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public StorageItemResponse findById(Long id) {
+        StorageItem sale = storageItemRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Продажа с таким id не существует!"));
+        return storageItemMapper.entityToResponse(sale);
     }
 
     @Override
