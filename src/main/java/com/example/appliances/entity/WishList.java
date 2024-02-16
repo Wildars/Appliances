@@ -3,10 +3,7 @@ package com.example.appliances.entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -20,6 +17,10 @@ public class WishList extends Audit<String> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
+
     String description;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    Storage storage;
 }

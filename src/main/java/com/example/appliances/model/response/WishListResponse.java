@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishListResponse {
     Long id;
-    String name;
+    StorageResponse storage;
     String description;
 
 }

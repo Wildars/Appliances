@@ -10,7 +10,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishListRequest {
-    String name;
+
     String description;
+    Long storageId;
 
 }
