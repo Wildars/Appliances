@@ -30,6 +30,8 @@ public interface StorageService {
 
      void deleteById(Long id);
 
+    public List<Product> getProductsById(List<Long> productIds);
+
 
     public void checkProductAvailability(Long productId, int requestedQuantity) ;
 

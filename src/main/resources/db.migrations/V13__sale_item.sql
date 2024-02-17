@@ -7,9 +7,8 @@ CREATE TABLE sale_item
     last_modified_date TIMESTAMP WITHOUT TIME ZONE,
     deleted_date       TIMESTAMP WITHOUT TIME ZONE,
     deleted_by         VARCHAR(255),
-    deleted            BOOLEAN                                 NOT NULL,
+    deleted            BOOLEAN                                 ,
     name               VARCHAR(255),
-    product_id         BIGINT,
     schedule           TIMESTAMP WITHOUT TIME ZONE,
     comments           VARCHAR(255),
     number_nakladnoy   INTEGER,
@@ -21,11 +20,20 @@ CREATE TABLE sale_item
     CONSTRAINT pk_saleitem PRIMARY KEY (id)
 );
 
+CREATE TABLE sale_item_product
+(
+    product_id   BIGINT NOT NULL,
+    sale_item_id BIGINT NOT NULL
+);
+
 ALTER TABLE sale_item
     ADD CONSTRAINT FK_SALEITEM_ON_CLIENT FOREIGN KEY (client_id) REFERENCES client (id);
 
 ALTER TABLE sale_item
-    ADD CONSTRAINT FK_SALEITEM_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id);
-
-ALTER TABLE sale_item
     ADD CONSTRAINT FK_SALEITEM_ON_SALE_STATUS FOREIGN KEY (sale_status) REFERENCES sale_status (id);
+
+ALTER TABLE sale_item_product
+    ADD CONSTRAINT fk_salitepro_on_product FOREIGN KEY (product_id) REFERENCES product (id);
+
+ALTER TABLE sale_item_product
+    ADD CONSTRAINT fk_salitepro_on_sale_item FOREIGN KEY (sale_item_id) REFERENCES sale_item (id);

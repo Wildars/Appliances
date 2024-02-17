@@ -33,6 +33,18 @@ public interface DefaultMapper {
 
 
 
+    @Named("setProducts")
+    default List<Product> setProducts(List<Long> ids) {
+        if (ids == null)
+            return null;
+        if (ids.isEmpty())
+            return new ArrayList<>();
+
+        List<Product> result = new ArrayList<>();
+        for (var i : ids)
+            result.add(Product.builder().id(i).build());
+        return result;
+    }
 
     @Named("setUser")
     default User setUser(Long id) {

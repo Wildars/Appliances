@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,11 +19,12 @@ import java.time.LocalDateTime;
 public class SaleItemRequest {
     String name;
 
-    Long productId;
+//    Long productId;
 
+    List<Long> productIds;
 
 //    Long saleId;
-LocalDateTime schedule;
+    LocalDateTime schedule;
     Integer quantity;
     Long clientId;
 

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,9 +20,16 @@ public class SaleItem extends Audit<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    Product product;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+//    Product product;
+
+
+    @ManyToMany
+    @JoinTable(name = "saleItem_product",
+            joinColumns = @JoinColumn(name = "saleItem_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    List<Product> products;
 
     LocalDateTime schedule;
     String comments;

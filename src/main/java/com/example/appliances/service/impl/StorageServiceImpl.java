@@ -108,6 +108,10 @@ public class StorageServiceImpl implements StorageService {
     public void deleteById(Long id) {
         storageRepository.deleteById(id);
     }
+    @Override
+    public List<Product> getProductsById(List<Long> productIds) {
+        return productRepository.findAllByIdIn(productIds);
+    }
 
     @Override
     @Transactional

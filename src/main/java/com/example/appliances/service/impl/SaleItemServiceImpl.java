@@ -8,6 +8,7 @@ import com.example.appliances.mapper.SaleItemMapper;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.response.SaleItemResponse;
+import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.SaleItemRepository;
 import com.example.appliances.repository.SaleStatusRepository;
 import com.example.appliances.service.ClientService;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class SaleItemServiceImpl implements SaleItemService {
     ProductService productService;
 
+    ProductRepository productRepository;
     SaleStatusRepository saleStatusRepository;
     ClientService clientService;
 
@@ -43,8 +45,9 @@ public class SaleItemServiceImpl implements SaleItemService {
     SaleItemRepository saleItemRepository;
     SaleItemMapper saleItemMapper;
 
-    public SaleItemServiceImpl(ProductService productService, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+    public SaleItemServiceImpl(ProductService productService, ProductRepository productRepository, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
         this.productService = productService;
+        this.productRepository = productRepository;
         this.saleStatusRepository = saleStatusRepository;
         this.clientService = clientService;
         this.clientMapper = clientMapper;
@@ -97,17 +100,18 @@ public class SaleItemServiceImpl implements SaleItemService {
     @Transactional
     public void rejectSaleItem(Long queueEntryId, SaleItemElementRequest request) {
 
-        SaleItem saleItem = saleItemRepository.findById(queueEntryId)
-                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
+//        SaleItem saleItem = saleItemRepository.findById(queueEntryId)
+//                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
+//
+//        // Получить информацию о товаре, который был куплен
+//        List<Product> product = saleItem.getProducts();
+//
+//        // Увеличить количество этого товара на складе
+//        storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
+//
+//        // Обновить статус покупки на "REJECTED" и добавить комментарии
+//        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
 
-        // Получить информацию о товаре, который был куплен
-        Product product = saleItem.getProduct();
-
-        // Увеличить количество этого товара на складе
-        storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
-
-        // Обновить статус покупки на "REJECTED" и добавить комментарии
-        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
     }
 
     private void updateQueueEntryStatus(Long queueEntryId, SaleStatusEnum status, String description) {
@@ -126,7 +130,11 @@ public class SaleItemServiceImpl implements SaleItemService {
         saleItemRepository.save(queueEntry);
     }
 
-
+//    public List<Product> getProductsById(List<Long> productIds) {
+//        // Ваша логика для получения списка продуктов по списку идентификаторов
+//        // Например, вы можете использовать repository.findAllById(productIds)
+//        return productRepository.findAllById(productIds);
+//    }
 
     @Override
     @Transactional
@@ -134,18 +142,18 @@ public class SaleItemServiceImpl implements SaleItemService {
         SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
 
         // Присваиваю статусы
-        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).get();
+        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         saleItem.setSaleStatus(saleStatus);
 
-        // Очень надеюсь что комменты помогут понять тебе код
         // Получаю информацию о товаре из склада
-        Product product = storageService.getProductById(saleItemRequest.getProductId());
+        List<Product> products = storageService.getProductsById(saleItemRequest.getProductIds());
 
-        // Проверяю наличие товара на складе
-        storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
-
-        // Обновляю количество товара на складе (уменьшаем)
-        storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
+// Проверяю наличие товара на складе
+        for (Product product : products) {
+            storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
+            // Обновляю количество товара на складе (уменьшаем)
+            storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
+        }
 
         // Получаю информацию о клиенте и его скидке
         Client client = clientService.findById(saleItemRequest.getClientId());
@@ -154,7 +162,9 @@ public class SaleItemServiceImpl implements SaleItemService {
         saleItem.setClient(client);
 
         // Вычисляю totalPrice
-        double totalPrice = product.getPrice() * saleItemRequest.getQuantity();
+        double totalPrice = products.stream()
+                .mapToDouble(product -> product.getPrice() * saleItemRequest.getQuantity())
+                .sum();
         saleItem.setTotalPrice(totalPrice);
 
         // Вычисляю итоговую стоимость с учетом скидки
