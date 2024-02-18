@@ -36,7 +36,7 @@ public class SaleItem extends Audit<String> implements Serializable {
 
     Integer numberNakladnoy;
     String address;
-
+    @Column(name = "phone_number")
     String phoneNumber;
     Integer quantity;
 
