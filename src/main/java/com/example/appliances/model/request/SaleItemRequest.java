@@ -28,6 +28,7 @@ public class SaleItemRequest {
     Integer quantity;
     Long clientId;
 
+    String phoneNumber;
     Double totalPrice;
 
     Integer numberNakladnoy;

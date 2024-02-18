@@ -37,6 +37,7 @@ public class SaleItem extends Audit<String> implements Serializable {
     Integer numberNakladnoy;
     String address;
 
+    String phoneNumber;
     Integer quantity;
 
     @ManyToOne

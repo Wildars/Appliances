@@ -23,6 +23,7 @@ public class SaleItemResponse {
     String address;
     LocalDateTime schedule;
 
+    String phoneNumber;
 //    SaleResponse sale;
 
     Integer quantity;
