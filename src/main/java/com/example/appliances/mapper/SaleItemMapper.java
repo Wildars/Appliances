@@ -15,6 +15,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
+                ClientMapper.class,
                 UserMapper.class,
 //                SaleMapper.class,
                 ProductMapper.class

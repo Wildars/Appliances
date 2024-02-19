@@ -26,6 +26,7 @@ public class SaleItemResponse {
     String phoneNumber;
 //    SaleResponse sale;
 
+    ClientResponse client;
     Integer quantity;
 
     Double totalPrice;
