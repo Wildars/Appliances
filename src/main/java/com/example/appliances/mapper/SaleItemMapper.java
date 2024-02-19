@@ -1,6 +1,7 @@
 package com.example.appliances.mapper;
 
 import com.example.appliances.entity.SaleItem;
+import com.example.appliances.entity.SaleStatus;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.request.SaleRequest;
 import com.example.appliances.model.response.SaleItemResponse;
@@ -18,6 +19,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
                 ClientMapper.class,
                 UserMapper.class,
 //                SaleMapper.class,
+                SaleStatus.class,
                 ProductMapper.class
         }
 )

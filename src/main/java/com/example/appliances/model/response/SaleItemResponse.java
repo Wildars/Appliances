@@ -1,5 +1,6 @@
 package com.example.appliances.model.response;
 
+import com.example.appliances.entity.SaleStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,6 +25,8 @@ public class SaleItemResponse {
     LocalDateTime schedule;
 
     String phoneNumber;
+
+    SaleStatus saleStatus;
 //    SaleResponse sale;
 
     ClientResponse client;
