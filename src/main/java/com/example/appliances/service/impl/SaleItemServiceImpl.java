@@ -100,18 +100,19 @@ public class SaleItemServiceImpl implements SaleItemService {
     @Transactional
     public void rejectSaleItem(Long queueEntryId, SaleItemElementRequest request) {
 
-//        SaleItem saleItem = saleItemRepository.findById(queueEntryId)
-//                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
-//
-//        // Получить информацию о товаре, который был куплен
-//        List<Product> product = saleItem.getProducts();
-//
-//        // Увеличить количество этого товара на складе
-//        storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
-//
-//        // Обновить статус покупки на "REJECTED" и добавить комментарии
-//        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
+        SaleItem saleItem = saleItemRepository.findById(queueEntryId)
+                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
 
+        // Получить информацию о товаре, который был куплен
+        List<Product> products = saleItem.getProducts();
+
+        // Итерируем по товарам и увеличиваем количество каждого товара на складе
+        for (Product product : products) {
+            storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
+        }
+
+        // Обновить статус покупки на "REJECTED" и добавить комментарии
+        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
     }
 
     private void updateQueueEntryStatus(Long queueEntryId, SaleStatusEnum status, String description) {
@@ -130,12 +131,6 @@ public class SaleItemServiceImpl implements SaleItemService {
         saleItemRepository.save(queueEntry);
     }
 
-//    public List<Product> getProductsById(List<Long> productIds) {
-//        // Ваша логика для получения списка продуктов по списку идентификаторов
-//        // Например, вы можете использовать repository.findAllById(productIds)
-//        return productRepository.findAllById(productIds);
-//    }
-
     @Override
     @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
@@ -148,7 +143,7 @@ public class SaleItemServiceImpl implements SaleItemService {
         // Получаю информацию о товаре из склада
         List<Product> products = storageService.getProductsById(saleItemRequest.getProductIds());
 
-// Проверяю наличие товара на складе
+        // Проверяю наличие товара на складе
         for (Product product : products) {
             storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
             // Обновляю количество товара на складе (уменьшаем)
