@@ -126,6 +126,14 @@ public class SaleItemServiceImpl implements SaleItemService {
 
     @Override
     @Transactional
+    public List<SaleItemResponse> getAllSaleItemsByStatus(Long saleStatusId) {
+        List<SaleItem> saleItems = saleItemRepository.findAllBySaleStatusId(saleStatusId);
+        return saleItems.stream()
+                .map(saleItemMapper::entityToResponse)
+                .collect(Collectors.toList());
+    }
+    @Override
+    @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
         SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
 

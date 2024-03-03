@@ -17,6 +17,7 @@ public interface SaleItemService {
     public SaleItemResponse createNow(SaleItemNowRequest saleItemRequest);
     public SaleItemResponse findById(Long id);
 
+    public List<SaleItemResponse> getAllSaleItemsByStatus(Long saleStatusId);
     public void sendSaleItem(Long saleItemId, SaleItemElementRequest request);
 
     public void doneSaleItem(Long saleItemId, SaleItemElementRequest request);

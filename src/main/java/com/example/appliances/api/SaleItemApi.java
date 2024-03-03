@@ -42,6 +42,11 @@ public class SaleItemApi {
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
+    @GetMapping("/byStatus")
+    public ResponseEntity<List<SaleItemResponse>> getAllSaleItemsByStatus(@RequestParam Long saleStatusId) {
+        List<SaleItemResponse> saleItems = saleItemService.getAllSaleItemsByStatus(saleStatusId);
+        return new ResponseEntity<>(saleItems, HttpStatus.OK);
+    }
     @GetMapping("/list")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public Page<SaleItemResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
