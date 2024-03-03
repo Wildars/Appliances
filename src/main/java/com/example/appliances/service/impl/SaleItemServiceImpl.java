@@ -6,6 +6,7 @@ import com.example.appliances.exception.*;
 import com.example.appliances.mapper.ClientMapper;
 import com.example.appliances.mapper.SaleItemMapper;
 import com.example.appliances.model.request.SaleItemElementRequest;
+import com.example.appliances.model.request.SaleItemNowRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.ProductRepository;
@@ -75,14 +76,6 @@ public class SaleItemServiceImpl implements SaleItemService {
         return saleItemsPage.map(saleItemMapper::entityToResponse);
     }
 
-//    private Pageable createPageable(int page, int size, Optional<Boolean> sortOrder, String sortBy) {
-//        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-//        return PageRequest.of(page, size, direction, sortBy);
-//    }
-
-
-
-
 
     @Override
     @Transactional
@@ -138,6 +131,49 @@ public class SaleItemServiceImpl implements SaleItemService {
 
         // Присваиваю статусы
         SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
+        saleItem.setSaleStatus(saleStatus);
+
+        // Получаю информацию о товаре из склада
+        List<Product> products = storageService.getProductsById(saleItemRequest.getProductIds());
+
+        // Проверяю наличие товара на складе
+        for (Product product : products) {
+            storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
+            // Обновляю количество товара на складе (уменьшаем)
+            storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
+        }
+
+        // Получаю информацию о клиенте и его скидке
+        Client client = clientService.findById(saleItemRequest.getClientId());
+
+        // Присваиваю клиента к SaleItem
+        saleItem.setClient(client);
+
+        // Вычисляю totalPrice
+        double totalPrice = products.stream()
+                .mapToDouble(product -> product.getPrice() * saleItemRequest.getQuantity())
+                .sum();
+        saleItem.setTotalPrice(totalPrice);
+
+        // Вычисляю итоговую стоимость с учетом скидки
+        double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
+        saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
+
+        SaleItem savedSaleItem = saleItemRepository.save(saleItem);
+
+        // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
+        return saleItemMapper.entityToResponse(savedSaleItem);
+    }
+
+
+
+    @Override
+    @Transactional
+    public SaleItemResponse createNow(SaleItemNowRequest saleItemRequest) {
+        SaleItem saleItem = saleItemMapper.requestTo(saleItemRequest);
+
+        // Присваиваю статусы
+        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.DONE.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         saleItem.setSaleStatus(saleStatus);
 
         // Получаю информацию о товаре из склада

@@ -1,6 +1,7 @@
 package com.example.appliances.service;
 
 import com.example.appliances.model.request.SaleItemElementRequest;
+import com.example.appliances.model.request.SaleItemNowRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.request.SaleRequest;
 import com.example.appliances.model.response.SaleItemResponse;
@@ -13,7 +14,7 @@ import java.util.Optional;
 public interface SaleItemService {
 
     public SaleItemResponse create(SaleItemRequest saleItemRequest);
-
+    public SaleItemResponse createNow(SaleItemNowRequest saleItemRequest);
     public SaleItemResponse findById(Long id);
 
     public void sendSaleItem(Long saleItemId, SaleItemElementRequest request);

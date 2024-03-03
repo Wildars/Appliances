@@ -2,6 +2,7 @@ package com.example.appliances.mapper;
 
 import com.example.appliances.entity.SaleItem;
 import com.example.appliances.entity.SaleStatus;
+import com.example.appliances.model.request.SaleItemNowRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.request.SaleRequest;
 import com.example.appliances.model.response.SaleItemResponse;
@@ -30,6 +31,9 @@ public interface SaleItemMapper {
 //    @Mapping(target = "product", source = "productId", qualifiedByName = "setProduct")
     @Mapping(target = "products", source = "productIds", qualifiedByName = "setProducts")
     SaleItem requestToEntity(SaleItemRequest request);
+
+    @Mapping(target = "products", source = "productIds", qualifiedByName = "setProducts")
+    SaleItem requestTo(SaleItemNowRequest request);
 
     void update(@MappingTarget SaleItem entity, SaleItemRequest request);
 }

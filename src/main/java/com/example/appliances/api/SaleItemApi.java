@@ -1,6 +1,7 @@
 package com.example.appliances.api;
 
 import com.example.appliances.model.request.SaleItemElementRequest;
+import com.example.appliances.model.request.SaleItemNowRequest;
 import com.example.appliances.model.request.SaleItemRequest;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.model.response.UserResponse;
@@ -30,6 +31,14 @@ public class SaleItemApi {
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<SaleItemResponse> createSaleItem(@RequestBody SaleItemRequest saleItemRequest) {
         SaleItemResponse createdSaleItem = saleItemService.create(saleItemRequest);
+        return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/now")
+    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+    public ResponseEntity<SaleItemResponse> createSaleItemNow(@RequestBody SaleItemNowRequest saleItemRequest) {
+        SaleItemResponse createdSaleItem = saleItemService.createNow(saleItemRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
