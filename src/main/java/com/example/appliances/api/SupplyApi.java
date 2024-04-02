@@ -57,18 +57,21 @@ public class SupplyApi {
                                                         @RequestParam(required = false) String sortBy) {
         return supplyService.getAllSuppliers(page, size, sortOrder, sortBy);
     }
-    @GetMapping("/alls")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public List<Supply> getAllSupplies() {
-        return supplyService.findAlls();
-    }
 
-    @GetMapping
+    @GetMapping("/supply_items")
     @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<List<SupplyItemResponse>> getAllProviders() {
         List<SupplyItemResponse> saleItems = supplyService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
+
+    @GetMapping("/alls")
+    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+    public ResponseEntity<List<SupplyResponse>>getAllSupplies() {
+        List<SupplyResponse> saleItems = supplyService.findAlls();
+        return new ResponseEntity<>(saleItems, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
