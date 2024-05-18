@@ -27,7 +27,6 @@ public class SaleItemNowRequest {
     String phoneNumber;
     Double totalPrice;
 
-    Integer numberNakladnoy;
     String address;
 //    Long userId;
 

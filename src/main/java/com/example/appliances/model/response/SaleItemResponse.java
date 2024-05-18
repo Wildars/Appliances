@@ -19,7 +19,7 @@ public class SaleItemResponse {
     String name;
 
 //    ProductResponse product;
-    Integer numberNakladnoy;
+    String numberNakladnoy;
     List<ProductResponse> products;
     String address;
     LocalDateTime schedule;

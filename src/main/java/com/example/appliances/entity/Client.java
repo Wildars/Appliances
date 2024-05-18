@@ -21,6 +21,7 @@ public class Client {
     String surname;
     String patronymic;
 
+    String phoneNumber;
     @ManyToOne
     @JoinColumn(name = "discount_category_id")
     DiscountCategory discountCategory;

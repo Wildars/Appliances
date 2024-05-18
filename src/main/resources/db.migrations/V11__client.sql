@@ -4,7 +4,7 @@ CREATE TABLE client
     name                 VARCHAR(255),
     surname              VARCHAR(255),
     patronymic           VARCHAR(255),
-
+    phone_number         VARCHAR(255),
     discount_category_id BIGINT,
     client_type_id       BIGINT,
     CONSTRAINT pk_client PRIMARY KEY (id)
@@ -15,6 +15,3 @@ ALTER TABLE client
 
 ALTER TABLE client
     ADD CONSTRAINT FK_CLIENT_ON_DISCOUNT_CATEGORY FOREIGN KEY (discount_category_id) REFERENCES discount_category (id);
-
-
-

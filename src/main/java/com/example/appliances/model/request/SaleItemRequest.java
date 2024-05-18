@@ -31,7 +31,7 @@ public class SaleItemRequest {
     String phoneNumber;
     Double totalPrice;
 
-    Integer numberNakladnoy;
+
     String address;
 //    Long userId;
 

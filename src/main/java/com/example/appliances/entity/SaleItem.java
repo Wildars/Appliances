@@ -34,7 +34,7 @@ public class SaleItem extends Audit<String> implements Serializable {
     LocalDateTime schedule;
     String comments;
 
-    Integer numberNakladnoy;
+    String numberNakladnoy;
     String address;
     @Column(name = "phone_number")
     String phoneNumber;

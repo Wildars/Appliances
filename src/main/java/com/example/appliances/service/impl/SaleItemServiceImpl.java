@@ -1,5 +1,7 @@
 package com.example.appliances.service.impl;
-
+import com.twilio.exception.ApiException;
+import com.twilio.rest.api.v2010.account.Call;
+import com.twilio.type.PhoneNumber;
 import com.example.appliances.entity.*;
 import com.example.appliances.enums.SaleStatusEnum;
 import com.example.appliances.exception.*;
@@ -16,6 +18,7 @@ import com.example.appliances.service.ClientService;
 import com.example.appliances.service.ProductService;
 import com.example.appliances.service.SaleItemService;
 import com.example.appliances.service.StorageService;
+import com.twilio.Twilio;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
@@ -26,6 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +39,10 @@ import java.util.stream.Collectors;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class SaleItemServiceImpl implements SaleItemService {
+
+
+
+    TwilioService twilioService;
     ProductService productService;
 
     ProductRepository productRepository;
@@ -46,7 +56,8 @@ public class SaleItemServiceImpl implements SaleItemService {
     SaleItemRepository saleItemRepository;
     SaleItemMapper saleItemMapper;
 
-    public SaleItemServiceImpl(ProductService productService, ProductRepository productRepository, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+    public SaleItemServiceImpl(TwilioService twilioService, ProductService productService, ProductRepository productRepository, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+        this.twilioService = twilioService;
         this.productService = productService;
         this.productRepository = productRepository;
         this.saleStatusRepository = saleStatusRepository;
@@ -132,6 +143,57 @@ public class SaleItemServiceImpl implements SaleItemService {
                 .map(saleItemMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
+
+    // Генерация номера накладной
+    public String generateNextNakladnoy() {
+        // Текущая дата в формате yyyyMMdd
+        String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        // Поиск всех номеров накладных, которые начинаются с текущей даты
+        List<String> existingNakladnoyNumbers = saleItemRepository.findNakladnoyNumbersByDate(currentDate);
+
+        int nextNumber = 1;
+
+        if (!existingNakladnoyNumbers.isEmpty()) {
+            // Поиск максимального номера для текущей даты и увеличение его на 1
+            for (String number : existingNakladnoyNumbers) {
+                String[] parts = number.split("\\+");
+                if (parts.length == 2 && parts[0].equals(currentDate)) {
+                    int currentNumber = Integer.parseInt(parts[1]);
+                    if (currentNumber >= nextNumber) {
+                        nextNumber = currentNumber + 1;
+                    }
+                }
+            }
+        }
+
+        // Форматирование следующего номера накладной
+        String nextNakladnoyNumber = String.format("%s%05d", currentDate, nextNumber);
+
+        return nextNakladnoyNumber;
+    }
+
+
+    //смс оповещение
+//    public void makeSMS(String toPhoneNumber) {
+//        try {
+//            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//
+//            Call call = Call.creator(
+//                            new PhoneNumber(toPhoneNumber),
+//                            new PhoneNumber(TWILIO_PHONE_NUMBER),
+//                            URI.create("http://demo.twilio.com/docs/voice.xml"))
+//                    .create();
+//        } catch (ApiException e) {
+//            if (e.getMessage().contains("unverified")) {
+//                // Handle the case where the number is unverified
+//                System.err.println("The number " + toPhoneNumber + " is unverified. Trial accounts may only make calls to verified numbers.");
+//            } else {
+//                // Handle other API exceptions
+//                System.err.println("An error occurred: " + e.getMessage());
+//            }
+//        }
+//    }
     @Override
     @Transactional
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
@@ -167,11 +229,64 @@ public class SaleItemServiceImpl implements SaleItemService {
         double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
         saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
 
+        // номер накладной генерится
+        String newScreen = generateNextNakladnoy();
+
+        saleItem.setNumberNakladnoy(newScreen);
+
         SaleItem savedSaleItem = saleItemRepository.save(saleItem);
+
+        // Отправка SMS клиенту
+        String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
+                client.getName(), saleItem.getTotalPrice());
+        twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
         // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
         return saleItemMapper.entityToResponse(savedSaleItem);
     }
+//    public SaleItemResponse create(SaleItemRequest saleItemRequest) {
+//        SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
+//
+//        // Присваиваю статусы
+//        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
+//        saleItem.setSaleStatus(saleStatus);
+//
+//        // Получаю информацию о товаре из склада
+//        List<Product> products = storageService.getProductsById(saleItemRequest.getProductIds());
+//
+//        // Проверяю наличие товара на складе
+//        for (Product product : products) {
+//            storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
+//            // Обновляю количество товара на складе (уменьшаем)
+//            storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
+//        }
+//
+//        // Получаю информацию о клиенте и его скидке
+//        Client client = clientService.findById(saleItemRequest.getClientId());
+//
+//        // Присваиваю клиента к SaleItem
+//        saleItem.setClient(client);
+//
+//        // Вычисляю totalPrice
+//        double totalPrice = products.stream()
+//                .mapToDouble(product -> product.getPrice() * saleItemRequest.getQuantity())
+//                .sum();
+//        saleItem.setTotalPrice(totalPrice);
+//
+//        // Вычисляю итоговую стоимость с учетом скидки
+//        double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
+//        saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
+//
+//        //номер накладной генерится
+//        String newScreen = generateNextNakladnoy();
+//
+//        saleItem.setNumberNakladnoy(newScreen);
+//
+//        SaleItem savedSaleItem = saleItemRepository.save(saleItem);
+//
+//        // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
+//        return saleItemMapper.entityToResponse(savedSaleItem);
+//    }
 
 
 

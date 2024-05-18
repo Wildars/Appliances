@@ -90,10 +90,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authenticate/**",
                         "/organizations/getAllOrganizationByPin",
                         "/organizations/getAllUserOrganizations",
-                        "/kt/getForGuest/*",
-                        "/kt/exportPdf",
-                        "/kt/upload/*",
-
                         "/swagger-ui/",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
@@ -102,10 +98,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**"
                 )
                 .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .exceptionHandling()
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .exceptionHandling()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
