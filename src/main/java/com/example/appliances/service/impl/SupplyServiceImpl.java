@@ -61,8 +61,9 @@ ProductService productService;
     }
     @Override
     @Transactional
-    public List<Supply> findAlls() {
-        return supplyRepository.findAll();
+    public List<SupplyResponse> findAlls() {
+        List<Supply> supplies = supplyRepository.findAll();
+        return supplies.stream().map(supplyMapper::entityToResponse).collect(Collectors.toList());
     }
 
     @Override

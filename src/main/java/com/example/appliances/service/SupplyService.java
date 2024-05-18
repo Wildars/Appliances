@@ -21,7 +21,7 @@ public interface SupplyService {
 
      public List<WishListResponse> getAllWishListItems();
      public Page<WishListResponse> getAllWishListItemsPaged(int page, int size, Optional<Boolean> sortOrder, String sortBy);
-     public List<Supply> findAlls();
+     public List<SupplyResponse> findAlls();
 
      public Page<SupplyResponse> getAllSuppliers(int page,
                                                  int size,
