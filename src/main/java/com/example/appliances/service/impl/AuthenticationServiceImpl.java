@@ -54,33 +54,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationModel generateToken(AuthenticationRequestModel authRequest, HttpServletResponse response) {
         User user = userRepository.getUserByPinQuery(authRequest.getPin());
 
-        if (user == null)
+        if (user == null) {
             throw new CustomException(CustomError.USER_NOT_FOUND);
+        }
 
-        if (!user.getIsActive())
+        if (!user.getIsActive()) {
             throw new CustomException(CustomError.USER_NOT_ACTIVE);
+        }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getPin(), authRequest.getPassword()));
-            String jwt = jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode());
         } catch (Exception ex) {
             throw new CustomException(CustomError.USER_NOT_AUTHENTICATE);
         }
 
         Filial organization = null;
         boolean found = false;
-        for (Filial organizations : user.getFilials()) {
-            if (organizations.getFilCode().equals(authRequest.getFilCode())) {
+        for (Filial org : user.getFilials()) {
+            if (org.getFilCode().equals(authRequest.getFilCode())) {
                 found = true;
+                organization = org; // Присваиваем найденное значение переменной organization
                 break;
             }
         }
 
-        if (found)
-            organization = organizationsRepository.findByFilCode(authRequest.getFilCode());
-        else
+        if (!found) {
             throw new CustomException(CustomError.USER_NOT_HAVE_THIS_ORGANISATION);
+        }
 
         HashSet<String> authorities = new HashSet<>();
         for (var role : user.getRoles()) {
@@ -88,6 +89,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 authorities.add(permission.getName());
             }
         }
+
+        // Используем переменную jwt один раз
+        String jwt = jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode());
 
         return AuthenticationModel.builder()
                 .id(user.getId())
@@ -97,11 +101,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .patronymic(user.getPatronymic())
                 .phone(user.getPhone())
                 .email(user.getEmail())
-                .jwtToken(jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode()))
+                .jwtToken(jwt)
                 .organizations(organization)
                 .roles(user.getRoles())
                 .permissions(authorities.stream().collect(Collectors.toList()))
                 .build();
     }
+
 
 }

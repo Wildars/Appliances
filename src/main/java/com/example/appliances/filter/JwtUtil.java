@@ -3,6 +3,7 @@ package com.example.appliances.filter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -10,24 +11,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Service
 public class JwtUtil {
+
     @Value("${jwt.token.secret}")
     @NonFinal
     String secret;
+    String filCodeClaimName = "filCode";
+    Key key;
 
-    final String filCodeClaimName = "filCode";
+    public JwtUtil(@Value("${jwt.token.secret}") String secret) {
+        this.secret = secret;
+        this.key = Keys.hmacShaKeyFor(secret.getBytes()); // Генерация безопасного ключа
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     public String extractFilCode(String token) {
         return extractClaim(token, claims -> (String) claims.get(filCodeClaimName));
     }
@@ -40,8 +48,9 @@ public class JwtUtil {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -55,13 +64,12 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(9999, 12, 31))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 часов
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
