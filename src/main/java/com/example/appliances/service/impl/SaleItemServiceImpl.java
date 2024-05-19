@@ -1,4 +1,5 @@
 package com.example.appliances.service.impl;
+import com.example.appliances.service.*;
 import com.twilio.exception.ApiException;
 import com.twilio.rest.api.v2010.account.Call;
 import com.twilio.type.PhoneNumber;
@@ -14,10 +15,6 @@ import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.SaleItemRepository;
 import com.example.appliances.repository.SaleStatusRepository;
-import com.example.appliances.service.ClientService;
-import com.example.appliances.service.ProductService;
-import com.example.appliances.service.SaleItemService;
-import com.example.appliances.service.StorageService;
 import com.twilio.Twilio;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -49,19 +46,20 @@ public class SaleItemServiceImpl implements SaleItemService {
     SaleStatusRepository saleStatusRepository;
     ClientService clientService;
 
-
+    UserService userService;
 
     ClientMapper clientMapper;
     StorageService storageService;
     SaleItemRepository saleItemRepository;
     SaleItemMapper saleItemMapper;
 
-    public SaleItemServiceImpl(TwilioService twilioService, ProductService productService, ProductRepository productRepository, SaleStatusRepository saleStatusRepository, ClientService clientService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
+    public SaleItemServiceImpl(TwilioService twilioService, ProductService productService, ProductRepository productRepository, SaleStatusRepository saleStatusRepository, ClientService clientService, UserService userService, ClientMapper clientMapper, StorageService storageService, SaleItemRepository saleItemRepository, SaleItemMapper saleItemMapper) {
         this.twilioService = twilioService;
         this.productService = productService;
         this.productRepository = productRepository;
         this.saleStatusRepository = saleStatusRepository;
         this.clientService = clientService;
+        this.userService = userService;
         this.clientMapper = clientMapper;
         this.storageService = storageService;
         this.saleItemRepository = saleItemRepository;
@@ -199,6 +197,10 @@ public class SaleItemServiceImpl implements SaleItemService {
     public SaleItemResponse create(SaleItemRequest saleItemRequest) {
         SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
 
+        //установка продавца,доделать если нужно
+//        User currentUser = userService.getCurrentUser();
+//        saleItem.set(currentUser);
+
         // Присваиваю статусы
         SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         saleItem.setSaleStatus(saleStatus);
@@ -236,58 +238,14 @@ public class SaleItemServiceImpl implements SaleItemService {
 
         SaleItem savedSaleItem = saleItemRepository.save(saleItem);
 
-        // Отправка SMS клиенту
-        String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
-                client.getName(), saleItem.getTotalPrice());
-        twilioService.sendSms(client.getPhoneNumber(), messageBody);
+        // Отправка SMS клиенту , раскомментить
+//        String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
+//                client.getName(), saleItem.getTotalPrice());
+//        twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
         // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
         return saleItemMapper.entityToResponse(savedSaleItem);
     }
-//    public SaleItemResponse create(SaleItemRequest saleItemRequest) {
-//        SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
-//
-//        // Присваиваю статусы
-//        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
-//        saleItem.setSaleStatus(saleStatus);
-//
-//        // Получаю информацию о товаре из склада
-//        List<Product> products = storageService.getProductsById(saleItemRequest.getProductIds());
-//
-//        // Проверяю наличие товара на складе
-//        for (Product product : products) {
-//            storageService.checkProductAvailability(product.getId(), saleItemRequest.getQuantity());
-//            // Обновляю количество товара на складе (уменьшаем)
-//            storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
-//        }
-//
-//        // Получаю информацию о клиенте и его скидке
-//        Client client = clientService.findById(saleItemRequest.getClientId());
-//
-//        // Присваиваю клиента к SaleItem
-//        saleItem.setClient(client);
-//
-//        // Вычисляю totalPrice
-//        double totalPrice = products.stream()
-//                .mapToDouble(product -> product.getPrice() * saleItemRequest.getQuantity())
-//                .sum();
-//        saleItem.setTotalPrice(totalPrice);
-//
-//        // Вычисляю итоговую стоимость с учетом скидки
-//        double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
-//        saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
-//
-//        //номер накладной генерится
-//        String newScreen = generateNextNakladnoy();
-//
-//        saleItem.setNumberNakladnoy(newScreen);
-//
-//        SaleItem savedSaleItem = saleItemRepository.save(saleItem);
-//
-//        // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
-//        return saleItemMapper.entityToResponse(savedSaleItem);
-//    }
-
 
 
     @Override
@@ -325,12 +283,23 @@ public class SaleItemServiceImpl implements SaleItemService {
         double totalPriceWithDiscount = calculateTotalPriceWithDiscount(saleItem);
         saleItem.setTotalPrice(totalPriceWithDiscount); // Использую setTotalPrice для сохранения с учетом скидки
 
+        // номер накладной генерится
+        String newScreen = generateNextNakladnoy();
+
+        saleItem.setNumberNakladnoy(newScreen);
+
         SaleItem savedSaleItem = saleItemRepository.save(saleItem);
+
+        // Отправка SMS клиенту , раскомментить
+//        String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
+//                client.getName(), saleItem.getTotalPrice());
+//        twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
         // Использую маппер для преобразования сущности SaleItem в SaleItemResponse
         return saleItemMapper.entityToResponse(savedSaleItem);
     }
 
+    // считаю стоимость со скидкойЫ
     private double calculateTotalPriceWithDiscount(SaleItem saleItem) {
         Client client = saleItem.getClient();
         DiscountCategory discountCategory = client.getDiscountCategory();
@@ -341,7 +310,7 @@ public class SaleItemServiceImpl implements SaleItemService {
         return saleItem.getTotalPrice() - discount;
     }
 
-
+    // проверияю доступность продукта
     private void checkProductAvailability(Long productId, int quantity) {
         int availableQuantity = storageService.getAvailableQuantity(productId);
         if (quantity > availableQuantity) {

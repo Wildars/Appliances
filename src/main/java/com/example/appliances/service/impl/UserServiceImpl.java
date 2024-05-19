@@ -7,6 +7,7 @@ import com.example.appliances.entity.User;
 import com.example.appliances.exception.CustomError;
 import com.example.appliances.exception.CustomException;
 import com.example.appliances.exception.RecordNotFoundException;
+import com.example.appliances.exception.UnauthorizedException;
 import com.example.appliances.mapper.DefaultMapper;
 import com.example.appliances.mapper.UserMapper;
 import com.example.appliances.model.request.UserRequest;
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
     }
 
+    // Сохранение менеджеров
     @Override
     @Transactional
     public UserResponse saveUser(UserRequest userRequest) {
@@ -167,6 +169,22 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    public User getCurrentUser() {
+        // Получаем текущий контекст аутентификации из SecurityContextHolder
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Проверяем, аутентифицирован ли пользователь
+        if (authentication != null && authentication.isAuthenticated()) {
+            // Получаем имя пользователя из контекста аутентификации
+            String login = authentication.getName();
+
+            // Возвращаем заглушку
+            return userRepository.findByPin(login);
+        } else {
+            // Если пользователь не аутентифицирован, можно выбрасывать исключение или возвращать null, в зависимости от вашего случая
+            throw new UnauthorizedException("User is not authenticated");
+        }
+    }
     @Override
     @Transactional
     public UserResponse updateUser(UserRequest request, Long id) {

@@ -2,6 +2,8 @@ package com.example.appliances.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,12 +22,10 @@ public class SaleItem extends Audit<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn
-//    Product product;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "saleItem_product",
             joinColumns = @JoinColumn(name = "saleItem_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))

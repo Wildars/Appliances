@@ -1,5 +1,6 @@
 package com.example.appliances.service;
 
+import com.example.appliances.entity.User;
 import com.example.appliances.model.request.UserRequest;
 import com.example.appliances.model.response.UserResponse;
 import org.springframework.data.domain.Page;
@@ -25,5 +26,7 @@ public interface UserService {
 
     void deactivate(Long id);
     void activate(Long id);
+
+    public User getCurrentUser();
     Boolean check();
 }

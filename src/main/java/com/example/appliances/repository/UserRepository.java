@@ -26,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findByIsActiveFalse(Pageable pageable);
 
+    User findByPin(String pin);
+
 //    @Query("SELECT u.organizations FROM User u WHERE u = :expert")
 //    List<Organization> findOrganizationsByExpert(User expert);
 
