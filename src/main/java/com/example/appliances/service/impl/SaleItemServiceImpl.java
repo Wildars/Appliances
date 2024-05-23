@@ -41,7 +41,6 @@ public class SaleItemServiceImpl implements SaleItemService {
 
     TwilioService twilioService;
     ProductService productService;
-
     ProductRepository productRepository;
     SaleStatusRepository saleStatusRepository;
     ClientService clientService;
@@ -215,6 +214,10 @@ public class SaleItemServiceImpl implements SaleItemService {
             storageService.updateStockByProductId(product.getId(), saleItemRequest.getQuantity());
         }
 
+        for (SaleItem item : saleItem.get()) {
+            item.setOrder(order);
+        }
+
         // Получаю информацию о клиенте и его скидке
         Client client = clientService.findById(saleItemRequest.getClientId());
 
@@ -233,7 +236,7 @@ public class SaleItemServiceImpl implements SaleItemService {
 
         // номер накладной генерится
         String newScreen = generateNextNakladnoy();
-
+        // присваиваю номер накладной
         saleItem.setNumberNakladnoy(newScreen);
 
         SaleItem savedSaleItem = saleItemRepository.save(saleItem);

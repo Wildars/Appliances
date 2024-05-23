@@ -1,9 +1,9 @@
 package com.example.appliances.model.request;
 
-import com.example.appliances.entity.Field;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -12,8 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductCategoryRequest {
+public class OrderRequest {
+
+    List<OrderItemRequest> orderItems;
+
+    Date dateDelivery;
+    String address;
+    String phoneNumber;
     String name;
-    Long parentId;
-    List<Field> fields;
+    String comment;
 }

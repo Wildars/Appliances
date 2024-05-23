@@ -1,9 +1,6 @@
 package com.example.appliances.model.response;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -11,10 +8,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductCategoryResponse {
+public class ProductFieldResponse {
     Long id;
-    String name;
-    Long parent;
-    List<ProductCategoryResponse> children;
-    List<FieldResponse> fields;
+    FieldResponse field;
+    ProductResponse product;
+    String value;
 }

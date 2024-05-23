@@ -1,10 +1,7 @@
 package com.example.appliances.model.request;
 
-import com.example.appliances.entity.Field;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -12,8 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductCategoryRequest {
+public class BrandRequest {
     String name;
-    Long parentId;
-    List<Field> fields;
 }

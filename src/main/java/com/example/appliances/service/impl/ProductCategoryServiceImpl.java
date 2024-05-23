@@ -54,18 +54,36 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategoryResponse create(ProductCategoryRequest productRequest) {
-        ProductCategory product = productCategoryMapper.requestToEntity(productRequest);
-        ProductCategory savedProduct = productCategoryRepository.save(product);
-        return productCategoryMapper.entityToResponse(savedProduct);
+    public ProductCategoryResponse create(ProductCategoryRequest productCategoryRequest) {
+        ProductCategory parentCategory = null;
+        if (productCategoryRequest.getParentId() != null) {
+            parentCategory = productCategoryRepository.findById(productCategoryRequest.getParentId())
+                    .orElseThrow(() -> new RecordNotFoundException("Parent category not found with id: " + productCategoryRequest.getParentId()));
+        }
+
+        ProductCategory productCategory = productCategoryMapper.requestToEntity(productCategoryRequest);
+        productCategory.setParent(parentCategory);
+
+        ProductCategory savedProductCategory = productCategoryRepository.save(productCategory);
+
+        // Если есть родительская категория, добавляем текущую категорию в список ее дочерних
+        if (parentCategory != null) {
+            parentCategory.getChildren().add(savedProductCategory);
+        }
+
+        return productCategoryMapper.entityToResponse(savedProductCategory);
     }
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
+//    @Cacheable(value = "productCategories", key = "#id")
     public ProductCategoryResponse findById(Long id) {
         ProductCategory product = productCategoryRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Категория товара с таким id не существует!"));
         return productCategoryMapper.entityToResponse(product);
     }
+
+
+
     @Override
     @Transactional
     public ProductCategoryResponse update(ProductCategoryRequest productRequest, Long productId) {
@@ -76,10 +94,16 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return productCategoryMapper.entityToResponse(updatedProduct);
     }
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ProductCategoryResponse> findAll() {
-        List<ProductCategory> products = productCategoryRepository.findAll();
-        return products.stream().map(productCategoryMapper::entityToResponse).collect(Collectors.toList());
+        List<ProductCategory> categories = productCategoryRepository.findAll();
+        for (ProductCategory category : categories) {
+            category.getFields().size(); // Загрузка коллекции fields
+        }
+        return productCategoryMapper.entitiesToResponses(categories);
+
+//        List<ProductCategory> products = productCategoryRepository.findAll();
+//        return products.stream().map(productCategoryMapper::entitiesToResponses).collect(Collectors.toList());
     }
     @Override
     @Transactional
