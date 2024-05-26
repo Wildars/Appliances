@@ -1,44 +1,73 @@
 package com.example.appliances.config;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
-@Configuration
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.*;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Component
+@EnableSwagger2
 public class SwaggerConfig {
+
+    static String BEARER_AUTH = "Bearer";
+
     @Bean
-    public GroupedOpenApi publicUserApi() {
-        return GroupedOpenApi.builder()
-                .group("api")
-                .packagesToScan("com.example.appliances.api")
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.example.appliances.api"))
+                .paths(PathSelectors.any())
+                .build()
+                .securitySchemes(Arrays.asList(apiKey()))
+                .securityContexts(Arrays.asList(securityContext()));
+//                .consumes(Collections.singleton("multipart/form-data"));
+    }
+
+    private List<SecurityScheme> securitySchemes() {
+        return List.of(new ApiKey(BEARER_AUTH, "Authorization", "header"));
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+                "My REST API",
+                "Some custom description of API.",
+                "1.0",
+                "Terms of service",
+                new Contact("test", "test", "test@gmail.com"),
+                "License of API",
+                "API license URL",
+                Collections.emptyList());
+    }
+
+    private ApiKey apiKey() {
+        return new ApiKey("JWT", "Authorization", "header");
+    }
+
+    private SecurityContext securityContext() {
+        return SecurityContext
+                .builder()
+                .securityReferences((List<SecurityReference>) defaultAuth())
                 .build();
     }
 
-    @Bean
-    public OpenAPI customOpenApi() {
-        return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement()
-                        .addList("Bearer Authentication"))
-                .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
-                .info(new Info()
-                        .title("Appliances")
-                        .version("1.0")
-                        .description("Здесь будем тестить наши API.")
-                )
-                ;
-    }
-
-    private SecurityScheme createAPIKeyScheme() {
-        return new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY)
-                .name("Authorization")
-                .in(SecurityScheme.In.HEADER)
-                .description("Bearer_[token]");
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
     }
 }

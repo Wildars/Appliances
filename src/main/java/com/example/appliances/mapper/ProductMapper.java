@@ -6,10 +6,8 @@ import com.example.appliances.model.request.PermissionRequest;
 import com.example.appliances.model.request.ProductRequest;
 import com.example.appliances.model.response.PermissionResponse;
 import com.example.appliances.model.response.ProductResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,16 +16,19 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
+                BrandMapper.class,
+                ProducingCountryMapper.class,
                 ProductCategoryMapper.class,
-                ImageMapper.class
+                ProductPhotoPathMapper.class
         }
 )
 public interface ProductMapper {
     ProductResponse entityToResponse(Product entity);
-    @Mapping(target = "productCategory", source = "productCategoryId", qualifiedByName = "setProductCategory")
-    @Mapping(target = "image", source = "imageId", qualifiedByName = "setImage")
-    @Mapping(target = "status", source = "statusId", qualifiedByName = "setStatus")
-    Product requestToEntity(ProductRequest request);
+    @Mapping(target = "categories", source = "categoryIds", qualifiedByName = "setProductCategories")
+    @Mapping(target = "brand", source = "brandId", qualifiedByName = "setBrand")
+    @Mapping(target = "producingCountry", source = "producingCountryId", qualifiedByName = "setProducingCountry")
+//    @Mapping(target = "status", source = "statusId", qualifiedByName = "setStatus")
+    Product requestToEntity(ProductRequest request, @Context List<MultipartFile> photos);
 
     List<ProductResponse> toResponseList(List<Product> productList);
     void update(@MappingTarget Product entity, ProductRequest request);

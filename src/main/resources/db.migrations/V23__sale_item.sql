@@ -23,7 +23,7 @@ CREATE TABLE sale_item
 
 CREATE TABLE sale_item_product
 (
-    product_id   BIGINT NOT NULL,
+    product_id   UUID NOT NULL,
     sale_item_id BIGINT NOT NULL
 );
 

@@ -15,6 +15,36 @@ import java.util.UUID;
 public interface DefaultMapper {
 
 
+    @Named("setBrand")
+    default Brand setBrand(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Brand.builder().id(id).build();
+    }
+
+    @Named("setProducingCountry")
+    default ProducingCountry setProducingCountry(Long id) {
+        if (id == null)
+            return null;
+        else
+            return ProducingCountry.builder().id(id).build();
+    }
+
+
+    @Named("setProductCategories")
+    default List<ProductCategory> setProductCategories(List<Long> ids) {
+        if (ids == null)
+            return null;
+        if (ids.isEmpty())
+            return new ArrayList<>();
+
+        List<ProductCategory> result = new ArrayList<>();
+        for (var i : ids)
+            result.add(ProductCategory.builder().id(i).build());
+        return result;
+    }
+
     @Named("setProductCategory")
     default ProductCategory setProductCategory(Long id) {
         if (id == null)
@@ -31,10 +61,24 @@ public interface DefaultMapper {
             return Status.builder().id(id).build();
     }
 
+    @Named("setProduct")
+    default Product setProduct(UUID id) {
+        if (id == null)
+            return null;
+        else
+            return Product.builder().id(id).build();
+    }
+    @Named("setOrder")
+    default Order setOrder(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Order.builder().id(id).build();
+    }
 
 
     @Named("setProducts")
-    default List<Product> setProducts(List<Long> ids) {
+    default List<Product> setProducts(List<UUID> ids) {
         if (ids == null)
             return null;
         if (ids.isEmpty())
@@ -109,13 +153,13 @@ public interface DefaultMapper {
         else
             return Image.builder().id(id).build();
     }
-    @Named("setProduct")
-    default Product setProduct(Long id) {
-        if (id == null)
-            return null;
-        else
-            return Product.builder().id(id).build();
-    }
+//    @Named("setProduct")
+//    default Product setProduct(Long id) {
+//        if (id == null)
+//            return null;
+//        else
+//            return Product.builder().id(id).build();
+//    }
 
     @Named("setOrganizations")
     default List<Filial> setOrganizations(List<Long> ids) {

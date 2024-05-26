@@ -1,6 +1,5 @@
 package com.example.appliances.model.response;
 
-import com.example.proremont.entity.SystemStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,7 +19,7 @@ public class OrderResponse {
 
     List<OrderItemResponse> orderItems;
     UserResponse user;
-    SystemStatus status;
+//    SystemStatus status;
     String comment;
     Date dateDelivery;
     String address;

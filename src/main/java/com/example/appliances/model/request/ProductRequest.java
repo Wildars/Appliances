@@ -3,6 +3,9 @@ package com.example.appliances.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -11,11 +14,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
     String name;
-
-    Long productCategoryId;
-    Double price;
-
     String description;
-    Long imageId;
-    Long statusId;
+    String code;
+
+    BigDecimal price;
+    List<Long> categoryIds;
+    List<ProductFieldRequest> fields;
+    String  photoPath;
+
+
+    Long brandId;
+    Long producingCountryId;
 }

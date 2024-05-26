@@ -1,9 +1,7 @@
-package com.example.appliances.model.request;
+package com.example.appliances.model.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,8 +9,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SupplyItemRequest {
-     UUID productId;
-     Long supplyId;
-     int quantity;
+public class ProductPhotoPathResponse {
+    private Long id;
+    private String photoPaths;
 }

@@ -1,14 +1,15 @@
 package com.example.appliances.service.impl;
 
 
-import com.example.appliances.entity.Order;
-import com.example.appliances.entity.OrderItem;
-import com.example.appliances.entity.Product;
-import com.example.appliances.entity.User;
+import com.example.appliances.entity.*;
+import com.example.appliances.enums.SaleStatusEnum;
+import com.example.appliances.exception.OrderNotFoundException;
+import com.example.appliances.mapper.OrderMapper;
 import com.example.appliances.model.request.OrderItemRequest;
 import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.repository.OrderRepository;
+import com.example.appliances.repository.SaleStatusRepository;
 import com.example.appliances.repository.UserRepository;
 import com.example.appliances.service.OrderService;
 import com.example.appliances.service.ProductService;
@@ -40,9 +41,9 @@ public class OrderServiceImpl implements OrderService {
 
     UserRepository userRepository;
 
-    SystemStatusRepository systemStatusRepository;
+    SaleStatusRepository systemStatusRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, UserRepository userRepository, SystemStatusRepository systemStatusRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, UserRepository userRepository, SaleStatusRepository systemStatusRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.productService = productService;
@@ -58,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(currentUser);
 
         // Устанавливаем начальный статус заказа
-        SystemStatus status = systemStatusRepository.findById(StatusSystemEnum.BLANK.getId()).orElseThrow(() -> new RuntimeException("SystemStatus not found"));
+        SaleStatus status = systemStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SystemStatus not found"));
         order.setStatus(status);
 
         // Перебираем элементы заказа из OrderRequest и устанавливаем им ссылку на заказ
@@ -80,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
 
         // Находим статус VERIFIED в базе данных
-        SystemStatus verifiedStatus = systemStatusRepository.findById(StatusSystemEnum.VERIFICATED.getId()).orElseThrow(() -> new RuntimeException("SystemStatus not found"));
+        SaleStatus verifiedStatus = systemStatusRepository.findById(SaleStatusEnum.SENDET.getId()).orElseThrow(() -> new RuntimeException("SystemStatus not found"));
 
         // Меняем статус заказа на VERIFIED
         order.setStatus(verifiedStatus);

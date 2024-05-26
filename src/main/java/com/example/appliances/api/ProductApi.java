@@ -8,11 +8,16 @@ import com.example.appliances.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
@@ -36,11 +41,16 @@ public class ProductApi {
                                                                 @RequestParam(required = false) String sortBy) {
         return productService.getAllProduct(page, size, sortOrder, sortBy);
     }
-    @PostMapping
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
-        ProductResponse createdProduct = productService.create(productRequest);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+//    @ApiOperation(value = "Создание", notes = "Создание нового продукта")
+    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> save(@RequestPart(required = false) List<MultipartFile> files, @Valid ProductRequest model) {
+        try {
+            productService.create(model, files);
+            return ResponseEntity.ok("Запись успешно сохранена!");
+        } catch (Exception e) {
+            return new ResponseEntity<>("Произошла ошибка при сохранении", HttpStatus.BAD_REQUEST);
+        }
     }
 
 
@@ -52,14 +62,14 @@ public class ProductApi {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable UUID id) {
         ProductResponse product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<ProductResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable Long id) {
+    public ResponseEntity<ProductResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable UUID id) {
         ProductResponse updatedProduct = productService.update(productRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
@@ -77,7 +87,7 @@ public class ProductApi {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

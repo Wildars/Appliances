@@ -29,7 +29,7 @@ public class Order extends Audit<String> {
 
     @ManyToOne
     @JoinColumn(name = "status")
-    Status status;
+    SaleStatus status;
 
     String address;
     String phoneNumber;

@@ -9,5 +9,9 @@ CREATE TABLE product_category
     deleted_by         VARCHAR(255),
     deleted            BOOLEAN                                 NOT NULL,
     name               VARCHAR(255),
+    parent_id          BIGINT,
     CONSTRAINT pk_productcategory PRIMARY KEY (id)
 );
+
+ALTER TABLE product_category
+    ADD CONSTRAINT FK_PRODUCTCATEGORY_ON_PARENT FOREIGN KEY (parent_id) REFERENCES product_category (id);

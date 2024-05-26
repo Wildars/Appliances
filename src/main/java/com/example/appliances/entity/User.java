@@ -2,6 +2,8 @@ package com.example.appliances.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,6 +34,7 @@ public class User extends Audit<String> implements Serializable {
     String position;
 
     @ManyToMany
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "use_filials",
             joinColumns = @JoinColumn(name = "use_id"),
             inverseJoinColumns = @JoinColumn(name = "filial_id"))
@@ -42,6 +45,7 @@ public class User extends Audit<String> implements Serializable {
     @Column(nullable = false)
     String password;
     @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     List<Role> roles;
     @Column(columnDefinition = "boolean default true")
     Boolean isActive;

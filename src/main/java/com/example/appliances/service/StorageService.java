@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface StorageService {
 
@@ -20,22 +21,22 @@ public interface StorageService {
                                                  Optional<Boolean> sortOrder,
                                                  String sortBy);
 
-    public int getAvailableQuantity(Long productId);
+    public int getAvailableQuantity(UUID productId);
 
-    public void updateStockByProductId(Long productId, int quantity);
-    public void returnStockByProductId(Long productId, int quantity);
+//    public void updateStockByProductId(UUID productId, int quantity);
+    public void returnStockByProductId(UUID productId, int quantity);
     StorageResponse update(StorageRequest storageRequest, Long id);
 
      List<StorageResponse> findAll();
 
      void deleteById(Long id);
 
-    public List<Product> getProductsById(List<Long> productIds);
+    public List<Product> getProductsById(List<UUID> productIds);
 
 
-    public void checkProductAvailability(Long productId, int requestedQuantity) ;
+    public void checkProductAvailability(UUID productId, int requestedQuantity) ;
 
 
-    public void updateStock(Long productId, Long storageId, int quantity) ;
-    public Product getProductById(Long productId);
+//    public void updateStock(UUID productId, Long storageId, int quantity) ;
+    public Product getProductById(UUID productId);
 }

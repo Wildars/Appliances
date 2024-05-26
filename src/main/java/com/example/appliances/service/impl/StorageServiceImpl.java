@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,14 +109,16 @@ public class StorageServiceImpl implements StorageService {
     public void deleteById(Long id) {
         storageRepository.deleteById(id);
     }
+
+
     @Override
-    public List<Product> getProductsById(List<Long> productIds) {
+    public List<Product> getProductsById(List<UUID> productIds) {
         return productRepository.findAllByIdIn(productIds);
     }
 
     @Override
     @Transactional
-    public void checkProductAvailability(Long productId, int requestedQuantity) {
+    public void checkProductAvailability(UUID productId, int requestedQuantity) {
         // Найдем запись StorageItem для заданного productId
         StorageItem storageItem = storageItemRepository.findByProductId(productId);
 
@@ -131,7 +134,7 @@ public class StorageServiceImpl implements StorageService {
     }
     @Override
     @Transactional(readOnly = true)
-    public int getAvailableQuantity(Long productId) {
+    public int getAvailableQuantity(UUID productId) {
         // Получаем информацию о товаре на складе
         StorageItem storageItem = storageItemRepository.findByProductId(productId);
 
@@ -140,7 +143,7 @@ public class StorageServiceImpl implements StorageService {
     }
     @Transactional
     @Override
-    public void returnStockByProductId(Long productId, int quantity) {
+    public void returnStockByProductId(UUID productId, int quantity) {
         // Получаем информацию о товаре на складе по productId
         StorageItem storageItem = storageItemRepository.findByProductId(productId);
 
@@ -153,34 +156,34 @@ public class StorageServiceImpl implements StorageService {
         storageItemRepository.save(storageItem);
     }
 
+//    @Override
+//    @Transactional
+//    public void updateStockByProductId(UUID productId, int quantity) {
+//        // Получаем информацию о товаре на складе по productId
+//        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+//
+//        if (storageItem == null) {
+//            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+//        }
+//
+//        int newQuantity = storageItem.getQuantity() - quantity;
+//        if (newQuantity < 0) {
+//            throw new IllegalArgumentException("Недостаточно товара на складе");
+//        }
+//
+//        storageItem.setQuantity(newQuantity);
+//        storageItemRepository.save(storageItem);
+//    }
+//    @Override
+//    @Transactional
+//    public void updateStock(UUID productId, Long storageId, int quantity) {
+//        storageItemService.updateStock(productId, storageId, quantity);
+//        productService.updateStock(productId, quantity);
+//    }
+
     @Override
     @Transactional
-    public void updateStockByProductId(Long productId, int quantity) {
-        // Получаем информацию о товаре на складе по productId
-        StorageItem storageItem = storageItemRepository.findByProductId(productId);
-
-        if (storageItem == null) {
-            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
-        }
-
-        int newQuantity = storageItem.getQuantity() - quantity;
-        if (newQuantity < 0) {
-            throw new IllegalArgumentException("Недостаточно товара на складе");
-        }
-
-        storageItem.setQuantity(newQuantity);
-        storageItemRepository.save(storageItem);
-    }
-    @Override
-    @Transactional
-    public void updateStock(Long productId, Long storageId, int quantity) {
-        storageItemService.updateStock(productId, storageId, quantity);
-        productService.updateStock(productId, quantity);
-    }
-
-    @Override
-    @Transactional
-    public Product getProductById(Long productId) {
+    public Product getProductById(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Товар с ID " + productId + " не найден"));
     }

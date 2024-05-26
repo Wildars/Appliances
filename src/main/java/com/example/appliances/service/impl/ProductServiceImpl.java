@@ -18,9 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,23 +62,25 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> findAllProduct() {
         return productMapper.toResponseList(productRepository.findAll());
     }
-    @Override
     @Transactional
-    public ProductResponse create(ProductRequest productRequest) {
-        Product product = productMapper.requestToEntity(productRequest);
+    @Override
+    public ProductResponse create(ProductRequest productRequest, List<MultipartFile> photos) throws IOException {
+        Product product = productMapper.requestToEntity(productRequest, photos);
+        List<String> photoPaths = MediaTypeUtils.saveImages(photos);
+        product.setPhotoPaths(photoPaths);
         Product savedProduct = productRepository.save(product);
         return productMapper.entityToResponse(savedProduct);
     }
     @Override
     @Transactional
-    public ProductResponse getProductById(Long id) {
+    public ProductResponse getProductById(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует!"));
         return productMapper.entityToResponse(product);
     }
     @Override
     @Transactional
-    public ProductResponse update(ProductRequest productRequest, Long productId) {
+    public ProductResponse update(ProductRequest productRequest, UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует"));
         productMapper.update(product, productRequest);
@@ -90,13 +95,13 @@ public class ProductServiceImpl implements ProductService {
     }
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         productRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void updateStock(Long productId, int quantity) {
+    public void updateStock(UUID productId, int quantity) {
 //        Product product = productRepository.findById(productId)
 //                .orElseThrow(() -> new RecordNotFoundException("Товар с таким id не существует"));
 //
@@ -107,5 +112,11 @@ public class ProductServiceImpl implements ProductService {
 //
 //        product.setStock(updatedStock);
 //        productRepository.save(product);
+    }
+
+    @Override
+    public Product getById(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Product not found with id: " + id));
     }
 }

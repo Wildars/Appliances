@@ -6,6 +6,7 @@ import com.example.appliances.model.response.StorageItemResponse;
 import com.example.appliances.model.response.StorageResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface StorageItemService {
     public StorageItemResponse createStorageItem(StorageItemRequest storageItemRequest);
@@ -18,7 +19,7 @@ public interface StorageItemService {
 
     StorageItemResponse findById(Long id);
 
-    void updateStock(Long productId, Long storageId, int quantity);
+//    void updateStock(UUID productId, Long storageId, int quantity);
 
-    public void updateStockByProductId(Long productId, int quantity);
+//    public void updateStockByProductId(UUID productId, int quantity);
 }

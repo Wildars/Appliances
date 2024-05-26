@@ -65,37 +65,37 @@ public class StorageItemServiceImpl implements StorageItemService {
         return storageItemMapper.entityToResponse(sale);
     }
 
-    @Override
-    @Transactional
-    public void updateStock(Long productId, Long storageId, int quantity) {
-        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
-                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
-
-        int newQuantity = storageItem.getQuantity() + quantity;
-        if (newQuantity < 0) {
-            throw new IllegalArgumentException("Недостаточно товара на складе");
-        }
-
-        storageItem.setQuantity(newQuantity);
-        storageItemRepository.save(storageItem);
-    }
-
-    @Override
-    @Transactional
-    public void updateStockByProductId(Long productId, int quantity) {
-        // Получаем информацию о товаре на складе по productId (если нужно)
-        StorageItem storageItem = storageItemRepository.findByProductId(productId);
-
-        if (storageItem == null) {
-            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
-        }
-
-        int newQuantity = storageItem.getQuantity() + quantity;
-        if (newQuantity < 0) {
-            throw new IllegalArgumentException("Недостаточно товара на складе");
-        }
-
-        storageItem.setQuantity(newQuantity);
-        storageItemRepository.save(storageItem);
-    }
+//    @Override
+//    @Transactional
+//    public void updateStock(Long productId, Long storageId, int quantity) {
+//        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
+//                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+//
+//        int newQuantity = storageItem.getQuantity() + quantity;
+//        if (newQuantity < 0) {
+//            throw new IllegalArgumentException("Недостаточно товара на складе");
+//        }
+//
+//        storageItem.setQuantity(newQuantity);
+//        storageItemRepository.save(storageItem);
+//    }
+//
+//    @Override
+//    @Transactional
+//    public void updateStockByProductId(Long productId, int quantity) {
+//        // Получаем информацию о товаре на складе по productId (если нужно)
+//        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+//
+//        if (storageItem == null) {
+//            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+//        }
+//
+//        int newQuantity = storageItem.getQuantity() + quantity;
+//        if (newQuantity < 0) {
+//            throw new IllegalArgumentException("Недостаточно товара на складе");
+//        }
+//
+//        storageItem.setQuantity(newQuantity);
+//        storageItemRepository.save(storageItem);
+//    }
 }

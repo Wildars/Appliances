@@ -3,6 +3,8 @@ package com.example.appliances.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -10,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StorageItemRequest {
-     Long productId;
+     UUID productId;
      Long storageId;
      int quantity;
 }
