@@ -101,9 +101,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
             category.getFields().size(); // Загрузка коллекции fields
         }
         return productCategoryMapper.entitiesToResponses(categories);
-
-//        List<ProductCategory> products = productCategoryRepository.findAll();
-//        return products.stream().map(productCategoryMapper::entitiesToResponses).collect(Collectors.toList());
     }
     @Override
     @Transactional

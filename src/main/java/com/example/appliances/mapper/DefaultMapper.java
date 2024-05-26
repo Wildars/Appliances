@@ -22,6 +22,13 @@ public interface DefaultMapper {
         else
             return Brand.builder().id(id).build();
     }
+    @Named("setField")
+    default Field setField(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Field.builder().id(id).build();
+    }
 
     @Named("setProducingCountry")
     default ProducingCountry setProducingCountry(Long id) {
