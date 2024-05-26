@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "product_photo_paths")
 public class ProductPhotoPath {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

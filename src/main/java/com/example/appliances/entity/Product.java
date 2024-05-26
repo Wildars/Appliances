@@ -42,9 +42,9 @@ public class Product extends Audit<String> implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     List<ProductCategory> categories;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    Image image;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+//    Image image;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
