@@ -197,8 +197,8 @@
 //        SaleItem saleItem = saleItemMapper.requestToEntity(saleItemRequest);
 //
 //        //установка продавца,доделать если нужно
-////        User currentUser = userService.getCurrentUser();
-////        saleItem.set(currentUser);
+//        User currentUser = userService.getCurrentUser();
+//        saleItem.setUser(currentUser);
 //
 //        // Присваиваю статусы
 //        SaleStatus saleStatus = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));

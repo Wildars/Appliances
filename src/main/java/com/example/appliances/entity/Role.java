@@ -3,6 +3,8 @@ package com.example.appliances.entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -28,5 +30,6 @@ public class Role extends Audit<String> implements Serializable {
 
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     List<Permission> permissions = new ArrayList<>();
 }

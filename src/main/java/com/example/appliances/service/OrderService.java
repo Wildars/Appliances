@@ -3,11 +3,13 @@ package com.example.appliances.service;
 
 import com.example.appliances.entity.Order;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface OrderService {
@@ -30,6 +32,7 @@ public interface OrderService {
 //
 //    public void convertCartToOrder(Long orderId);
 
+    public byte[] generateOrderPdf(Map<String, Object> orderData);
 
     public Page<OrderResponse> getAll(int page,
                                       int size,
@@ -42,5 +45,11 @@ public interface OrderService {
                                             int size,
                                             Optional<Boolean> sortOrder,
                                             String sortBy);
+
+    public void rejectOrder(Long queueEntryId, SaleItemElementRequest request);
+
+    public void doneOrder(Long saleItemId, SaleItemElementRequest request);
+
+    public void sendOrder(Long saleItemId, SaleItemElementRequest request);
 }
 

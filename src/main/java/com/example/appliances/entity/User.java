@@ -33,7 +33,7 @@ public class User extends Audit<String> implements Serializable {
     @Column
     String position;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "use_filials",
             joinColumns = @JoinColumn(name = "use_id"),

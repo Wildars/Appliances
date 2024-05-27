@@ -3,6 +3,7 @@ package com.example.appliances.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -21,4 +22,12 @@ public class OrderRequest {
     String phoneNumber;
     String name;
     String comment;
+
+    Long clientId;
+
+    String numberNakladnoy;
+    LocalDateTime schedule;
+
+    Double totalAmount;
+
 }

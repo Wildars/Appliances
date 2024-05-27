@@ -1,8 +1,11 @@
 package com.example.appliances.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +27,7 @@ public class Order extends Audit<String> {
     User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     List<OrderItem> orderItems = new ArrayList<>();
 
 
@@ -41,4 +45,14 @@ public class Order extends Audit<String> {
 
     @Column(name = "total_amount")
     Double totalAmount;
+
+
+    String description;
+    String numberNakladnoy;
+    LocalDateTime schedule;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    Client client;
+
 }
