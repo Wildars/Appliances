@@ -4,6 +4,9 @@ import com.example.appliances.entity.Order;
 import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.service.OrderService;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +39,7 @@ public class OrderApi {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable("id") Long orderId) {
+    public ResponseEntity<OrderResponse> getOrder( @PathVariable("id") Long orderId) {
         OrderResponse order = orderService.getOrder(orderId);
         return ResponseEntity.ok(order);
     }
@@ -90,7 +95,7 @@ public class OrderApi {
     }
 
 
-    @GetMapping("/{orderId}/pdf")
+    @RequestMapping("/order/{orderId}/pdf")
     public ResponseEntity<byte[]> getOrderPdf(@PathVariable Long orderId) {
         // Здесь вам нужно получить данные о заказе, например, из вашего сервиса заказов
         Map<String, Object> orderData = getOrderDataById(orderId);
@@ -101,7 +106,7 @@ public class OrderApi {
         }
 
         // Генерируем PDF
-        byte[] pdfBytes = orderService.generateOrderPdf(orderData);
+        byte[] pdfBytes = generateOrderPdf(orderData);
 
         // Создаем HTTP-заголовки для ответа
         HttpHeaders headers = new HttpHeaders();
@@ -124,4 +129,47 @@ public class OrderApi {
         // Заполните остальные данные о заказе
         return orderData;
     }
+
+    private byte[] generateOrderPdf(Map<String, Object> orderData) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, byteArrayOutputStream);
+            document.open();
+            // Добавьте содержимое PDF-документа здесь
+            document.add(new com.itextpdf.text.Paragraph("Order ID: " + orderData.get("id")));
+            document.add(new com.itextpdf.text.Paragraph("Client Name: " + orderData.get("clientName")));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } finally {
+            document.close();
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
+
+    @GetMapping("/api/statistics/orders/count")
+    public Long countAllOrders() {
+        return orderService.countAllOrders();
+    }
+
+    @GetMapping("/api/statistics/orders/successful")
+    public Long countSuccessfulOrders() {
+        return orderService.countSuccessfulOrders();
+    }
+
+    @GetMapping("/api/statistics/orders/unsuccessful")
+    public Long countUnsuccessfulOrders() {
+        return orderService.countUnsuccessfulOrders();
+    }
+
+    @GetMapping("/api/statistics/orders")
+    public Map<String, Long> getOrderStatistics() {
+        Map<String, Long> statistics = new HashMap<>();
+        statistics.put("totalOrders", orderService.countAllOrders());
+        statistics.put("successfulOrders", orderService.countSuccessfulOrders());
+        statistics.put("unsuccessfulOrders", orderService.countUnsuccessfulOrders());
+        return statistics;
+    }
 }
+

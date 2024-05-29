@@ -32,6 +32,10 @@ public class ProductApi {
         this.productService = productService;
     }
 
+    @GetMapping("/api/statistics/products/count")
+    public Long countAllProducts() {
+        return productService.countAllProducts();
+    }
 
     @GetMapping("/list")
     @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")

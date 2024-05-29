@@ -25,4 +25,14 @@ public interface OrderRepository extends JpaRepository<Order,Long> , JpaSpecific
     List<String> findNakladnoyNumbersByDate(String datePrefix);
 
     Page<Order> findByUser(User currentUser, Pageable paging);
+
+
+    @Query("SELECT COUNT(o) FROM Order o")
+    Long countAllOrders();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 1")
+    Long countSuccessfulOrders();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 2")
+    Long countUnsuccessfulOrders();
 }

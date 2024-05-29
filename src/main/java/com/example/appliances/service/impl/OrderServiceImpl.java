@@ -388,7 +388,8 @@ public class OrderServiceImpl implements OrderService {
 
             // Заголовок
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 20, Font.BOLD);
-            Paragraph title = new Paragraph("Заказ #" + orderData.get("id"), titleFont);
+            String orderId = orderData.get("id") != null ? orderData.get("id").toString() : "N/A";
+            Paragraph title = new Paragraph("Заказ #" + orderId, titleFont);
             title.setAlignment(Paragraph.ALIGN_CENTER);
             document.add(title);
             document.add(new Paragraph("\n"));
@@ -396,11 +397,11 @@ public class OrderServiceImpl implements OrderService {
             // Информация о заказе
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100);
-            table.addCell(createCell("Клиент:", orderData.get("clientName").toString()));
-            table.addCell(createCell("Дата заказа:", orderData.get("created_date").toString()));
-            table.addCell(createCell("Адрес:", orderData.get("address").toString()));
-            table.addCell(createCell("Телефон:", orderData.get("phoneNumber").toString()));
-            table.addCell(createCell("Общая сумма:", orderData.get("totalAmount").toString()));
+            table.addCell(createCell("Клиент:", orderData.get("clientName") != null ? orderData.get("clientName").toString() : "N/A"));
+            table.addCell(createCell("Дата заказа:", orderData.get("created_date") != null ? orderData.get("created_date").toString() : "N/A"));
+            table.addCell(createCell("Адрес:", orderData.get("address") != null ? orderData.get("address").toString() : "N/A"));
+            table.addCell(createCell("Телефон:", orderData.get("phoneNumber") != null ? orderData.get("phoneNumber").toString() : "N/A"));
+            table.addCell(createCell("Общая сумма:", orderData.get("totalAmount") != null ? orderData.get("totalAmount").toString() : "N/A"));
             document.add(table);
             document.add(new Paragraph("\n"));
 
@@ -412,9 +413,9 @@ public class OrderServiceImpl implements OrderService {
             productsTable.addCell("Цена");
 
             for (Map<String, Object> product : (Iterable<Map<String, Object>>) orderData.get("orderItems")) {
-                productsTable.addCell(product.get("productName").toString());
-                productsTable.addCell(product.get("quantity").toString());
-                productsTable.addCell(product.get("price").toString());
+                productsTable.addCell(product.get("productName") != null ? product.get("productName").toString() : "N/A");
+                productsTable.addCell(product.get("quantity") != null ? product.get("quantity").toString() : "0");
+                productsTable.addCell(product.get("price") != null ? product.get("price").toString() : "0.00");
             }
 
             document.add(productsTable);
@@ -443,5 +444,24 @@ public class OrderServiceImpl implements OrderService {
         valueCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
         valueCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
         return cell;
+    }
+
+
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAllOrders() {
+        return orderRepository.countAllOrders();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Long countSuccessfulOrders() {
+        return orderRepository.countSuccessfulOrders();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Long countUnsuccessfulOrders() {
+        return orderRepository.countUnsuccessfulOrders();
     }
 }

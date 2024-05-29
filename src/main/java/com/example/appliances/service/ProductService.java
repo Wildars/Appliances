@@ -34,4 +34,6 @@ public interface ProductService {
      void deleteById(UUID id) ;
 
      Product getById(UUID id);
+
+     public Long countAllProducts();
 }

@@ -119,4 +119,10 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Product not found with id: " + id));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAllProducts() {
+        return productRepository.countAllProducts();
+    }
 }

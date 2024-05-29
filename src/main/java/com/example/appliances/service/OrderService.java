@@ -51,5 +51,11 @@ public interface OrderService {
     public void doneOrder(Long saleItemId, SaleItemElementRequest request);
 
     public void sendOrder(Long saleItemId, SaleItemElementRequest request);
+
+    public Long countAllOrders();
+
+    public Long countSuccessfulOrders();
+
+    public Long countUnsuccessfulOrders();
 }
 
