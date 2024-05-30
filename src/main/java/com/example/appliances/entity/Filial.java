@@ -21,6 +21,8 @@ public class Filial extends Audit<String> implements Serializable {
 
     String filCode;
 
+//    String address;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "storage_id", referencedColumnName = "id")
     Storage storage;

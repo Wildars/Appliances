@@ -174,12 +174,12 @@ public class StorageServiceImpl implements StorageService {
 //        storageItem.setQuantity(newQuantity);
 //        storageItemRepository.save(storageItem);
 //    }
-//    @Override
-//    @Transactional
-//    public void updateStock(UUID productId, Long storageId, int quantity) {
-//        storageItemService.updateStock(productId, storageId, quantity);
-//        productService.updateStock(productId, quantity);
-//    }
+    @Override
+    @Transactional
+    public void updateStock(UUID productId, Long storageId, int quantity) {
+        storageItemService.updateStock(productId, storageId, quantity);
+        productService.updateStock(productId, quantity);
+    }
 
     @Override
     @Transactional

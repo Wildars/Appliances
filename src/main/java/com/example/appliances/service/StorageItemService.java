@@ -19,7 +19,7 @@ public interface StorageItemService {
 
     StorageItemResponse findById(Long id);
 
-//    void updateStock(UUID productId, Long storageId, int quantity);
+    void updateStock(UUID productId, Long storageId, int quantity);
 
 //    public void updateStockByProductId(UUID productId, int quantity);
 }

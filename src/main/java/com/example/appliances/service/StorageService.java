@@ -37,6 +37,6 @@ public interface StorageService {
     public void checkProductAvailability(UUID productId, int requestedQuantity) ;
 
 
-//    public void updateStock(UUID productId, Long storageId, int quantity) ;
+    public void updateStock(UUID productId, Long storageId, int quantity) ;
     public Product getProductById(UUID productId);
 }

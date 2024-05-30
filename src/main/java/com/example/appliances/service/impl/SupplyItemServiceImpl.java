@@ -13,10 +13,15 @@ import com.example.appliances.repository.SupplyItemRepository;
 import com.example.appliances.service.SupplyItemService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +41,15 @@ public class SupplyItemServiceImpl implements SupplyItemService {
     public SupplyItemResponse create(SupplyItemRequest supplyItemRequest) {
         SupplyItem saleItem = supplyItemMapperu.requestToEntity(supplyItemRequest);
 
+        for (SupplyItemRequest itemRequest : supplyItemRequest.getSupplyItems()) {
+            SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
+            // supplyItem.setSupply(supply);
+
+            supplyItems.add(supplyItem);
+
+            // Обновляем количество товара на складе
+            storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+        }
         SupplyItem savedSaleItem = supplyItemRepository.save(saleItem);
 
 
@@ -69,5 +83,23 @@ public class SupplyItemServiceImpl implements SupplyItemService {
         supplyItemRepository.deleteById(id);
     }
 
+    @Override
+    @Transactional
+    public Page<SupplyItemResponse> getAllSupplierItemPages(int page,
+                                                        int size,
+                                                        Optional<Boolean> sortOrder,
+                                                        String sortBy){
+        Pageable paging = null;
+
+        if (sortOrder.isPresent()){
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, sortBy);
+        } else {
+            paging = PageRequest.of(page, size);
+        }
+        Page<SupplyItem> saleItemsPage = supplyItemRepository.findAll(paging);
+
+        return saleItemsPage.map(supplyItemMapperu::entityToResponse);
+    }
 
 }

@@ -89,16 +89,20 @@ ProductService productService;
     public SupplyResponse create(SupplyRequest supplyRequest) {
         Supply supply = supplyMapper.requestToEntity(supplyRequest);
 
+        // Инициируем пустой список supplyItems
         List<SupplyItem> supplyItems = new ArrayList<>();
 
-        for (SupplyItemRequest itemRequest : supplyRequest.getSupplyItems()) {
-            SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
-//            supplyItem.setSupply(supply);
+        // Проверяем, что supplyRequest.getSupplyItems() не null
+        if (supplyRequest.getSupplyItems() != null) {
+            for (SupplyItemRequest itemRequest : supplyRequest.getSupplyItems()) {
+                SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
+                // supplyItem.setSupply(supply);
 
-            supplyItems.add(supplyItem);
+                supplyItems.add(supplyItem);
 
-            // Обновляю количество товара на складе
-//            storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+                // Обновляем количество товара на складе
+                 storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+            }
         }
 
         supply.setSupplyItems(supplyItems);

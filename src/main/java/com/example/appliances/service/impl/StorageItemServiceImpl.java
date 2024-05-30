@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,20 +66,20 @@ public class StorageItemServiceImpl implements StorageItemService {
         return storageItemMapper.entityToResponse(sale);
     }
 
-//    @Override
-//    @Transactional
-//    public void updateStock(Long productId, Long storageId, int quantity) {
-//        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
-//                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
-//
-//        int newQuantity = storageItem.getQuantity() + quantity;
-//        if (newQuantity < 0) {
-//            throw new IllegalArgumentException("Недостаточно товара на складе");
-//        }
-//
-//        storageItem.setQuantity(newQuantity);
-//        storageItemRepository.save(storageItem);
-//    }
+    @Override
+    @Transactional
+    public void updateStock(UUID productId, Long storageId, int quantity) {
+        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
+                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+
+        int newQuantity = storageItem.getQuantity() + quantity;
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
 //
 //    @Override
 //    @Transactional
