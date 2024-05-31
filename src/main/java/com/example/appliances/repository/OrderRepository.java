@@ -35,4 +35,12 @@ public interface OrderRepository extends JpaRepository<Order,Long> , JpaSpecific
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 2")
     Long countUnsuccessfulOrders();
+
+
+    @Query("SELECT m.name, m.surname, SUM(o.totalAmount) as totalRevenue " +
+            "FROM Order o " +
+            "JOIN o.manager m " +
+            "GROUP BY m.name, m.surname " +
+            "ORDER BY totalRevenue DESC")
+    List<Object[]> findTopSellingManagers();
 }
