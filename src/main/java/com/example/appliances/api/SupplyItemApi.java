@@ -30,27 +30,27 @@ public class SupplyItemApi {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyItemResponse> createProvider(@RequestBody SupplyItemRequest supplyRequest) {
         SupplyItemResponse createdSaleItem = supplyService.create(supplyRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyItemResponse> getProviderById(@PathVariable Long id) {
         SupplyItemResponse saleItem = supplyService.findById(id);
         return new ResponseEntity<>(saleItem, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyItemResponse> updateProvider(@RequestBody SupplyItemRequest supplyRequest, @PathVariable Long id) {
         SupplyItemResponse updatedSaleItem = supplyService.update(supplyRequest, id);
         return new ResponseEntity<>(updatedSaleItem, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     @GetMapping("/page")
     public Page<SupplyItemResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                         @RequestParam(required = false, defaultValue = "25") int size,
@@ -60,7 +60,7 @@ public class SupplyItemApi {
     }
 
     @GetMapping("/list/supply_items")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<List<SupplyItemResponse>> getAll() {
         List<SupplyItemResponse> saleItems = supplyService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
@@ -69,7 +69,7 @@ public class SupplyItemApi {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProvider(@PathVariable Long id) {
         supplyService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

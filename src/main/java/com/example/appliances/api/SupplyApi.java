@@ -29,27 +29,27 @@ public class SupplyApi {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyResponse> createProvider(@RequestBody SupplyRequest supplyRequest) {
         SupplyResponse createdSaleItem = supplyService.create(supplyRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyResponse> getProviderById(@PathVariable Long id) {
         SupplyResponse saleItem = supplyService.findById(id);
         return new ResponseEntity<>(saleItem, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyResponse> updateProvider(@RequestBody SupplyRequest supplyRequest, @PathVariable Long id) {
         SupplyResponse updatedSaleItem = supplyService.update(supplyRequest, id);
         return new ResponseEntity<>(updatedSaleItem, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     @GetMapping("/list")
     public Page<SupplyResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                         @RequestParam(required = false, defaultValue = "25") int size,
@@ -59,14 +59,14 @@ public class SupplyApi {
     }
 
     @GetMapping("/supply_items")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<List<SupplyItemResponse>> getAllProviders() {
         List<SupplyItemResponse> saleItems = supplyService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
 
     @GetMapping("/alls")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<List<SupplyResponse>>getAllSupplies() {
         List<SupplyResponse> saleItems = supplyService.findAlls();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
@@ -74,7 +74,7 @@ public class SupplyApi {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProvider(@PathVariable Long id) {
         supplyService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -84,14 +84,14 @@ public class SupplyApi {
 
 
     @GetMapping("/wishlist")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<List<WishListResponse>> getAllWishListItems() {
         List<WishListResponse> wishListItems = supplyService.getAllWishListItems();
         return new ResponseEntity<>(wishListItems, HttpStatus.OK);
     }
 
     @GetMapping("/wishlist/paged")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<Page<WishListResponse>> getAllWishListItemsPaged(@RequestParam(required = false, defaultValue = "0") int page,
                                                                            @RequestParam(required = false, defaultValue = "25") int size,
                                                                            @RequestParam(required = false) Optional<Boolean> sortOrder,

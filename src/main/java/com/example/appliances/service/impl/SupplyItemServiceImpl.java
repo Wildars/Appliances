@@ -39,21 +39,22 @@ public class SupplyItemServiceImpl implements SupplyItemService {
     @Override
     @Transactional
     public SupplyItemResponse create(SupplyItemRequest supplyItemRequest) {
-        SupplyItem saleItem = supplyItemMapperu.requestToEntity(supplyItemRequest);
-
-        for (SupplyItemRequest itemRequest : supplyItemRequest.getSupplyItems()) {
-            SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
-            // supplyItem.setSupply(supply);
-
-            supplyItems.add(supplyItem);
-
-            // Обновляем количество товара на складе
-            storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
-        }
-        SupplyItem savedSaleItem = supplyItemRepository.save(saleItem);
-
-
-        return supplyItemMapperu.entityToResponse(savedSaleItem);
+//        SupplyItem saleItem = supplyItemMapperu.requestToEntity(supplyItemRequest);
+//
+//        for (SupplyItemRequest itemRequest : supplyItemRequest.getSupplyItems()) {
+//            SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
+//            // supplyItem.setSupply(supply);
+//
+//            supplyItems.add(supplyItem);
+//
+//            // Обновляем количество товара на складе
+//            storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+//        }
+//        SupplyItem savedSaleItem = supplyItemRepository.save(saleItem);
+//
+//
+//        return supplyItemMapperu.entityToResponse(savedSaleItem);
+        return null;
     }
     @Override
     @Transactional

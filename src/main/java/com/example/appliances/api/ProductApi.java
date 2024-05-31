@@ -38,14 +38,14 @@ public class ProductApi {
     }
 
     @GetMapping("/list")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")
     public Page<ProductResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                                 @RequestParam(required = false, defaultValue = "25") int size,
                                                                 @RequestParam(required = false) Optional<Boolean> sortOrder,
                                                                 @RequestParam(required = false) String sortBy) {
         return productService.getAllProduct(page, size, sortOrder, sortBy);
     }
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
 //    @ApiOperation(value = "Создание", notes = "Создание нового продукта")
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> save(@RequestPart(required = false) List<MultipartFile> files, @Valid ProductRequest model) {
@@ -59,20 +59,20 @@ public class ProductApi {
 
 
     @PostMapping("/upload")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public Long uploadPhoto(@RequestBody ImageRequest imageRequest){
         return imageService.uploadPhoto(imageRequest);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable UUID id) {
         ProductResponse product = productService.getProductById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<ProductResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable UUID id) {
         ProductResponse updatedProduct = productService.update(productRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
@@ -83,14 +83,14 @@ public class ProductApi {
         return productService.findAllProduct();
     }
     @GetMapping("findAll")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
