@@ -55,4 +55,9 @@ public class Order extends Audit<String> {
     @JoinColumn(name = "client_id")
     Client client;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    Manager manager;
+
+
 }

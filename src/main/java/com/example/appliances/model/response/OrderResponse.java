@@ -29,4 +29,6 @@ public class OrderResponse {
 
     Date creationDate;
 
+    ManagerResponse manager;
+
 }

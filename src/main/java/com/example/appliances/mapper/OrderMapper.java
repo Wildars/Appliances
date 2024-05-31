@@ -5,6 +5,7 @@ import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.model.response.SimpleOrderResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
@@ -14,7 +15,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         uses = {
                 DefaultMapper.class,
                 OrderItemMapper.class,
-                UserMapper.class
+                UserMapper.class,
+                ManagerMapper.class
         }
 )
 public interface OrderMapper {
@@ -22,6 +24,7 @@ public interface OrderMapper {
 
     SimpleOrderResponse entityToResponseSimple(Order entity);
 
+    @Mapping(target = "manager", source = "managerId", qualifiedByName = "setManager")
     Order requestToEntity(OrderRequest request);
 
     void update(@MappingTarget Order entity, OrderRequest request);

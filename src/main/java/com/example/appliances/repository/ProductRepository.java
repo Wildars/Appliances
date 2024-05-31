@@ -15,4 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT COUNT(p) FROM Product p")
     Long countAllProducts();
 
+
+
 }

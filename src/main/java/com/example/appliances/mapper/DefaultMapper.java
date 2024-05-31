@@ -22,6 +22,16 @@ public interface DefaultMapper {
         else
             return Brand.builder().id(id).build();
     }
+
+    @Named("setManager")
+    default Manager setManager(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Manager.builder().id(id).build();
+    }
+
+
     @Named("setField")
     default Field setField(Long id) {
         if (id == null)

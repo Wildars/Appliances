@@ -1,0 +1,6 @@
+ALTER TABLE orders
+    ADD COLUMN IF NOT EXISTS manager_id BIGINT;
+
+
+ALTER TABLE orders
+    ADD CONSTRAINT FK_ORDERS_ON_MANAGER FOREIGN KEY (manager_id) REFERENCES manager (id);

@@ -30,4 +30,6 @@ public class OrderRequest {
 
     Double totalAmount;
 
+    Long managerId;
+
 }
