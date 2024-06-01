@@ -1,7 +1,9 @@
-package com.example.appliances.model.response;
+package com.example.appliances.model.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -9,9 +11,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StorageItemResponse {
-     Long id;
-     ProductResponse product;
+public class FilialItemRequest {
+     UUID productId;
+     Long filialId;
      int quantity;
-
 }
