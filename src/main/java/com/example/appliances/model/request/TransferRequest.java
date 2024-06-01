@@ -4,16 +4,16 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.UUID;
-
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItemRequest {
-    Long id;
-    private Long orderId;
+public class TransferRequest {
     private UUID productId;
-    private Integer quantity;
+    private Long storageId;
+    private Long filialId;
+    private int quantity;
+
 }

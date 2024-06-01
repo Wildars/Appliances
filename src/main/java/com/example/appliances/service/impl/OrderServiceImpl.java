@@ -23,6 +23,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
 
     ClientService clientService;
 
+    FilialItemService filialItemService;
     SaleStatusRepository saleStatusRepository;
     UserRepository userRepository;
 
@@ -60,21 +63,24 @@ public class OrderServiceImpl implements OrderService {
 
     SaleStatusRepository systemStatusRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, ClientService clientService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, ClientService clientService, FilialItemService filialItemService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.productService = productService;
         this.userService = userService;
         this.clientService = clientService;
+        this.filialItemService = filialItemService;
         this.saleStatusRepository = saleStatusRepository;
         this.userRepository = userRepository;
         this.storageService = storageService;
         this.systemStatusRepository = systemStatusRepository;
     }
 
+
     @Override
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
+        // Создаем объект Order из OrderRequest с использованием маппера
         Order order = orderMapper.requestToEntity(orderRequest);
 
         // Устанавливаем текущего пользователя
@@ -82,40 +88,38 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(currentUser);
 
         // Устанавливаем начальный статус заказа
-        SaleStatus status = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId()).orElseThrow(() -> new RuntimeException("SaleStatus not found"));
+        SaleStatus status = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId())
+                .orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         order.setStatus(status);
-
-        // Перебираем элементы заказа из OrderRequest и устанавливаем им ссылку на заказ
-        for (OrderItem item : order.getOrderItems()) {
-            item.setOrder(order);
-        }
-
-        // Получаем информацию о товаре из склада и проверяем наличие
-        List<UUID> productIds = orderRequest.getOrderItems().stream()
-                .map(OrderItemRequest::getProductId)
-                .collect(Collectors.toList());
-        List<Product> products = storageService.getProductsById(productIds);
-
-        for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
-            storageService.checkProductAvailability(itemRequest.getProductId(), itemRequest.getQuantity());
-            // Обновляем количество товара на складе (уменьшаем)
-//            storageService.updateStockByProductId(itemRequest.getProductId(), itemRequest.getQuantity());
-        }
 
         // Получаем информацию о клиенте и его скидке
         Client client = clientService.findById(orderRequest.getClientId());
         order.setClient(client);
 
-        // Вычисляем общую сумму заказа
-        BigDecimal totalAmount = orderRequest.getOrderItems().stream()
-                .map(item -> {
-                    Product product = products.stream()
-                            .filter(p -> p.getId().equals(item.getProductId()))
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("Product not found"));
-                    return product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-                })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Вычисляем общую сумму заказа и проверяем доступность товара
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
+            // Проверяем наличие товара и обновляем количество на складе
+            filialItemService.checkProductAvailability(itemRequest.getId(), itemRequest.getQuantity());
+            filialItemService.updateStockByProductId(itemRequest.getId(), itemRequest.getQuantity());
+
+            // Получаем FilialItem и продукт
+            FilialItem filialItem = filialItemService.getFilialItemById(itemRequest.getId());
+            Product product = filialItem.getProduct();
+
+            // Вычисляем сумму для текущего элемента заказа
+            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+            totalAmount = totalAmount.add(itemTotal);
+
+            // Создаем OrderItem и добавляем его в заказ
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemRequest.getQuantity());
+            order.getOrderItems().add(orderItem);
+        }
+
+        // Устанавливаем общую сумму заказа
         order.setTotalAmount(totalAmount.doubleValue());
 
         // Вычисляем итоговую стоимость с учетом скидки
@@ -126,14 +130,15 @@ public class OrderServiceImpl implements OrderService {
         String newScreen = generateNextNakladnoy();
         order.setNumberNakladnoy(newScreen);
 
+        // Сохраняем заказ
         Order savedOrder = orderRepository.save(order);
 
         // Отправка SMS клиенту, если нужно
-//    String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
-//            client.getName(), order.getTotalAmount());
-//    twilioService.sendSms(client.getPhoneNumber(), messageBody);
+        // String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
+        //         client.getName(), order.getTotalAmount());
+        // twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
-        // Используем маппер для преобразования сущности Order в OrderResponse
+        // Преобразуем сущность Order в OrderResponse с помощью маппера и возвращаем ответ
         return orderMapper.entityToResponse(savedOrder);
     }
 

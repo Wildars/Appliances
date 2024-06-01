@@ -13,9 +13,12 @@ public interface FilialItemRepository extends JpaRepository<FilialItem,Long> {
 
     Optional<FilialItem> findByFilialIdAndProductId(Long filialId, UUID productId);
 
+    Optional<FilialItem> findById(Long id);
+
     FilialItem findByProductId(UUID productId);
 
     Optional<FilialItem> findByProductIdAndFilialId(UUID productId, Long filialId);
 
 
+//    Optional<FilialItem> findByProductIdAndStorageId(UUID productId, Long storageId);
 }

@@ -23,7 +23,7 @@ public interface StorageService {
 
     public int getAvailableQuantity(UUID productId);
 
-//    public void updateStockByProductId(UUID productId, int quantity);
+    public void updateStockByProductId(UUID productId, int quantity);
     public void returnStockByProductId(UUID productId, int quantity);
     StorageResponse update(StorageRequest storageRequest, Long id);
 

@@ -156,24 +156,24 @@ public class StorageServiceImpl implements StorageService {
         storageItemRepository.save(storageItem);
     }
 
-//    @Override
-//    @Transactional
-//    public void updateStockByProductId(UUID productId, int quantity) {
-//        // Получаем информацию о товаре на складе по productId
-//        StorageItem storageItem = storageItemRepository.findByProductId(productId);
-//
-//        if (storageItem == null) {
-//            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
-//        }
-//
-//        int newQuantity = storageItem.getQuantity() - quantity;
-//        if (newQuantity < 0) {
-//            throw new IllegalArgumentException("Недостаточно товара на складе");
-//        }
-//
-//        storageItem.setQuantity(newQuantity);
-//        storageItemRepository.save(storageItem);
-//    }
+    @Override
+    @Transactional
+    public void updateStockByProductId(UUID productId, int quantity) {
+        // Получаем информацию о товаре на складе по productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+        }
+
+        int newQuantity = storageItem.getQuantity() - quantity;
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
     @Override
     @Transactional
     public void updateStock(UUID productId, Long storageId, int quantity) {

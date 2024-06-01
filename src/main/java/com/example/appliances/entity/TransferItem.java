@@ -12,15 +12,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"filial_id", "product_id"}))
-public class FilialItem {
+public class TransferItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "filial_id")
-    private Filial filial;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -28,5 +23,7 @@ public class FilialItem {
 
     private int quantity;
 
-
+    @ManyToOne
+    @JoinColumn(name = "transfer_id")
+    private Transfer transfer;
 }

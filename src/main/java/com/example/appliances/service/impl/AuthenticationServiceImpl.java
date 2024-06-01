@@ -7,6 +7,7 @@ import com.example.appliances.exception.CustomException;
 import com.example.appliances.filter.JwtUtil;
 import com.example.appliances.model.request.AuthenticationModel;
 import com.example.appliances.model.request.AuthenticationRequestModel;
+import com.example.appliances.model.response.FilialResponse;
 import com.example.appliances.repository.FilialRepository;
 import com.example.appliances.repository.UserRepository;
 import com.example.appliances.service.AuthenticationService;
@@ -74,7 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         for (Filial org : user.getFilials()) {
             if (org.getFilCode().equals(authRequest.getFilCode())) {
                 found = true;
-                organization = org; // Присваиваем найденное значение переменной organization
+                organization = org;
                 break;
             }
         }
@@ -93,6 +94,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Используем переменную jwt один раз
         String jwt = jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode());
 
+        FilialResponse organizationResponse = mapToFilialResponse(organization);
+
         return AuthenticationModel.builder()
                 .id(user.getId())
                 .pin(user.getPin())
@@ -102,11 +105,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .jwtToken(jwt)
-                .organizations(organization)
+                .organizations(organizationResponse)
                 .roles(user.getRoles())
                 .permissions(authorities.stream().collect(Collectors.toList()))
                 .build();
     }
 
+    public FilialResponse mapToFilialResponse(Filial filial) {
+        FilialResponse filialResponse = new FilialResponse();
+        filialResponse.setId(filial.getId());
+        filialResponse.setName(filial.getName());
+        filialResponse.setFilCode(filial.getFilCode());
+        return filialResponse;
+    }
 
 }

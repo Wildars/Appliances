@@ -2,6 +2,7 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.StorageItem;
+import com.example.appliances.exception.ProductNotAvailableException;
 import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.StorageItemMapper;
@@ -80,23 +81,49 @@ public class StorageItemServiceImpl implements StorageItemService {
         storageItem.setQuantity(newQuantity);
         storageItemRepository.save(storageItem);
     }
-//
-//    @Override
-//    @Transactional
-//    public void updateStockByProductId(Long productId, int quantity) {
-//        // Получаем информацию о товаре на складе по productId (если нужно)
-//        StorageItem storageItem = storageItemRepository.findByProductId(productId);
-//
-//        if (storageItem == null) {
-//            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
-//        }
-//
-//        int newQuantity = storageItem.getQuantity() + quantity;
-//        if (newQuantity < 0) {
-//            throw new IllegalArgumentException("Недостаточно товара на складе");
-//        }
-//
-//        storageItem.setQuantity(newQuantity);
-//        storageItemRepository.save(storageItem);
-//    }
+
+
+    @Override
+    @Transactional
+    public void checkProductAvailability(UUID productId, int requestedQuantity) {
+        // Найдем запись StorageItem для заданного productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        // Проверим, найден ли StorageItem
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Продукт с ID " + productId + " не найден на складе");
+        }
+
+        // Проверим доступное количество
+        if (storageItem.getQuantity() < requestedQuantity) {
+            throw new ProductNotAvailableException("Недостаточно товара на складе. Доступное количество: " + storageItem.getQuantity());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateStockByProductId(UUID productId, int quantity) {
+        // Получаем информацию о товаре на складе по productId
+        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+
+        if (storageItem == null) {
+            throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
+        }
+
+        int newQuantity = storageItem.getQuantity() - quantity;
+        if (newQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+
+        storageItem.setQuantity(newQuantity);
+        storageItemRepository.save(storageItem);
+    }
+
+    // Реализация метода findByProductIdAndFilialId
+    @Override
+    @Transactional
+    public StorageItem findByProductIdAndStorageId(UUID productId, Long storageId) {
+        return storageItemRepository.findByProductIdAndStorageId(productId, storageId)
+                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+    }
 }

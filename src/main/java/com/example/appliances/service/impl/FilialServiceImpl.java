@@ -73,6 +73,7 @@ public class FilialServiceImpl implements FilialService {
     }
 
     @Override
+    @Transactional
     public FilialResponse saveOrganization(FilialRequest organizationModel) {
         Filial organization = filialMapper.requestToEntity(organizationModel);
         String newFilCode = generateNextFilCode();
@@ -105,7 +106,7 @@ public class FilialServiceImpl implements FilialService {
 
         return minFilialCode;
     }
-
+    @Transactional
     public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy) {
         Pageable paging = null;
 
@@ -121,6 +122,7 @@ public class FilialServiceImpl implements FilialService {
     }
 
     @Override
+    @Transactional
     public FilialResponse getOrganizationById(Long id) {
         Filial organizations = this.organizationsRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));
@@ -128,6 +130,7 @@ public class FilialServiceImpl implements FilialService {
     }
 
     @Override
+    @Transactional
     public void deleteOrganizationById(Long id) {
         Filial organizations = this.organizationsRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));
@@ -135,6 +138,7 @@ public class FilialServiceImpl implements FilialService {
     }
 
     @Override
+    @Transactional
     public FilialResponse updateOrganization(FilialRequest organizationModel, Long id) {
         Filial organization = this.organizationsRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Организация с таким id не существует!"));

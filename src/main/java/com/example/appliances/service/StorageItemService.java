@@ -1,5 +1,6 @@
 package com.example.appliances.service;
 
+import com.example.appliances.entity.StorageItem;
 import com.example.appliances.model.request.StorageItemRequest;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.model.response.StorageItemResponse;
@@ -21,5 +22,9 @@ public interface StorageItemService {
 
     void updateStock(UUID productId, Long storageId, int quantity);
 
-//    public void updateStockByProductId(UUID productId, int quantity);
+    public void checkProductAvailability(UUID productId, int requestedQuantity);
+
+    public void updateStockByProductId(UUID productId, int quantity);
+
+    public StorageItem findByProductIdAndStorageId(UUID productId, Long storageId);
 }

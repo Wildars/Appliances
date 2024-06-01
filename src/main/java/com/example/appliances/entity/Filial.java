@@ -2,9 +2,13 @@ package com.example.appliances.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,7 +27,8 @@ public class Filial extends Audit<String> implements Serializable {
 
 //    String address;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "storage_id", referencedColumnName = "id")
-    Storage storage;
+    @OneToMany(mappedBy = "filial", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FilialItem> filialItems = new ArrayList<>();
+
+
 }
