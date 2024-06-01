@@ -1,7 +1,13 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.*;
+import com.example.appliances.exception.RecordNotFoundException;
+import com.example.appliances.mapper.TransferItemMapper;
+import com.example.appliances.mapper.TransferMapper;
 import com.example.appliances.model.request.TransferRequest;
+import com.example.appliances.model.response.ProductFieldResponse;
+import com.example.appliances.model.response.TransferItemResponse;
+import com.example.appliances.model.response.TransferResponse;
 import com.example.appliances.repository.*;
 import com.example.appliances.service.FilialItemService;
 import com.example.appliances.service.StorageItemService;
@@ -13,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransferServiceImpl implements TransferService {
@@ -24,11 +31,13 @@ public class TransferServiceImpl implements TransferService {
     private final ProductRepository productRepository;
     private final FilialRepository filialRepository;
     private final StorageRepository storageRepository;
+    private final TransferItemMapper transferItemMapper;
+    private final TransferMapper transferMapper;
 
     public TransferServiceImpl(StorageItemService storageItemService, FilialItemService filialItemService,
                                TransferRepository transferRepository, TransferItemRepository transferItemRepository,
                                ProductRepository productRepository, FilialRepository filialRepository,
-                               StorageRepository storageRepository) {
+                               StorageRepository storageRepository, TransferItemMapper transferItemMapper, TransferMapper transferMapper) {
         this.storageItemService = storageItemService;
         this.filialItemService = filialItemService;
         this.transferRepository = transferRepository;
@@ -36,6 +45,8 @@ public class TransferServiceImpl implements TransferService {
         this.productRepository = productRepository;
         this.filialRepository = filialRepository;
         this.storageRepository = storageRepository;
+        this.transferItemMapper = transferItemMapper;
+        this.transferMapper = transferMapper;
     }
 
     @Override
@@ -89,5 +100,38 @@ public class TransferServiceImpl implements TransferService {
             }
             filialItemService.create(filialItem);
         }
+    }
+
+
+
+
+    @Override
+    @Transactional
+    public List<TransferResponse> findAllTransfers() {
+        List<Transfer> productFields = transferRepository.findAll();
+        return productFields.stream().map(transferMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public TransferResponse findByIdransfers(Long id) {
+        Transfer productField = transferRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Product field not found with id: " + id));
+        return transferMapper.entityToResponse(productField);
+    }
+
+    @Override
+    @Transactional
+    public List<TransferItemResponse> findAllransfersItem() {
+        List<TransferItem> productFields = transferItemRepository.findAll();
+        return productFields.stream().map(transferItemMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public TransferItemResponse findByIdransfersItem(Long id) {
+        TransferItem productField = transferItemRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Product field not found with id: " + id));
+        return transferItemMapper.entityToResponse(productField);
     }
 }
