@@ -1,5 +1,8 @@
 package com.example.appliances.bot;
 
+import com.example.appliances.model.response.WishListResponse;
+import com.example.appliances.service.SupplierService;
+import com.example.appliances.service.WishListService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,13 +13,32 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Component
 public class YourTelegramBot extends TelegramLongPollingBot {
 
-    final BotConfig botConfig;
+    private final BotConfig botConfig;
+    private final SupplierService supplierService;
+    private final WishListService wishListService;
 
-    public YourTelegramBot(BotConfig botConfig) {
+    private final Map<Long, String> userStates = new HashMap<>();
+    private final Map<Long, String> userLogins = new HashMap<>();
+
+    @Autowired
+    public YourTelegramBot(BotConfig botConfig, SupplierService supplierService, WishListService wishListService) {
         this.botConfig = botConfig;
+        this.supplierService = supplierService;
+        this.wishListService = wishListService;
     }
 
     @Override
@@ -33,119 +55,67 @@ public class YourTelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
-            Long chatId = update.getMessage().getChatId();
+            long chatId = update.getMessage().getChatId();
+
             if (messageText.equals("/start")) {
-                sendStartMenu(chatId);
-            } else {
-                // Обработка нажатий на кнопки
-                String buttonText = messageText.toLowerCase(); // приводим текст к нижнему регистру для удобства сравнения
-                switch (buttonText) {
-                    case "о нас":
-                        sendAboutUs(chatId);
-                        break;
-                    case "наши товары/услуги":
-                        sendProductsServices(chatId);
-                        break;
-                    case "контакты":
-                        sendContacts(chatId);
-                        break;
-                    case "адреса филиалов":
-                        sendBranchAddresses(chatId);
-                        break;
-                    case "акции и специальные предложения":
-                        sendMessageFeedback(chatId);
-                        break;
-                    case "поддержка/обратная связь":
-                        sendSupport(chatId);
-                        break;
-                    case "партнерство/сотрудничество":
-                        sendPartnershipInfo(chatId);
-                        break;
-//                    case "отправить сообщение на почту":
-//                        sendEmailPrompt(chatId);
-//                        break;
-                    default:
-                        // Возможно, здесь стоит добавить обработку неизвестной команды или текста
-                        break;
+                sendMessage(chatId, "Welcome! Please login using /login <username> <password>");
+            } else if (messageText.startsWith("/login")) {
+                handleLogin(chatId, messageText);
+            } else if (userStates.containsKey(chatId) && userStates.get(chatId).equals("AUTHORIZED")) {
+                if (messageText.equals("/wishlist")) {
+                    handleWishList(chatId);
+                } else {
+                    sendMessage(chatId, "Unknown command. Use /wishlist to view the wish list.");
                 }
+            } else {
+                sendMessage(chatId, "Please login using /login <username> <password>");
             }
         }
     }
-    private void sendAboutUs(Long chatId) {
-        String infoAboutUs  = "Информация о нас";
 
-        sendMessage(chatId, infoAboutUs);
-    }
-
-    private void sendProductsServices(Long chatId) {
-        String websiteLink = "Вот ссылка на наш сайт: glavsnab.kg ";
-        sendMessage(chatId, websiteLink);
-    }
-
-    private void sendContacts(Long chatId) {
-        String contactInfo = "Для связи с нашими специалистами, позвоните по номеру: +99655555555";
-        sendMessage(chatId, contactInfo);
-    }
-
-    private void sendBranchAddresses(Long chatId) {
-        String branchAddress = "Адрес нашего филиала: [Адрес_филиала]";
-        sendMessage(chatId, branchAddress);
-    }
-
-//    private void sendPromotions(Long chatId) {
-//        String promotionsInfo = "У нас действуют следующие акции и специальные предложения: [Информация_о_акциях]";
-//        sendMessage(chatId, promotionsInfo);
-//    }
-
-    private void sendSupport(Long chatId) {
-        // Форма обратной связи
-        sendMessage(chatId, "Пожалуйста, введите ваше сообщение для поддержки:");
-    }
-
-    private void sendPartnershipInfo(Long chatId) {
-        // Информация о возможностях партнерства или сотрудничества
-    }
-
-    private void sendMessageFeedback(Long chatId) {
-        String feedbackForm = "Для отправки обратной связи, пожалуйста, заполните форму по ссылке: [Ссылка_на_форму_обратной_связи]";
-        sendMessage(chatId, feedbackForm);
-    }
-
-    private void sendMessage(Long chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId.toString());
-        message.setText(text);
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+    private void handleLogin(long chatId, String messageText) {
+        String[] parts = messageText.split(" ");
+        if (parts.length == 3) {
+            String pin = parts[1];
+            String password = parts[2];
+            // Assuming SupplierService has a method for validating login
+            if (supplierService.validateLogin(pin, password)) {
+                userStates.put(chatId, "AUTHORIZED");
+                userLogins.put(chatId, pin);
+                sendMessage(chatId, "Login successful!");
+            } else {
+                sendMessage(chatId, "Invalid username or password. Please try again.");
+            }
+        } else {
+            sendMessage(chatId, "Invalid login command. Use /login <username> <password>");
         }
     }
-    private void sendStartMenu(Long chatId) {
-        ReplyKeyboardMarkup replyMarkup = new ReplyKeyboardMarkup();
-        replyMarkup.setResizeKeyboard(true);
 
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add("О нас");
-        row1.add("Наши товары/услуги");
-        row1.add("Контакты");
+    private void handleWishList(long chatId) {
+        List<WishListResponse> wishLists = wishListService.findAll().stream()
+                .filter(wishList -> !wishList.getIsServed())
+                .collect(Collectors.toList());
 
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add("Адреса филиалов");
-//        row2.add("Акции и специальные предложения");
-        row2.add("Поддержка/Обратная связь");
+        if (wishLists.isEmpty()) {
+            sendMessage(chatId, "No pending wish lists.");
+        } else {
+            wishLists.forEach(wishList -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append("WishList ID: ").append(wishList.getId()).append("\n");
+                sb.append("Storage: ").append(wishList.getStorageId()).append("\n");
+                sb.append("Items:\n");
+                wishList.getWishListItems().forEach(item -> {
+                    sb.append(" - ").append(item.getProduct().getName()).append(": ").append(item.getQuantity()).append("\n");
+                });
+                sendMessage(chatId, sb.toString());
+            });
+        }
+    }
 
-        KeyboardRow row3 = new KeyboardRow();
-        row3.add("Партнерство/Сотрудничество");
-        row3.add("Отправить сообщение на почту");
-
-        List<KeyboardRow> keyboard = Arrays.asList(row1, row2, row3);
-        replyMarkup.setKeyboard(keyboard);
+    private void sendMessage(long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
-        message.setText("Выберите действие:");
-        message.setReplyMarkup(replyMarkup);
-
+        message.setText(text);
         try {
             execute(message);
         } catch (TelegramApiException e) {

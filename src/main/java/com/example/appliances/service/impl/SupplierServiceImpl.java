@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     SupplyItemRepository supplyItemRepository;
 
+    PasswordEncoder passwordEncoder;
     SupplierMapper supplierMapper;
     SupplierRepository supplierRepository;
     SupplyMapper supplyMapper;
@@ -56,10 +58,11 @@ public class SupplierServiceImpl implements SupplierService {
     WishListRepository wishListRepository;
 
 
-    public SupplierServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, SupplyItemRepository supplyItemRepository, SupplyMapper supplyMapper, WishListMapper wishListMapper, WishListRepository wishListRepository, ProductService productService, StorageService storageService, SupplierMapper supplierMapper, SupplierRepository supplierRepository) {
+    public SupplierServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, SupplyItemRepository supplyItemRepository, PasswordEncoder passwordEncoder, SupplyMapper supplyMapper, WishListMapper wishListMapper, WishListRepository wishListRepository, ProductService productService, StorageService storageService, SupplierMapper supplierMapper, SupplierRepository supplierRepository) {
         this.supplyRepository = supplyRepository;
         this.supplyItemMapper = supplyItemMapper;
         this.supplyItemRepository = supplyItemRepository;
+        this.passwordEncoder = passwordEncoder;
         this.supplyMapper = supplyMapper;
         this.wishListMapper = wishListMapper;
         this.wishListRepository = wishListRepository;
@@ -70,12 +73,12 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional
     public Page<SupplierResponse> getAllSuppliers(int page,
-                                               int size,
-                                               Optional<Boolean> sortOrder,
-                                               String sortBy) {
+                                                  int size,
+                                                  Optional<Boolean> sortOrder,
+                                                  String sortBy) {
         Pageable paging = null;
 
-        if (sortOrder.isPresent()){
+        if (sortOrder.isPresent()) {
             Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
             paging = PageRequest.of(page, size, direction, sortBy);
         } else {
@@ -85,6 +88,7 @@ public class SupplierServiceImpl implements SupplierService {
 
         return saleItemsPage.map(supplierMapper::entityToResponse);
     }
+
     @Override
     @Transactional
     public SupplierResponse create(SupplierRequest request) {
@@ -95,6 +99,7 @@ public class SupplierServiceImpl implements SupplierService {
 
         return supplierMapper.entityToResponse(savedSupply);
     }
+
     @Override
     @Transactional
     public SupplierResponse findById(Long id) {
@@ -102,6 +107,7 @@ public class SupplierServiceImpl implements SupplierService {
                 .orElseThrow(() -> new RecordNotFoundException("Поставщика с таким id не существует!"));
         return supplierMapper.entityToResponse(saleItem);
     }
+
     @Override
     @Transactional
     public SupplierResponse update(SupplierRequest request, Long id) {
@@ -111,22 +117,19 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier updatedSaleItem = supplierRepository.save(saleItem);
         return supplierMapper.entityToResponse(updatedSaleItem);
     }
+
     @Override
     @Transactional
     public List<SupplierResponse> findAll() {
         List<Supplier> supplies = supplierRepository.findAll();
         return supplies.stream().map(supplierMapper::entityToResponse).collect(Collectors.toList());
     }
+
     @Override
     @Transactional
     public void deleteById(Long id) {
         supplierRepository.deleteById(id);
     }
-
-
-
-
-
 
 
 //    @Override
@@ -159,12 +162,12 @@ public class SupplierServiceImpl implements SupplierService {
 //    }
 
 
-
-
-
-
-
-
-
-
+    @Override
+    public boolean validateLogin(String pin, String password) {
+        Supplier supplier = supplierRepository.findByPin(pin);
+        if (supplier != null && passwordEncoder.matches(password, supplier.getPassword())) {
+            return true;
+        }
+        return false;
+    }
 }

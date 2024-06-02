@@ -3,6 +3,8 @@ package com.example.appliances.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -13,5 +15,5 @@ public class WishListRequest {
 
     Boolean isServed;
     Long storageId;
-
+     List<WishListItemRequest> wishListItems;
 }

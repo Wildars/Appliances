@@ -1,10 +1,15 @@
 package com.example.appliances.service.impl;
 
+import com.example.appliances.entity.Product;
+import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.WishList;
+import com.example.appliances.entity.WishListItem;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.WishListMapper;
 import com.example.appliances.model.request.WishListRequest;
 import com.example.appliances.model.response.WishListResponse;
+import com.example.appliances.repository.ProductRepository;
+import com.example.appliances.repository.StorageRepository;
 import com.example.appliances.repository.WishListRepository;
 import com.example.appliances.service.ProductCategoryService;
 import com.example.appliances.service.WishListService;
@@ -28,10 +33,14 @@ public class WishListServiceImpl implements WishListService {
     WishListRepository wishListRepository;
     WishListMapper wishListMapper;
 
+    StorageRepository storageRepository;
+    ProductRepository productRepository;
     @Autowired
-    public WishListServiceImpl(WishListRepository wishListRepository, WishListMapper wishListMapper) {
+    public WishListServiceImpl(WishListRepository wishListRepository, WishListMapper wishListMapper, StorageRepository storageRepository, ProductRepository productRepository) {
         this.wishListRepository = wishListRepository;
         this.wishListMapper = wishListMapper;
+        this.storageRepository = storageRepository;
+        this.productRepository = productRepository;
     }
     @Override
     public Page<WishListResponse> getAllProductCategory(int page,
@@ -54,9 +63,29 @@ public class WishListServiceImpl implements WishListService {
     @Override
     @Transactional
     public WishListResponse create(WishListRequest wishListRequest) {
-        WishList product = wishListMapper.requestToEntity(wishListRequest);
-        WishList savedProduct = wishListRepository.save(product);
-        return wishListMapper.entityToResponse(savedProduct);
+        WishList wishList = wishListMapper.requestToEntity(wishListRequest);
+
+        // Validate and set storage
+        Storage storage = storageRepository.findById(wishListRequest.getStorageId())
+                .orElseThrow(() -> new RecordNotFoundException("Storage not found"));
+        wishList.setStorage(storage);
+
+        // Map WishListItems
+        List<WishListItem> wishListItems = wishListRequest.getWishListItems().stream()
+                .map(itemRequest -> {
+                    Product product = productRepository.findById(itemRequest.getProductId())
+                            .orElseThrow(() -> new RecordNotFoundException("Product not found"));
+                    return WishListItem.builder()
+                            .product(product)
+                            .wishList(wishList)
+                            .quantity(itemRequest.getQuantity())
+                            .build();
+                })
+                .collect(Collectors.toList());
+        wishList.setWishListItems(wishListItems);
+
+        WishList savedWishList = wishListRepository.save(wishList);
+        return wishListMapper.entityToResponse(savedWishList);
     }
     @Override
     @Transactional

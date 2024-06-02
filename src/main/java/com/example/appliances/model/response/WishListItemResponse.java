@@ -14,6 +14,6 @@ import java.util.UUID;
 public class WishListItemResponse {
     Long id;
     ProductResponse product;
-    WishListResponse wishList;
+//    WishListResponse wishList;
     int quantity;
 }

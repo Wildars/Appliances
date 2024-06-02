@@ -25,5 +25,7 @@ public interface SupplierService {
                                                  Optional<Boolean> sortOrder,
                                                  String sortBy);
 
+
+     public boolean validateLogin(String pin, String password);
      void deleteById(Long id);
 }
