@@ -50,6 +50,12 @@ public class FilialItemServiceImpl implements FilialItemService {
 
     @Override
     @Transactional
+    public FilialItem updateEntity(FilialItem filialItem) {
+        return filialItemRepository.save(filialItem);  // Обновление сущности
+    }
+
+    @Override
+    @Transactional
     public FilialItemResponse update(FilialItemRequest request, Long id) {
         FilialItem storageItem = filialItemRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Элемент склада с таким id не существует"));
@@ -137,7 +143,7 @@ public class FilialItemServiceImpl implements FilialItemService {
     @Transactional
     public FilialItem findByProductIdAndFilialId(UUID productId, Long filialId) {
         return filialItemRepository.findByProductIdAndFilialId(productId, filialId)
-                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+                .orElseThrow(() -> new RecordNotFoundException("Товар не найден в филиале"));
     }
 
     @Override

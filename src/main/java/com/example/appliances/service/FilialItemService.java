@@ -20,6 +20,8 @@ public interface FilialItemService {
 
     public List<FilialItemResponse> findAll();
 
+    public FilialItem updateEntity(FilialItem filialItem);
+
     public void deleteById(Long id);
 
     FilialItemResponse findById(Long id);

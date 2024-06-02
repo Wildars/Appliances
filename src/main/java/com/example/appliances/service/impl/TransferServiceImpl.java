@@ -50,7 +50,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void transferProducts(List<TransferRequest> transferRequests) {
         for (TransferRequest request : transferRequests) {
             UUID productId = request.getProductId();
@@ -87,20 +87,23 @@ public class TransferServiceImpl implements TransferService {
             transferItemRepository.save(transferItem);
 
             // Обновление количества товара в филиале
-            FilialItem filialItem = filialItemService.findByProductIdAndFilialId(productId, filialId);
-            if (filialItem != null) {
+            try {
+                FilialItem filialItem = filialItemService.findByProductIdAndFilialId(productId, filialId);
                 // Если товар уже есть в филиале, увеличиваем количество
                 filialItem.setQuantity(filialItem.getQuantity() + quantity);
-            } else {
+                filialItemService.updateEntity(filialItem);
+            } catch (RecordNotFoundException e) {
                 // Если товара нет в филиале, создаем новую запись
-                filialItem = new FilialItem();
+                FilialItem filialItem = new FilialItem();
                 filialItem.setProduct(product);
                 filialItem.setFilial(filial);
                 filialItem.setQuantity(quantity);
+                filialItemService.create(filialItem);
             }
-            filialItemService.create(filialItem);
         }
     }
+
+
 
 
 
