@@ -23,6 +23,22 @@ public interface DefaultMapper {
             return Brand.builder().id(id).build();
     }
 
+    @Named("setWishList")
+    default WishList setWishList(Long id) {
+        if (id == null)
+            return null;
+        else
+            return WishList.builder().id(id).build();
+    }
+
+    @Named("setFilialItem")
+    default FilialItem setFilialItem(Long id) {
+        if (id == null)
+            return null;
+        else
+            return FilialItem.builder().id(id).build();
+    }
+
     @Named("setManager")
     default Manager setManager(Long id) {
         if (id == null)
@@ -169,6 +185,14 @@ public interface DefaultMapper {
             return null;
         else
             return Image.builder().id(id).build();
+    }
+
+    @Named("setRole")
+    default Role setRole(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Role.builder().id(id).build();
     }
 //    @Named("setProduct")
 //    default Product setProduct(Long id) {

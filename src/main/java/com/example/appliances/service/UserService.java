@@ -1,7 +1,9 @@
 package com.example.appliances.service;
 
 import com.example.appliances.entity.User;
+import com.example.appliances.model.request.SupplierRequest;
 import com.example.appliances.model.request.UserRequest;
+import com.example.appliances.model.response.SupplierResponse;
 import com.example.appliances.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 
@@ -29,4 +31,6 @@ public interface UserService {
 
     public User getCurrentUser();
     Boolean check();
+
+    public SupplierResponse saveProvider(SupplierRequest request);
 }

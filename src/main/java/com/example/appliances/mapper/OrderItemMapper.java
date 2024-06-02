@@ -15,7 +15,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         uses = {
                 DefaultMapper.class,
                 OrderMapper.class,
-                ProductMapper.class
+                ProductMapper.class,
+                FilialItemMapper.class
         }
 )
 public interface OrderItemMapper {
@@ -23,7 +24,7 @@ public interface OrderItemMapper {
 
     SimpleOrderItemResponse entityToResponseSimple(OrderItem entity);
 
-    @Mapping(target = "product", source = "productId", qualifiedByName = "setProduct")
+    @Mapping(target = "filialItem", source = "filialItemId", qualifiedByName = "setFilialItem")
     @Mapping(target = "order", source = "orderId", qualifiedByName = "setOrder")
     OrderItem requestToEntity(OrderItemRequest request);
 

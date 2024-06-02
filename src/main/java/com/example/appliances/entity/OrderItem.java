@@ -21,9 +21,11 @@ public class OrderItem {
     @JsonIgnore
      Order order;
 
+
+    //TODO изменить продукт на filialItem
     @ManyToOne
-    @JoinColumn(name = "product_id")
-     Product product;
+    @JoinColumn(name = "filialItem_id")
+     FilialItem filialItem;
 
      Integer quantity;
 }

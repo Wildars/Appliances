@@ -3,17 +3,22 @@ package com.example.appliances.service.impl;
 import com.example.appliances.components.CustomUserDetails;
 import com.example.appliances.entity.Filial;
 import com.example.appliances.entity.Role;
+import com.example.appliances.entity.Supplier;
 import com.example.appliances.entity.User;
 import com.example.appliances.exception.CustomError;
 import com.example.appliances.exception.CustomException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.exception.UnauthorizedException;
 import com.example.appliances.mapper.DefaultMapper;
+import com.example.appliances.mapper.SupplierMapper;
 import com.example.appliances.mapper.UserMapper;
+import com.example.appliances.model.request.SupplierRequest;
 import com.example.appliances.model.request.UserRequest;
+import com.example.appliances.model.response.SupplierResponse;
 import com.example.appliances.model.response.UserResponse;
 import com.example.appliances.repository.FilialRepository;
 import com.example.appliances.repository.RoleRepository;
+import com.example.appliances.repository.SupplierRepository;
 import com.example.appliances.repository.UserRepository;
 import com.example.appliances.service.UserService;
 import lombok.AccessLevel;
@@ -43,16 +48,21 @@ public class UserServiceImpl implements UserService {
 
     DefaultMapper defaultMapper;
 
+    SupplierRepository supplierRepository;
+
+    SupplierMapper supplierMapper;
     FilialRepository filialRepository;
 
     UserMapper userMapper;
     RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, DefaultMapper defaultMapper, FilialRepository filialRepository, UserMapper userMapper, RoleRepository roleRepository) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, DefaultMapper defaultMapper, SupplierRepository supplierRepository, SupplierMapper supplierMapper, FilialRepository filialRepository, UserMapper userMapper, RoleRepository roleRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.defaultMapper = defaultMapper;
+        this.supplierRepository = supplierRepository;
+        this.supplierMapper = supplierMapper;
         this.filialRepository = filialRepository;
         this.userMapper = userMapper;
         this.roleRepository = roleRepository;
@@ -76,6 +86,38 @@ public class UserServiceImpl implements UserService {
         try {
             User savedUser = userRepository.save(user);
             return userMapper.entityToResponse(savedUser);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Не удалось сохранить пользователя в базе данных", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public SupplierResponse saveProvider(SupplierRequest request) {
+        // Преобразуем запрос в сущность Supplier
+        Supplier user = supplierMapper.requestToEntity(request);
+
+        // Активируем пользователя
+        user.setIsActive(true);
+
+        // Присваиваем роль с ID 3
+        Role role = defaultMapper.setRole(3L);  // предполагается, что у вас есть метод setRole, который принимает ID роли
+        user.setRole(role);
+
+        // Проверяем, что пароль не равен null
+        if (user.getPassword() == null) {
+            throw new IllegalArgumentException("Пароль не может быть null");
+        }
+
+        // Кодируем пароль
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        try {
+            // Сохраняем пользователя в базу данных
+            Supplier savedUser = supplierRepository.save(user);
+
+            // Преобразуем сохраненного пользователя в ответ и возвращаем его
+            return supplierMapper.entityToResponse(savedUser);
         } catch (RuntimeException e) {
             throw new RuntimeException("Не удалось сохранить пользователя в базе данных", e);
         }

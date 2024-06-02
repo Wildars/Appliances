@@ -15,17 +15,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class WishList extends Audit<String> implements Serializable {
+public class Supplier extends Audit<String> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    String name;
+    String surname;
+    String patronymic;
+    String phoneNumber;
+    String email;
 
-    Boolean isServed;
+    String password;
+    String pin;
+    Boolean isActive;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    Storage storage;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    @OneToMany(mappedBy = "wishList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WishListItem> wishListItems = new ArrayList<>();
 }

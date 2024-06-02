@@ -21,11 +21,13 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     @Transactional
     public List<ProductStatisticsResponse> getTopSellingProducts() {
-        List<Object[]> results = productRepository.findTopSellingProducts();
-        return results.stream()
-                .map(result -> new ProductStatisticsResponse((String) result[0], (Long) result[1]))
-                .collect(Collectors.toList());
+        return null;
     }
+//        List<Object[]> results = productRepository.findTopSellingProducts();
+//        return results.stream()
+//                .map(result -> new ProductStatisticsResponse((String) result[0], (Long) result[1]))
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     @Transactional

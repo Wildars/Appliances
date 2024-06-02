@@ -38,10 +38,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        // Создаем объект Order из OrderRequest с использованием маппера
+        // Преобразуем запрос в сущность Order
         Order order = orderMapper.requestToEntity(orderRequest);
 
         // Устанавливаем текущего пользователя
@@ -92,34 +90,37 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         order.setStatus(status);
 
+        // Перебираем элементы заказа из OrderRequest и устанавливаем им ссылку на заказ
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setQuantity(itemRequest.getQuantity());
+
+            // Проверяем наличие товара и обновляем количество товара на складе
+            filialItemService.checkProductAvailability(itemRequest.getFilialItemId(), itemRequest.getQuantity());
+            filialItemService.updateStockByProductId(itemRequest.getFilialItemId(), itemRequest.getQuantity());
+
+            // Получаем FilialItem и устанавливаем его в orderItem
+            FilialItem filialItem = filialItemService.getFilialItemById(itemRequest.getFilialItemId());
+            orderItem.setFilialItem(filialItem);
+
+            // Добавляем orderItem в список orderItems
+            orderItems.add(orderItem);
+        }
+        order.setOrderItems(orderItems);
+
         // Получаем информацию о клиенте и его скидке
         Client client = clientService.findById(orderRequest.getClientId());
         order.setClient(client);
 
-        // Вычисляем общую сумму заказа и проверяем доступность товара
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
-            // Проверяем наличие товара и обновляем количество на складе
-            filialItemService.checkProductAvailability(itemRequest.getId(), itemRequest.getQuantity());
-            filialItemService.updateStockByProductId(itemRequest.getId(), itemRequest.getQuantity());
-
-            // Получаем FilialItem и продукт
-            FilialItem filialItem = filialItemService.getFilialItemById(itemRequest.getId());
-            Product product = filialItem.getProduct();
-
-            // Вычисляем сумму для текущего элемента заказа
-            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
-            totalAmount = totalAmount.add(itemTotal);
-
-            // Создаем OrderItem и добавляем его в заказ
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setProduct(product);
-            orderItem.setQuantity(itemRequest.getQuantity());
-            order.getOrderItems().add(orderItem);
-        }
-
-        // Устанавливаем общую сумму заказа
+        // Вычисляем общую сумму заказа
+        BigDecimal totalAmount = orderItems.stream()
+                .map(item -> {
+                    Product product = item.getFilialItem().getProduct();
+                    return product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(totalAmount.doubleValue());
 
         // Вычисляем итоговую стоимость с учетом скидки
@@ -130,6 +131,14 @@ public class OrderServiceImpl implements OrderService {
         String newScreen = generateNextNakladnoy();
         order.setNumberNakladnoy(newScreen);
 
+        // Устанавливаем дополнительные поля заказа
+        order.setDateDelivery(orderRequest.getDateDelivery());
+        order.setAddress(orderRequest.getAddress());
+        order.setPhoneNumber(orderRequest.getPhoneNumber());
+        order.setName(orderRequest.getName());
+        order.setComment(orderRequest.getComment());
+        order.setSchedule(orderRequest.getSchedule());
+
         // Сохраняем заказ
         Order savedOrder = orderRepository.save(order);
 
@@ -138,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
         //         client.getName(), order.getTotalAmount());
         // twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
-        // Преобразуем сущность Order в OrderResponse с помощью маппера и возвращаем ответ
+        // Преобразуем сохраненный заказ в ответ
         return orderMapper.entityToResponse(savedOrder);
     }
 
@@ -179,26 +188,26 @@ public class OrderServiceImpl implements OrderService {
         // Сохраняем обновленный заказ
         orderRepository.save(order);
     }
-    public Double calculateTotalAmount(OrderRequest orderRequest) {
-        Double totalAmount = 0.0;
-
-        List<OrderItemRequest> orderItemRequests = orderRequest.getOrderItems();
-        for (OrderItemRequest orderItemRequest : orderItemRequests) {
-            UUID productId = orderItemRequest.getProductId();
-            Integer quantity = orderItemRequest.getQuantity();
-
-            // Найдите товар (Product) по его идентификатору
-            Product product = productService.getById(productId);
-
-            // Если товар найден, добавьте его стоимость к общей сумме заказа
-            if (product != null) {
-                BigDecimal price = product.getPrice();
-                totalAmount += price.multiply(BigDecimal.valueOf(quantity)).doubleValue();
-            }
-        }
-
-        return totalAmount;
-    }
+//    public Double calculateTotalAmount(OrderRequest orderRequest) {
+//        Double totalAmount = 0.0;
+//
+//        List<OrderItemRequest> orderItemRequests = orderRequest.getOrderItems();
+//        for (OrderItemRequest orderItemRequest : orderItemRequests) {
+//            UUID productId = orderItemRequest.getProductId();
+//            Integer quantity = orderItemRequest.getQuantity();
+//
+//            // Найдите товар (Product) по его идентификатору
+//            Product product = productService.getById(productId);
+//
+//            // Если товар найден, добавьте его стоимость к общей сумме заказа
+//            if (product != null) {
+//                BigDecimal price = product.getPrice();
+//                totalAmount += price.multiply(BigDecimal.valueOf(quantity)).doubleValue();
+//            }
+//        }
+//
+//        return totalAmount;
+//    }
 
     @Override
     @Transactional
@@ -209,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = optionalOrder.get();
             Hibernate.initialize(order.getOrderItems());
             for (OrderItem orderItem : order.getOrderItems()) {
-                Hibernate.initialize(orderItem.getProduct().getPhotoPaths());
+                Hibernate.initialize(orderItem.getFilialItem());
             }
             return orderMapper.entityToResponse(order);
         } else {

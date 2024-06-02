@@ -1,6 +1,8 @@
 package com.example.appliances.api;
 
+import com.example.appliances.model.request.SupplierRequest;
 import com.example.appliances.model.request.UserRequest;
+import com.example.appliances.model.response.SupplierResponse;
 import com.example.appliances.model.response.UserResponse;
 import com.example.appliances.service.UserService;
 import lombok.AccessLevel;
@@ -74,5 +76,13 @@ public class UserApi {
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Boolean> check() {
         return new ResponseEntity<>(userService.check(), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/save/supplier")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<SupplierResponse> saveSupplier(@Valid @RequestBody SupplierRequest userModel) {
+        SupplierResponse saveUser = userService.saveProvider(userModel);
+        return new ResponseEntity<>(saveUser, HttpStatus.CREATED);
     }
 }

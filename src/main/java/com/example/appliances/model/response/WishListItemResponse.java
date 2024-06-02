@@ -1,4 +1,4 @@
-package com.example.appliances.model.request;
+package com.example.appliances.model.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,9 +11,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderItemRequest {
-
-    private Long orderId;
-    private Long filialItemId;
-    private Integer quantity;
+public class WishListItemResponse {
+    Long id;
+    ProductResponse product;
+    WishListResponse wishList;
+    int quantity;
 }

@@ -3,15 +3,17 @@ package com.example.appliances.model.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class WishListRequest {
+public class WishListItemRequest {
 
-    Boolean isServed;
-    Long storageId;
-
+    UUID productId;
+    Long wishListId;
+    int quantity;
 }

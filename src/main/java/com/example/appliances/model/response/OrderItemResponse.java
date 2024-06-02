@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class OrderItemResponse {
      Long id;
      Long orderId;
-     ProductResponse product;
+     FilialItemResponse filialItem;
      Integer quantity;
 }

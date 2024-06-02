@@ -1,12 +1,10 @@
 package com.example.appliances.entity;
 
+import io.swagger.models.auth.In;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -15,17 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class WishList extends Audit<String> implements Serializable {
+public class WishListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Boolean isServed;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    Product product;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    Storage storage;
+    WishList wishList;
 
-    @OneToMany(mappedBy = "wishList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WishListItem> wishListItems = new ArrayList<>();
+    Integer quantity;
+
+
 }

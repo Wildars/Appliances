@@ -15,11 +15,11 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT COUNT(p) FROM Product p")
     Long countAllProducts();
 
-    @Query("SELECT p.name, SUM(oi.quantity) as totalSold " +
-            "FROM OrderItem oi " +
-            "JOIN oi.product p " +
-            "GROUP BY p.name " +
-            "ORDER BY totalSold DESC")
-    List<Object[]> findTopSellingProducts();
+//    @Query("SELECT p.name, SUM(oi.quantity) as totalSold " +
+//            "FROM OrderItem oi " +
+//            "JOIN oi.product p " +
+//            "GROUP BY p.name " +
+//            "ORDER BY totalSold DESC")
+//    List<Object[]> findTopSellingProducts();
 
 }

@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class WishListResponse {
     Long id;
     StorageResponse storage;
-    String description;
+    Boolean isServed;
 
 }
