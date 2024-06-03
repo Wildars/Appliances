@@ -23,6 +23,21 @@ public interface DefaultMapper {
             return Brand.builder().id(id).build();
     }
 
+    @Named("setWishListFilial")
+    default WishListFilial setWishListFilial(Long id) {
+        if (id == null)
+            return null;
+        else
+            return WishListFilial.builder().id(id).build();
+    }
+ @Named("setWishListItemFilial")
+    default WishListItemFilial setWishListItemFilial(Long id) {
+        if (id == null)
+            return null;
+        else
+            return WishListItemFilial.builder().id(id).build();
+    }
+
     @Named("setWishList")
     default WishList setWishList(Long id) {
         if (id == null)
