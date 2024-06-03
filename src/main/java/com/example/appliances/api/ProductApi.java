@@ -6,7 +6,9 @@ import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.service.ImageService;
 import com.example.appliances.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -94,5 +97,33 @@ public class ProductApi {
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping("/image/{photoName}")
+    public ResponseEntity<Resource> getImageByName(@PathVariable String photoName) throws IOException {
+        Resource imageResource = productService.getImageByName(photoName);
+
+        // Set Content-Disposition header to inline to display the image in the browser
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageResource);
+    }
+    @GetMapping("/products/{productId}/image")
+    public ResponseEntity<Resource> getProductImage(@PathVariable UUID productId) throws IOException {
+        Resource imageResource = productService.getProductImage(productId);
+
+        // Set Content-Disposition header to inline to display the image in the browser
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageResource);
     }
 }

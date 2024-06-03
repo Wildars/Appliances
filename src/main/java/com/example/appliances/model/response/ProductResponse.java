@@ -5,6 +5,7 @@ import com.example.appliances.entity.Status;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -17,9 +18,11 @@ public class ProductResponse {
     UUID id;
     String name;
     Double price;
-
+    String code;
     String description;
+    ProductCategoryResponse productCategory;
     Status status;
-    Image image;
-    ProductResponse productCategory;
+    BrandResponse brand;
+    ProducingCountryResponse producingCountry;
+    List<String> photoPaths;
 }

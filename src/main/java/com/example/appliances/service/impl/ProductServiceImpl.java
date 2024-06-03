@@ -2,6 +2,7 @@ package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Product;
 import com.example.appliances.entity.ProductCategory;
+import com.example.appliances.exception.ProductNotFoundException;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ProductMapper;
 import com.example.appliances.model.request.ProductRequest;
@@ -12,19 +13,29 @@ import com.example.appliances.service.ProductService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.example.appliances.service.impl.MediaTypeUtils.uploadPathImage;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -124,5 +135,45 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Long countAllProducts() {
         return productRepository.countAllProducts();
+    }
+
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Resource getProductImage(UUID productId) throws IOException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
+        List<String> photoPaths = product.getPhotoPaths();
+        String firstPhotoPath = photoPaths.get(0);
+        String imagePath = uploadPathImage + File.separator + firstPhotoPath;
+        try {
+            Path file = Paths.get(imagePath);
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new FileNotFoundException("Could not read the image file: " + imagePath);
+            }
+        } catch (MalformedURLException e) {
+            throw new FileNotFoundException("Malformed URL: " + e.getMessage());
+        }
+    }
+
+
+    public Resource getImageByName(String photoName) throws IOException {
+        String imagePath = uploadPathImage + File.separator + photoName;
+        try {
+            Path file = Paths.get(imagePath);
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new FileNotFoundException("Could not read the image file: " + imagePath);
+            }
+        } catch (MalformedURLException e) {
+            throw new FileNotFoundException("Malformed URL: " + e.getMessage());
+        }
     }
 }
