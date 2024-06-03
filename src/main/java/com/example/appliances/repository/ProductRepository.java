@@ -12,6 +12,9 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findAllByIdIn(List<UUID> productIds);
 
+    @Query("SELECT p FROM Product p WHERE p.deleted = false")
+    List<Product> findAllNotDeleted();
+
     @Query("SELECT COUNT(p) FROM Product p")
     Long countAllProducts();
 

@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> findAllProduct() {
-        return productMapper.toResponseList(productRepository.findAll());
+        return productMapper.toResponseList(productRepository.findAllNotDeleted());
     }
     @Transactional
     @Override
@@ -101,13 +102,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public List<ProductResponse> findAll() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAllNotDeleted();
         return products.stream().map(productMapper::entityToResponse).collect(Collectors.toList());
     }
     @Override
     @Transactional
     public void deleteById(UUID id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + id));
+
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
     @Override
