@@ -29,4 +29,8 @@ public class Supply extends Audit<String> implements Serializable {
 //    private SupplyStatus status;
 
 
+    @ManyToOne // Добавлено поле для хранения информации о поставщике
+    @JoinColumn(name = "supplier_id")
+    Supplier supplier;
+
 }

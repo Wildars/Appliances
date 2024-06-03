@@ -72,6 +72,16 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional
+    public SupplierResponse findByUsername(String pin) {
+        Supplier supplier = supplierRepository.findByPin(pin);
+        if (supplier == null) {
+            throw new RecordNotFoundException("Supplier with username " + pin + " not found");
+        }
+        return supplierMapper.entityToResponse(supplier);
+    }
+
+    @Override
+    @Transactional
     public Page<SupplierResponse> getAllSuppliers(int page,
                                                   int size,
                                                   Optional<Boolean> sortOrder,
@@ -130,37 +140,6 @@ public class SupplierServiceImpl implements SupplierService {
     public void deleteById(Long id) {
         supplierRepository.deleteById(id);
     }
-
-
-//    @Override
-//    @Transactional
-//    public List<WishListResponse> getAllWishListItems() {
-//        List<WishList> wishListItems = wishListRepository.findAll();
-//        return wishListItems.stream().map(wishListMapper::entityToResponse).collect(Collectors.toList());
-//    }
-//
-//
-//
-//
-//    @Override
-//    @Transactional
-//    public Page<WishListResponse> getAllWishListItemsPaged(int page,
-//                                                int size,
-//                                                Optional<Boolean> sortOrder,
-//                                                String sortBy) {
-//        Pageable paging = null;
-//
-//        if (sortOrder.isPresent()){
-//            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-//            paging = PageRequest.of(page, size, direction, sortBy);
-//        } else {
-//            paging = PageRequest.of(page, size);
-//        }
-//        Page<WishList> wishListItemsPage = wishListRepository.findAll(paging);
-//
-//        return wishListItemsPage.map(wishListMapper::entityToResponse);
-//    }
-
 
     @Override
     public boolean validateLogin(String pin, String password) {

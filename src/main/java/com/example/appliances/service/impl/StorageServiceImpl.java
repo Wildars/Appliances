@@ -12,6 +12,7 @@ import com.example.appliances.mapper.StorageMapper;
 import com.example.appliances.model.request.StorageRequest;
 import com.example.appliances.model.response.SaleItemResponse;
 import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.model.response.StorageResponseBot;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.StorageItemRepository;
 import com.example.appliances.repository.StorageRepository;
@@ -97,6 +98,12 @@ public class StorageServiceImpl implements StorageService {
         storageMapper.update(sale, storageRequest);
         Storage updatedSale = storageRepository.save(sale);
         return storageMapper.entityToResponse(updatedSale);
+    }
+    @Override
+    @Transactional
+    public List<StorageResponseBot> findAllBot() {
+        List<Storage> sales = storageRepository.findAll();
+        return sales.stream().map(storageMapper::entityToResponseBot).collect(Collectors.toList());
     }
     @Override
     @Transactional

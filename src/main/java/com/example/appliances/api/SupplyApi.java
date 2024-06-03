@@ -6,6 +6,7 @@ import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
 import com.example.appliances.model.response.WishListResponse;
+import com.example.appliances.service.SupplierService;
 import com.example.appliances.service.SupplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,16 +24,26 @@ public class SupplyApi {
 
     private final SupplyService supplyService;
 
+    private final SupplierService supplierService;
+
     @Autowired
-    public SupplyApi(SupplyService supplyService) {
+    public SupplyApi(SupplyService supplyService, SupplierService supplierService) {
         this.supplyService = supplyService;
+        this.supplierService = supplierService;
     }
 
     @PostMapping
-//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplyResponse> createProvider(@RequestBody SupplyRequest supplyRequest) {
-        SupplyResponse createdSaleItem = supplyService.create(supplyRequest);
-        return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
+    public ResponseEntity<SupplyResponse> createSupply(@RequestBody SupplyRequest supplyRequest,
+                                                       @RequestHeader("X-Supplier-Pin") String supplierPin,
+                                                       @RequestHeader("X-Supplier-Password") String supplierPassword) {
+        // Проверяем валидность логина и пароля поставщика
+        if (!supplierService.validateLogin(supplierPin, supplierPassword)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Создаем поставку
+        SupplyResponse createdSupply = supplyService.create(supplyRequest, supplierPin, supplierPassword);
+        return new ResponseEntity<>(createdSupply, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

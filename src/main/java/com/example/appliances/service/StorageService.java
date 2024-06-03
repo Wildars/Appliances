@@ -4,6 +4,7 @@ import com.example.appliances.entity.Product;
 import com.example.appliances.model.request.StorageRequest;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.model.response.StorageResponseBot;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public interface StorageService {
     StorageResponse update(StorageRequest storageRequest, Long id);
 
      List<StorageResponse> findAll();
+
+    public List<StorageResponseBot> findAllBot();
 
      void deleteById(Long id);
 

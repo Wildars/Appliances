@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SupplyService {
-     SupplyResponse create(SupplyRequest supplyRequest);
+//     SupplyResponse create(SupplyRequest supplyRequest);
 
      SupplyResponse findById(Long id);
+
+     public SupplyResponse createFromWishList(long wishListId, String supplierUsername, String supplierPassword);
 
      SupplyResponse update(SupplyRequest supplyRequest, Long id);
 
@@ -29,4 +31,6 @@ public interface SupplyService {
                                                  String sortBy);
 
      void deleteById(Long id);
+
+     public SupplyResponse create(SupplyRequest supplyRequest, String supplierPin, String supplierPassword);
 }

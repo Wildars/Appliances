@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WishListRepository extends JpaRepository<WishList, Long> {
+    WishList findByStorageIdAndIsServedFalse(Long storageId);
 }

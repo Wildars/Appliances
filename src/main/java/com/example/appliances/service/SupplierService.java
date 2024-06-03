@@ -26,6 +26,7 @@ public interface SupplierService {
                                                  String sortBy);
 
 
+     public SupplierResponse findByUsername(String username);
      public boolean validateLogin(String pin, String password);
      void deleteById(Long id);
 }

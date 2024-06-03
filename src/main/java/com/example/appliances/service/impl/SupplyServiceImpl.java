@@ -1,9 +1,6 @@
 package com.example.appliances.service.impl;
 
-import com.example.appliances.entity.Storage;
-import com.example.appliances.entity.Supply;
-import com.example.appliances.entity.SupplyItem;
-import com.example.appliances.entity.WishList;
+import com.example.appliances.entity.*;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.SupplyItemMapper;
 import com.example.appliances.mapper.SupplyMapper;
@@ -14,10 +11,9 @@ import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
 import com.example.appliances.model.response.WishListResponse;
-import com.example.appliances.repository.SupplyItemRepository;
-import com.example.appliances.repository.SupplyRepository;
-import com.example.appliances.repository.WishListRepository;
+import com.example.appliances.repository.*;
 import com.example.appliances.service.ProductService;
+import com.example.appliances.service.SupplierService;
 import com.example.appliances.service.SupplyService;
 import com.example.appliances.service.StorageService;
 import lombok.AccessLevel;
@@ -40,6 +36,9 @@ public class SupplyServiceImpl implements SupplyService {
     SupplyRepository supplyRepository;
     SupplyItemMapper supplyItemMapper;
 
+    ProductRepository productRepository;
+    StorageRepository storageRepository;
+    SupplierRepository supplierRepository;
     SupplyItemRepository supplyItemRepository;
     SupplyMapper supplyMapper;
 
@@ -47,16 +46,22 @@ public class SupplyServiceImpl implements SupplyService {
 
     WishListRepository wishListRepository;
 ProductService productService;
+
+    SupplierService supplierService;
     StorageService storageService;
 
-    public SupplyServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, SupplyItemRepository supplyItemRepository, SupplyMapper supplyMapper, WishListMapper wishListMapper, WishListRepository wishListRepository, ProductService productService, StorageService storageService) {
+    public SupplyServiceImpl(SupplyRepository supplyRepository, SupplyItemMapper supplyItemMapper, ProductRepository productRepository, StorageRepository storageRepository, SupplierRepository supplierRepository, SupplyItemRepository supplyItemRepository, SupplyMapper supplyMapper, WishListMapper wishListMapper, WishListRepository wishListRepository, ProductService productService, SupplierService supplierService, StorageService storageService) {
         this.supplyRepository = supplyRepository;
         this.supplyItemMapper = supplyItemMapper;
+        this.productRepository = productRepository;
+        this.storageRepository = storageRepository;
+        this.supplierRepository = supplierRepository;
         this.supplyItemRepository = supplyItemRepository;
         this.supplyMapper = supplyMapper;
         this.wishListMapper = wishListMapper;
         this.wishListRepository = wishListRepository;
         this.productService = productService;
+        this.supplierService = supplierService;
         this.storageService = storageService;
     }
     @Override
@@ -86,31 +91,111 @@ ProductService productService;
     }
     @Override
     @Transactional
-    public SupplyResponse create(SupplyRequest supplyRequest) {
+    public SupplyResponse create(SupplyRequest supplyRequest, String supplierPin, String supplierPassword) {
+        // Проверяем валидность логина и пароля поставщика
+        if (!supplierService.validateLogin(supplierPin, supplierPassword)) {
+            throw new IllegalArgumentException("Неверные логин или пароль");
+        }
+
+        // Получаем поставщика по пину
+        Supplier supplier = supplierRepository.findByPin(supplierPin);
+
+        // Создаем объект поставки
         Supply supply = supplyMapper.requestToEntity(supplyRequest);
 
-        // Инициируем пустой список supplyItems
-        List<SupplyItem> supplyItems = new ArrayList<>();
+        // Устанавливаем склад
+        Storage storage = storageRepository.findById(supplyRequest.getStorageId())
+                .orElseThrow(() -> new IllegalArgumentException("Склад с указанным ID не найден"));
+        supply.setStorage(storage);
 
-        // Проверяем, что supplyRequest.getSupplyItems() не null
+        // Если есть список товаров в запросе, обрабатываем их
         if (supplyRequest.getSupplyItems() != null) {
+            List<SupplyItem> supplyItems = new ArrayList<>();
+
             for (SupplyItemRequest itemRequest : supplyRequest.getSupplyItems()) {
                 SupplyItem supplyItem = supplyItemMapper.requestToEntity(itemRequest);
-                // supplyItem.setSupply(supply);
-
+                supplyItem.setProduct(productRepository.findById(itemRequest.getProductId())
+                        .orElseThrow(() -> new IllegalArgumentException("Товар с указанным ID не найден")));
+                supplyItem.setSupply(supply);
                 supplyItems.add(supplyItem);
 
                 // Обновляем количество товара на складе
-                 storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+                storageService.updateStock(itemRequest.getProductId(), supplyRequest.getStorageId(), itemRequest.getQuantity());
+            }
+
+            supply.setSupplyItems(supplyItems);
+        } else {
+            // Если список товаров не указан, попробуем получить товары из WishList
+            WishList wishList = wishListRepository.findByStorageIdAndIsServedFalse(supplyRequest.getStorageId());
+
+            if (wishList != null && !wishList.getWishListItems().isEmpty()) {
+                List<SupplyItem> supplyItems = new ArrayList<>();
+
+                for (WishListItem wishListItem : wishList.getWishListItems()) {
+                    SupplyItem supplyItem = new SupplyItem();
+                    supplyItem.setProduct(wishListItem.getProduct());
+                    supplyItem.setSupply(supply);
+                    supplyItem.setQuantity(wishListItem.getQuantity());
+                    supplyItems.add(supplyItem);
+
+                    // Обновляем количество товара на складе
+                    storageService.updateStock(wishListItem.getProduct().getId(), supplyRequest.getStorageId(), wishListItem.getQuantity());
+                }
+
+                supply.setSupplyItems(supplyItems);
             }
         }
 
-        supply.setSupplyItems(supplyItems);
+        // Устанавливаем поставщика для поставки
+        supply.setSupplier(supplier);
 
+        // Сохраняем поставку в базу данных
         Supply savedSupply = supplyRepository.save(supply);
 
         return supplyMapper.entityToResponse(savedSupply);
     }
+
+    @Override
+    @Transactional
+    public SupplyResponse createFromWishList(long wishListId, String supplierUsername, String supplierPassword) {
+        // Проверяем валидность логина и пароля поставщика
+        if (!supplierService.validateLogin(supplierUsername, supplierPassword)) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
+        // Получаем информацию о WishList
+        WishList wishList = wishListRepository.findById(wishListId)
+                .orElseThrow(() -> new IllegalArgumentException("WishList with ID " + wishListId + " not found"));
+
+        // Создаем объект поставки
+        Supply supply = new Supply();
+        supply.setSupplier(supplierRepository.findByPin(supplierUsername)); // Устанавливаем поставщика
+
+        // Получаем склад для поставки
+        Storage storage = storageRepository.findById(wishList.getStorage().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Storage with ID " + wishList.getStorage() + " not found"));
+        supply.setStorage(storage);
+
+        // Создаем список товаров для поставки на основе товаров из WishList
+        List<SupplyItem> supplyItems = new ArrayList<>();
+        for (WishListItem wishListItem : wishList.getWishListItems()) {
+            SupplyItem supplyItem = new SupplyItem();
+            supplyItem.setProduct(wishListItem.getProduct());
+            supplyItem.setQuantity(wishListItem.getQuantity());
+            supplyItem.setSupply(supply);
+            supplyItems.add(supplyItem);
+        }
+
+        // Устанавливаем список товаров в поставку
+        supply.setSupplyItems(supplyItems);
+
+        // Сохраняем поставку в базу данных
+        Supply savedSupply = supplyRepository.save(supply);
+
+        return supplyMapper.entityToResponse(savedSupply);
+    }
+
+
     @Override
     @Transactional
     public SupplyResponse findById(Long id) {
