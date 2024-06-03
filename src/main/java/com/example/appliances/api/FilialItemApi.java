@@ -25,6 +25,12 @@ public class FilialItemApi {
     }
 
 
+    @GetMapping("/{filialId}/items")
+    public ResponseEntity<List<FilialItemResponse>> getFilialItems(@PathVariable Long filialId) {
+        List<FilialItemResponse> filialItems = filialItemService.getFilialItemsByFilialId(filialId);
+        return ResponseEntity.ok(filialItems);
+    }
+
 
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")

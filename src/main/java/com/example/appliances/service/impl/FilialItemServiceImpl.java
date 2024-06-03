@@ -73,6 +73,13 @@ public class FilialItemServiceImpl implements FilialItemService {
 
     @Override
     @Transactional
+    public List<FilialItemResponse> getFilialItemsByFilialId(Long filialId) {
+        List<FilialItem> filialItems = filialItemRepository.findByFilialId(filialId);
+        return filialItems.stream().map(filialItemMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         filialItemRepository.deleteById(id);
     }
@@ -151,4 +158,6 @@ public class FilialItemServiceImpl implements FilialItemService {
     public void create(FilialItem filialItem) {
         filialItemRepository.save(filialItem);
     }
+
+
 }

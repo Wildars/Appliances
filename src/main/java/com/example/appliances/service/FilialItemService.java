@@ -36,6 +36,7 @@ public interface FilialItemService {
 
     public FilialItem findByProductIdAndFilialId(UUID productId, Long storageId);
 
+    public List<FilialItemResponse> getFilialItemsByFilialId(Long filialId);
 
     void create(FilialItem newFilialItem);
 }
