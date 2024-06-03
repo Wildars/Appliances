@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class MediaTypeUtils {
-    public static String uploadPathImage = "C:/Users/Kantemir/IdeaProjects/Appliances/src/main/resources/img/";
+//    public static String uploadPathImage = "C:/Users/Kantemir/IdeaProjects/Appliances/src/main/resources/img/";
 
-//    public static String uploadPathImage = "/opt/photoAppliances/";
+    public static String uploadPathImage = "/opt/photoAppliances/";
     public static List<String> saveImages(List<MultipartFile> files) {
         List<String> resultUrls = new ArrayList<>();
         try {

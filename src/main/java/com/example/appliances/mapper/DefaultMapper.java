@@ -14,6 +14,9 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface DefaultMapper {
 
+    default Long map(ProductCategory value) {
+        return value != null ? value.getId() : null; // Здесь предполагается, что у ProductCategory есть метод getId(), который возвращает Long.
+    }
 
     @Named("setBrand")
     default Brand setBrand(Long id) {
@@ -92,6 +95,7 @@ public interface DefaultMapper {
             result.add(ProductCategory.builder().id(i).build());
         return result;
     }
+
 
     @Named("setProductCategory")
     default ProductCategory setProductCategory(Long id) {
@@ -186,14 +190,6 @@ public interface DefaultMapper {
             return Storage.builder().id(id).build();
     }
 
-//    @Named("setSale")
-//    default Sale setSale(Long id) {
-//        if (id == null)
-//            return null;
-//        else
-//            return Sale.builder().id(id).build();
-//    }
-
     @Named("setImage")
     default Image setImage(Long id) {
         if (id == null)
@@ -209,13 +205,6 @@ public interface DefaultMapper {
         else
             return Role.builder().id(id).build();
     }
-//    @Named("setProduct")
-//    default Product setProduct(Long id) {
-//        if (id == null)
-//            return null;
-//        else
-//            return Product.builder().id(id).build();
-//    }
 
     @Named("setOrganizations")
     default List<Filial> setOrganizations(List<Long> ids) {

@@ -23,6 +23,7 @@ import java.util.List;
         }
 )
 public interface ProductMapper {
+
     ProductResponse entityToResponse(Product entity);
     @Mapping(target = "categories", source = "categoryIds", qualifiedByName = "setProductCategories")
     @Mapping(target = "brand", source = "brandId", qualifiedByName = "setBrand")

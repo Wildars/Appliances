@@ -20,7 +20,8 @@ public class ProductResponse {
     Double price;
     String code;
     String description;
-    ProductCategoryResponse productCategory;
+    List<ProductCategoryResponse> categories;
+    List<ProductFieldResponse> fields;
     Status status;
     BrandResponse brand;
     ProducingCountryResponse producingCountry;
