@@ -70,6 +70,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new CustomException(CustomError.USER_NOT_AUTHENTICATE);
         }
 
+        // Проверка роли суперадмина
+        boolean isSuperAdmin = user.getRoles().stream().anyMatch(role -> role.getId() == 4);
+
+        // Если filCode не указан и пользователь - суперадмин
+        if (authRequest.getFilCode() == null) {
+            if (isSuperAdmin) {
+                return generateTokenForSuperAdmin(user);
+            } else {
+                throw new CustomException(CustomError.FIL_CODE_REQUIRED);
+            }
+        }
+
         Filial organization = null;
         boolean found = false;
         for (Filial org : user.getFilials()) {
@@ -91,7 +103,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
-        // Используем переменную jwt один раз
         String jwt = jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode());
 
         FilialResponse organizationResponse = mapToFilialResponse(organization);
@@ -111,12 +122,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    public FilialResponse mapToFilialResponse(Filial filial) {
+    private AuthenticationModel generateTokenForSuperAdmin(User user) {
+        HashSet<String> authorities = new HashSet<>();
+        for (var role : user.getRoles()) {
+            for (var permission : role.getPermissions()) {
+                authorities.add(permission.getName());
+            }
+        }
+
+        String jwt = jwtUtil.generateToken(user.getPin(), null);
+
+        return AuthenticationModel.builder()
+                .id(user.getId())
+                .pin(user.getPin())
+                .surname(user.getSurname())
+                .name(user.getName())
+                .patronymic(user.getPatronymic())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .jwtToken(jwt)
+                .roles(user.getRoles())
+                .permissions(authorities.stream().collect(Collectors.toList()))
+                .build();
+    }
+
+    private FilialResponse mapToFilialResponse(Filial filial) {
         FilialResponse filialResponse = new FilialResponse();
         filialResponse.setId(filial.getId());
         filialResponse.setName(filial.getName());
         filialResponse.setFilCode(filial.getFilCode());
         return filialResponse;
     }
-
 }

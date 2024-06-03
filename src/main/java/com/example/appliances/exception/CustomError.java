@@ -3,6 +3,8 @@ package com.example.appliances.exception;
 import org.springframework.http.HttpStatus;
 
 public enum CustomError {
+
+    FIL_CODE_REQUIRED("Нужен код филиала",HttpStatus.NOT_FOUND),
     //region Template
     TEMPLATE_DUPLICATE_NAME("duplicated KT with this name", HttpStatus.CONFLICT),
     TEMPLATE_NOT_CREATED("template not create", HttpStatus.UNPROCESSABLE_ENTITY),
