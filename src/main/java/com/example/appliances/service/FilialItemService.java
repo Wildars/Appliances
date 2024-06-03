@@ -18,6 +18,8 @@ public interface FilialItemService {
 
     public FilialItemResponse update(FilialItemRequest request, Long id);
 
+    public FilialItem save(FilialItem filialItem);
+
     public List<FilialItemResponse> findAll();
 
     public FilialItem updateEntity(FilialItem filialItem);

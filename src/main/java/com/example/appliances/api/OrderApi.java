@@ -2,6 +2,7 @@ package com.example.appliances.api;
 
 import com.example.appliances.entity.Order;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.service.OrderService;
 import com.itextpdf.text.Document;
@@ -95,7 +96,7 @@ public class OrderApi {
     }
 
 
-    @RequestMapping("/order/{orderId}/pdf")
+    @GetMapping("/order/{orderId}/pdf")
     public ResponseEntity<byte[]> getOrderPdf(@PathVariable Long orderId) {
         // Здесь вам нужно получить данные о заказе, например, из вашего сервиса заказов
         Map<String, Object> orderData = getOrderDataById(orderId);
@@ -162,6 +163,18 @@ public class OrderApi {
     public Long countUnsuccessfulOrders() {
         return orderService.countUnsuccessfulOrders();
     }
+
+
+    @PutMapping("/{orderId}/reject")
+//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
+    public ResponseEntity<Void> rejectOrder(
+            @PathVariable Long orderId,
+            @RequestBody SaleItemElementRequest request) {
+        orderService.rejectOrder(orderId, request);
+        return ResponseEntity.ok().build();
+    }
+
+
 
     @GetMapping("/api/statistics/orders")
     public Map<String, Long> getOrderStatistics() {

@@ -359,20 +359,26 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     @Transactional
-    public void rejectOrder(Long queueEntryId, SaleItemElementRequest request) {
-//        Order saleItem = orderRepository.findById(queueEntryId)
-//                .orElseThrow(() -> new SaleItemNotFoundException("Покупка с ID " + queueEntryId + " не найдена"));
-//
-//        // Получить информацию о товаре, который был куплен
-//        List<Product> products = saleItem.getProducts();
-//
-//        // Итерируем по товарам и увеличиваем количество каждого товара на складе
-//        for (Product product : products) {
-//            storageService.returnStockByProductId(product.getId(), saleItem.getQuantity());
-//        }
-//
-//        // Обновить статус покупки на "REJECTED" и добавить комментарии
-//        updateQueueEntryStatus(queueEntryId, SaleStatusEnum.REJECTED, request.getComments());
+    public void rejectOrder(Long orderId, SaleItemElementRequest request) {
+        // Находим заказ по его идентификатору
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Изменяем статус заказа на "Отмененный"
+        SaleStatus cancelledStatus = saleStatusRepository.findById(SaleStatusEnum.REJECTED.getId())
+                .orElseThrow(() -> new RuntimeException("Cancelled SaleStatus not found"));
+        order.setStatus(cancelledStatus);
+
+        // Возвращаем товары на склад
+        for (OrderItem orderItem : order.getOrderItems()) {
+            FilialItem filialItem = orderItem.getFilialItem();
+            int quantityToReturn = orderItem.getQuantity();
+            filialItem.setQuantity(filialItem.getQuantity() + quantityToReturn);
+            filialItemService.save(filialItem); // Предполагаем, что есть метод save для FilialItem
+        }
+
+        // Сохраняем обновленный заказ
+        orderRepository.save(order);
     }
 
     private void updateQueueEntryStatus(Long queueEntryId, SaleStatusEnum status, String description) {

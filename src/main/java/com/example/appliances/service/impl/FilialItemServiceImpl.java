@@ -39,7 +39,11 @@ public class FilialItemServiceImpl implements FilialItemService {
         return filialItemRepository.findById(id).orElseThrow(() ->
                 new ProductNotFoundException("Товар не найден на складе с ID: " + id));
     }
-
+    @Override
+    @Transactional
+    public FilialItem save(FilialItem filialItem) {
+        return filialItemRepository.save(filialItem);
+    }
     @Override
     @Transactional
     public FilialItemResponse create(FilialItemRequest request) {

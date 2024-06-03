@@ -26,12 +26,6 @@ public interface OrderService {
 
     public List<Order> getAllFiltered(LocalDateTime startDate, LocalDateTime endDate, Long status);
 
-
-
-//    public OrderResponse createCart(OrderRequest orderRequest);
-//
-//    public void convertCartToOrder(Long orderId);
-
     public byte[] generateOrderPdf(Map<String, Object> orderData);
 
     public Page<OrderResponse> getAll(int page,
