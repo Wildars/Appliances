@@ -51,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
     ProductService productService;
     UserService userService;
 
+    TwilioService twilioService;
+
     ClientService clientService;
 
     FilialItemService filialItemService;
@@ -61,11 +63,12 @@ public class OrderServiceImpl implements OrderService {
 
     SaleStatusRepository systemStatusRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, ClientService clientService, FilialItemService filialItemService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, TwilioService twilioService, ClientService clientService, FilialItemService filialItemService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.productService = productService;
         this.userService = userService;
+        this.twilioService = twilioService;
         this.clientService = clientService;
         this.filialItemService = filialItemService;
         this.saleStatusRepository = saleStatusRepository;
@@ -143,36 +146,13 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Отправка SMS клиенту, если нужно
-        // String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят.",
-        //         client.getName(), order.getTotalAmount());
-        // twilioService.sendSms(client.getPhoneNumber(), messageBody);
+         String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят. Номер накладной: %s",
+                 client.getName(),order.getTotalAmount(),order.getNumberNakladnoy());
+         twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
         // Преобразуем сохраненный заказ в ответ
         return orderMapper.entityToResponse(savedOrder);
     }
-
-
-
-    //смс оповещение
-//    public void makeSMS(String toPhoneNumber) {
-//        try {
-//            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//
-//            Call call = Call.creator(
-//                            new PhoneNumber(toPhoneNumber),
-//                            new PhoneNumber(TWILIO_PHONE_NUMBER),
-//                            URI.create("http://demo.twilio.com/docs/voice.xml"))
-//                    .create();
-//        } catch (ApiException e) {
-//            if (e.getMessage().contains("unverified")) {
-//                // Handle the case where the number is unverified
-//                System.err.println("The number " + toPhoneNumber + " is unverified. Trial accounts may only make calls to verified numbers.");
-//            } else {
-//                // Handle other API exceptions
-//                System.err.println("An error occurred: " + e.getMessage());
-//            }
-//        }
-//    }
 
 
     @Override

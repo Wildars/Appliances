@@ -63,9 +63,9 @@ public class YourTelegramBot extends TelegramLongPollingBot {
             } else if (messageText.startsWith("/login")) {
                 handleLogin(chatId, messageText);
             } else if (userStates.containsKey(chatId) && userStates.get(chatId).equals("AUTHORIZED")) {
-                if (messageText.equals("/wishlist")) {
+                if (messageText.equals("/лист заявок")) {
                     handleWishList(chatId);
-                } else if (messageText.equals("/supplylist")) {
+                } else if (messageText.equals("/лист поставок")) {
                     handleViewSupplies(chatId);
                 } else {
                     sendMessage(chatId, "Unknown command. Use /wishlist to view the wish list or /supplylist to view your supplies.");
@@ -84,7 +84,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText("Login");
+        button.setText("Логин");
         button.setCallbackData("login_prompt");
         rowInline.add(button);
         rowsInline.add(rowInline);
@@ -93,7 +93,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
-        message.setText("Welcome! Please login using /login <pin> <password>");
+        message.setText("Добро пожаловать! Пожалуйста введите /login <pin> <password>");
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
@@ -106,7 +106,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
     private void handleViewSupplies(long chatId) {
         String pin = userPins.get(chatId);
         if (pin == null) {
-            sendMessage(chatId, "Please login first.");
+            sendMessage(chatId, "Пожалуйста сначала логин.");
             return;
         }
 
@@ -114,14 +114,14 @@ public class YourTelegramBot extends TelegramLongPollingBot {
             List<SupplyItemResponse> supplies = supplyService.findAllBySupplierPin(pin);
 
             if (supplies == null || supplies.isEmpty()) {
-                sendMessage(chatId, "You haven't made any supplies yet.");
+                sendMessage(chatId, "Вы еще не совершили поставки.");
             } else {
                 StringBuilder sb = new StringBuilder();
-                sb.append("Your Supplies:\n");
+                sb.append("Ваши поставки:\n");
                 supplies.forEach(supply -> {
                     sb.append(" - ID: ").append(supply.getId())
-                            .append(", Quantity: ").append(supply.getQuantity())
-                            .append(", Product: ").append(supply.getProduct().getName())
+                            .append(", Количество: ").append(supply.getQuantity())
+                            .append(", Продукт: ").append(supply.getProduct().getName())
                             .append("\n");
                 });
 
@@ -130,8 +130,8 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
                 InlineKeyboardButton buttonBack = new InlineKeyboardButton();
-                buttonBack.setText("Back to Main Menu");
-                buttonBack.setCallbackData("back_to_main_menu");
+                buttonBack.setText("Назад в главное меню");
+                buttonBack.setCallbackData("Назад в главное меню");
                 rowInline.add(buttonBack);
 
                 rowsInline.add(rowInline);
@@ -179,17 +179,17 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
         InlineKeyboardButton buttonWishList = new InlineKeyboardButton();
-        buttonWishList.setText("View WishLists");
+        buttonWishList.setText("Заявки");
         buttonWishList.setCallbackData("view_wishlists");
         rowInline.add(buttonWishList);
 
         InlineKeyboardButton buttonProfile = new InlineKeyboardButton();
-        buttonProfile.setText("View Profile");
+        buttonProfile.setText("Показать профиль");
         buttonProfile.setCallbackData("view_profile");
         rowInline.add(buttonProfile);
 
         InlineKeyboardButton buttonSupplyList = new InlineKeyboardButton(); // Добавляем кнопку для просмотра поставок
-        buttonSupplyList.setText("View Your Supplies");
+        buttonSupplyList.setText("Поставлено");
         buttonSupplyList.setCallbackData("view_supplies");
         rowInline.add(buttonSupplyList);
 
@@ -198,7 +198,13 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
-        message.setText("Choose an option:");
+        message.setText("Приветствую в Appliances!\n" +
+                "\n" +
+                "Я рад, что ты здесь!\n" +
+                "\n" +
+                "Appliances - твой верный помощник в мире бытовой техники и электроники.\n" +
+                "\n" +
+                "Чем я могу тебе помочь?:");
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
@@ -222,7 +228,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
             wishLists.forEach(wishList -> {
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
                 InlineKeyboardButton button = new InlineKeyboardButton();
-                button.setText("WishList ID: " + wishList.getId());
+                button.setText("Заявка № : " + wishList.getId());
                 button.setCallbackData("wishlist_" + wishList.getId());
                 rowInline.add(button);
                 rowsInline.add(rowInline);
@@ -232,7 +238,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
             SendMessage message = new SendMessage();
             message.setChatId(String.valueOf(chatId));
-            message.setText("Select a WishList:");
+            message.setText("Выберите заявку:");
             message.setReplyMarkup(inlineKeyboardMarkup);
 
             try {
@@ -271,9 +277,9 @@ public class YourTelegramBot extends TelegramLongPollingBot {
         WishListResponse wishList = wishListService.findById(wishListId);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("WishList ID: ").append(wishList.getId()).append("\n");
-        sb.append("Storage: ").append(wishList.getStorageId()).append("\n");
-        sb.append("Items:\n");
+        sb.append("Заявка №: ").append(wishList.getId()).append("\n");
+        sb.append("Склад: ").append(wishList.getStorage().getName()).append("\n");
+        sb.append("Список необходимых продуктов:\n");
         wishList.getWishListItems().forEach(item -> {
             sb.append(" - ").append(item.getProduct().getName()).append(": ").append(item.getQuantity()).append("\n");
         });
@@ -283,17 +289,18 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
         InlineKeyboardButton buttonSupply = new InlineKeyboardButton();
-        buttonSupply.setText("Supply this WishList");
+        buttonSupply.setText("Поставить");
         buttonSupply.setCallbackData("supply_" + wishList.getId());
         rowInline.add(buttonSupply);
 
         InlineKeyboardButton buttonBack = new InlineKeyboardButton();
-        buttonBack.setText("Back to WishLists");
+        buttonBack.setText("Обратно к заявкам");
         buttonBack.setCallbackData("back_to_wishlists");
         rowInline.add(buttonBack);
 
-        InlineKeyboardButton buttonBackToMenu = new InlineKeyboardButton(); // Добавляем кнопку возврата в главное меню
-        buttonBackToMenu.setText("Back to Main Menu");
+        InlineKeyboardButton buttonBackToMenu = new InlineKeyboardButton();
+        // Добавляем кнопку возврата в главное меню
+        buttonBackToMenu.setText("Главное меню");
         buttonBackToMenu.setCallbackData("back_to_main_menu");
         rowInline.add(buttonBackToMenu);
 
@@ -318,7 +325,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
         String pin = userPins.get(chatId);
         String password = userPasswords.get(chatId);
         SupplyResponse supplyResponse = supplyService.createFromWishList(wishListId, pin, password);
-        sendMessage(chatId, "Supply successfully created with ID: " + supplyResponse.getId());
+        sendMessage(chatId, "Поставка успешно оформлена под номером: " + supplyResponse.getId());
     }
 
     private void handleViewProfile(long chatId) {
@@ -326,10 +333,12 @@ public class YourTelegramBot extends TelegramLongPollingBot {
         SupplierResponse supplier = supplierService.findByUsername(pin);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Profile Information:\n");
-        sb.append("pin: ").append(supplier.getPin()).append("\n");
+        sb.append("Информация о профиле:\n");
+        sb.append("ПИН: ").append(supplier.getPin()).append("\n");
+        sb.append("имя: ").append(supplier.getName()).append("\n");
+        sb.append("фамилия: ").append(supplier.getSurname()).append("\n");
         sb.append("Email: ").append(supplier.getEmail()).append("\n");
-        sb.append("Role: ").append(supplier.getRole().getName()).append("\n");
+        sb.append("номер телефона: ").append(supplier.getPhoneNumber()).append("\n");
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
