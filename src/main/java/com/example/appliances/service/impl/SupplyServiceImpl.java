@@ -73,6 +73,13 @@ ProductService productService;
 
     @Override
     @Transactional
+    public List<SupplyItemResponse> findAllBySupplierPin(String pin) {
+        List<SupplyItem> supplies = supplyItemRepository.findAllBySupplierPin(pin);
+        return supplies.stream().map(supplyItemMapper::entityToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public Page<SupplyResponse> getAllSuppliers(int page,
                                                int size,
                                                Optional<Boolean> sortOrder,

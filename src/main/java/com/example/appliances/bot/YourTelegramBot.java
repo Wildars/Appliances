@@ -30,7 +30,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
     private final StorageService storageService; // Добавляем зависимость для StorageService
 
     private final Map<Long, String> userStates = new HashMap<>();
-    private final Map<Long, String> userLogins = new HashMap<>();
+    private final Map<Long, String> userPins = new HashMap<>();
     private final Map<Long, String> userPasswords = new HashMap<>();
 
     @Autowired
@@ -65,10 +65,10 @@ public class YourTelegramBot extends TelegramLongPollingBot {
             } else if (userStates.containsKey(chatId) && userStates.get(chatId).equals("AUTHORIZED")) {
                 if (messageText.equals("/wishlist")) {
                     handleWishList(chatId);
-                } else if (messageText.equals("/storage")) {
-                    handleViewAllStorage(chatId); // Добавляем обработку команды для просмотра всех хранилищ
+                } else if (messageText.equals("/supplylist")) {
+                    handleViewSupplies(chatId);
                 } else {
-                    sendMessage(chatId, "Unknown command. Use /wishlist to view the wish list or /storage to view all storages.");
+                    sendMessage(chatId, "Unknown command. Use /wishlist to view the wish list or /supplylist to view your supplies.");
                 }
             } else {
                 sendLoginPrompt(chatId);
@@ -93,7 +93,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
-        message.setText("Welcome! Please login using /login <username> <password>");
+        message.setText("Welcome! Please login using /login <pin> <password>");
         message.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
@@ -103,21 +103,73 @@ public class YourTelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    private void handleViewSupplies(long chatId) {
+        String pin = userPins.get(chatId);
+        if (pin == null) {
+            sendMessage(chatId, "Please login first.");
+            return;
+        }
+
+        try {
+            List<SupplyItemResponse> supplies = supplyService.findAllBySupplierPin(pin);
+
+            if (supplies == null || supplies.isEmpty()) {
+                sendMessage(chatId, "You haven't made any supplies yet.");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Your Supplies:\n");
+                supplies.forEach(supply -> {
+                    sb.append(" - ID: ").append(supply.getId())
+                            .append(", Quantity: ").append(supply.getQuantity())
+                            .append(", Product: ").append(supply.getProduct().getName())
+                            .append("\n");
+                });
+
+                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+                InlineKeyboardButton buttonBack = new InlineKeyboardButton();
+                buttonBack.setText("Back to Main Menu");
+                buttonBack.setCallbackData("back_to_main_menu");
+                rowInline.add(buttonBack);
+
+                rowsInline.add(rowInline);
+                inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+                SendMessage message = new SendMessage();
+                message.setChatId(String.valueOf(chatId));
+                message.setText(sb.toString());
+                message.setReplyMarkup(inlineKeyboardMarkup);
+
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                    sendMessage(chatId, "Error occurred while sending the message: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(chatId, "Error occurred while retrieving supplies: " + e.getMessage());
+        }
+    }
+
     private void handleLogin(long chatId, String messageText) {
         String[] parts = messageText.split(" ");
         if (parts.length == 3) {
-            String username = parts[1];
+            String pin = parts[1];
             String password = parts[2];
-            if (supplierService.validateLogin(username, password)) {
+            if (supplierService.validateLogin(pin, password)) {
                 userStates.put(chatId, "AUTHORIZED");
-                userLogins.put(chatId, username);
-                userPasswords.put(chatId, password); // Сохраняем пароль
+                userPins.put(chatId, pin);
+                userPasswords.put(chatId, password);
                 sendMainMenu(chatId);
             } else {
-                sendMessage(chatId, "Invalid username or password. Please try again.");
+                sendMessage(chatId, "Invalid pin or password. Please try again.");
             }
         } else {
-            sendMessage(chatId, "Invalid login command. Use /login <username> <password>");
+            sendMessage(chatId, "Invalid login command. Use /login <pin> <password>");
         }
     }
 
@@ -136,10 +188,10 @@ public class YourTelegramBot extends TelegramLongPollingBot {
         buttonProfile.setCallbackData("view_profile");
         rowInline.add(buttonProfile);
 
-        InlineKeyboardButton buttonStorage = new InlineKeyboardButton(); // Добавляем кнопку для просмотра всех хранилищ
-        buttonStorage.setText("View All Storage");
-        buttonStorage.setCallbackData("view_storage");
-        rowInline.add(buttonStorage);
+        InlineKeyboardButton buttonSupplyList = new InlineKeyboardButton(); // Добавляем кнопку для просмотра поставок
+        buttonSupplyList.setText("View Your Supplies");
+        buttonSupplyList.setCallbackData("view_supplies");
+        rowInline.add(buttonSupplyList);
 
         rowsInline.add(rowInline);
         inlineKeyboardMarkup.setKeyboard(rowsInline);
@@ -209,8 +261,7 @@ public class YourTelegramBot extends TelegramLongPollingBot {
             handleWishList(chatId);
         } else if (callbackData.startsWith("back_to_main_menu")) { // Обрабатываем запрос на возврат в главное меню
             sendMainMenu(chatId);
-        }
-        else if (callbackData.startsWith("supply_")) {
+        } else if (callbackData.startsWith("supply_")) {
             long wishListId = Long.parseLong(callbackData.split("_")[1]);
             handleSupplyWishList(chatId, wishListId);
         }
@@ -264,15 +315,15 @@ public class YourTelegramBot extends TelegramLongPollingBot {
 
     private void handleSupplyWishList(long chatId, long wishListId) {
         WishListResponse wishList = wishListService.findById(wishListId);
-        String username = userLogins.get(chatId);
+        String pin = userPins.get(chatId);
         String password = userPasswords.get(chatId);
-        SupplyResponse supplyResponse = supplyService.createFromWishList(wishListId, username, password);
+        SupplyResponse supplyResponse = supplyService.createFromWishList(wishListId, pin, password);
         sendMessage(chatId, "Supply successfully created with ID: " + supplyResponse.getId());
     }
 
     private void handleViewProfile(long chatId) {
-        String username = userLogins.get(chatId);
-        SupplierResponse supplier = supplierService.findByUsername(username);
+        String pin = userPins.get(chatId);
+        SupplierResponse supplier = supplierService.findByUsername(pin);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Profile Information:\n");

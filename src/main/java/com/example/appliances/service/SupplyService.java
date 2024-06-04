@@ -14,7 +14,8 @@ public interface SupplyService {
 //     SupplyResponse create(SupplyRequest supplyRequest);
 
      SupplyResponse findById(Long id);
-
+     public List<SupplyItemResponse> findAllBySupplierPin(String pin);
+//     public List<SupplyItemResponse> findAllByPin(String pin);
      public SupplyResponse createFromWishList(long wishListId, String supplierUsername, String supplierPassword);
 
      SupplyResponse update(SupplyRequest supplyRequest, Long id);

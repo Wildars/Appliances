@@ -83,6 +83,13 @@ public class SupplyApi {
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
 
+    @GetMapping("/alls/telegram")
+//    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
+    public ResponseEntity<List<SupplyItemResponse>>getAllItemTelegram(@RequestParam(required = false )String pin) {
+        List<SupplyItemResponse> saleItems = supplyService.findAllBySupplierPin(pin);
+        return new ResponseEntity<>(saleItems, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
