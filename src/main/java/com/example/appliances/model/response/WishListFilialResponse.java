@@ -13,7 +13,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishListFilialResponse {
     Long id;
-    Long filialId;
+    FilialResponse filial;
     Boolean isServed;
     List<WishListItemFilialResponse> wishListItemFilials;
 
