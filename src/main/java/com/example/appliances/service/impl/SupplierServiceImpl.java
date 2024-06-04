@@ -124,6 +124,7 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier saleItem = supplierRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Поставщика с таким id не существует"));
         supplierMapper.update(saleItem, request);
+        saleItem.setPassword(passwordEncoder.encode(request.getPassword()));
         Supplier updatedSaleItem = supplierRepository.save(saleItem);
         return supplierMapper.entityToResponse(updatedSaleItem);
     }

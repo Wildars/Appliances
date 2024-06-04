@@ -80,8 +80,30 @@ public class StorageServiceImpl implements StorageService {
     @Transactional
     public StorageResponse create(StorageRequest storageRequest) {
         Storage storage = storageMapper.requestToEntity(storageRequest);
+        String newFilCode = generateNextFilCode();
+        storage.setStorageCode(newFilCode);
         Storage savedStorage = storageRepository.save(storage);
         return storageMapper.entityToResponse(savedStorage);
+    }
+
+    private String generateNextFilCode() {
+        String minFilialCode = "00001";
+
+
+        List<String> existingScreens = storageRepository.findAllStorageCodes();
+
+        if (!existingScreens.isEmpty()) {
+            //мин значение с бд
+            for (int i = 1; i < Integer.MAX_VALUE; i++) {
+                String nextScreenValue = String.format("%05d", i);
+                if (!existingScreens.contains(nextScreenValue)) {
+                    minFilialCode = nextScreenValue;
+                    break;
+                }
+            }
+        }
+
+        return minFilialCode;
     }
     @Override
     @Transactional
