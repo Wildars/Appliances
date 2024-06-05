@@ -349,6 +349,9 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Cancelled SaleStatus not found"));
         order.setStatus(cancelledStatus);
 
+        // Устанавливаем описание из запроса
+        order.setDescription(request.getDescription());
+
         // Возвращаем товары на склад
         for (OrderItem orderItem : order.getOrderItems()) {
             FilialItem filialItem = orderItem.getFilialItem();
@@ -360,7 +363,6 @@ public class OrderServiceImpl implements OrderService {
         // Сохраняем обновленный заказ
         orderRepository.save(order);
     }
-
     private void updateQueueEntryStatus(Long queueEntryId, SaleStatusEnum status, String description) {
         Order queueEntry = orderRepository.findById(queueEntryId)
                 .orElseThrow(() -> new CustomException(CustomError.ENTITY_NOT_FOUND));
@@ -371,7 +373,7 @@ public class OrderServiceImpl implements OrderService {
         queueEntry.setStatus(queueEntryStatus);
 
         if (status == SaleStatusEnum.REJECTED) {
-            queueEntry.setComment(description);
+            queueEntry.setDescription(description);
         }
 
         orderRepository.save(queueEntry);
