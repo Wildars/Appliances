@@ -164,6 +164,17 @@ public class OrderApi {
         return orderService.countUnsuccessfulOrders();
     }
 
+    @GetMapping("/api/statistics/orders/accepted")
+    public Long countAcceptedOrders() {
+        return orderService.countAcceptedOrders();
+    }
+
+    @GetMapping("/api/statistics/orders/sendet")
+    public Long countSendetOrders() {
+        return orderService.countSendetOrders();
+    }
+
+
 
     @PutMapping("/{orderId}/reject")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
@@ -182,6 +193,8 @@ public class OrderApi {
         statistics.put("totalOrders", orderService.countAllOrders());
         statistics.put("successfulOrders", orderService.countSuccessfulOrders());
         statistics.put("unsuccessfulOrders", orderService.countUnsuccessfulOrders());
+        statistics.put("aceptedOrders", orderService.countAcceptedOrders());
+        statistics.put("sendetOrders", orderService.countSendetOrders());
         return statistics;
     }
 }

@@ -466,4 +466,14 @@ public class OrderServiceImpl implements OrderService {
     public Long countUnsuccessfulOrders() {
         return orderRepository.countUnsuccessfulOrders();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Long countAcceptedOrders() {
+        return orderRepository.countAcceptedOrders();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Long countSendetOrders() {
+        return orderRepository.countSendetOrders();
+    }
 }

@@ -51,5 +51,9 @@ public interface OrderService {
     public Long countSuccessfulOrders();
 
     public Long countUnsuccessfulOrders();
+
+    public Long countAcceptedOrders();
+
+    public Long countSendetOrders();
 }
 

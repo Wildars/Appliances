@@ -30,11 +30,17 @@ public interface OrderRepository extends JpaRepository<Order,Long> , JpaSpecific
     @Query("SELECT COUNT(o) FROM Order o")
     Long countAllOrders();
 
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 1")
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 4")
     Long countSuccessfulOrders();
 
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 2")
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 3")
     Long countUnsuccessfulOrders();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 1")
+    Long countAcceptedOrders();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status.id = 2")
+    Long countSendetOrders();
 
 
     @Query("SELECT m.name, m.surname, SUM(o.totalAmount) as totalRevenue " +
