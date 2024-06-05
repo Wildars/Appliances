@@ -1,5 +1,6 @@
 package com.example.appliances.entity;
 
+import com.example.appliances.enums.SupplyStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -33,4 +34,6 @@ public class Supply extends Audit<String> implements Serializable {
     @JoinColumn(name = "supplier_id")
     Supplier supplier;
 
+    @Enumerated(EnumType.STRING)
+    private SupplyStatus status;
 }

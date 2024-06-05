@@ -32,6 +32,9 @@ public interface SupplyService {
                                                  String sortBy);
 
      void deleteById(Long id);
+     void confirmDelivery(Long supplyId);
+
+     void rejectSupply(Long supplyId);
 
      public SupplyResponse create(SupplyRequest supplyRequest, String supplierPin, String supplierPassword);
 }

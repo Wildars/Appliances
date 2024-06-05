@@ -9,8 +9,11 @@ import com.example.appliances.mapper.StorageItemMapper;
 import com.example.appliances.model.request.StorageItemRequest;
 import com.example.appliances.model.response.StorageItemResponse;
 import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.StorageItemRepository;
+import com.example.appliances.repository.StorageRepository;
 import com.example.appliances.service.StorageItemService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +23,24 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StorageItemServiceImpl implements StorageItemService {
 
-    @Autowired
-    private StorageItemRepository storageItemRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    private StorageItemMapper storageItemMapper;
+    private final StorageItemRepository storageItemRepository;
+    @Autowired
+    private final StorageRepository storageRepository;
+    @Autowired
+    private final StorageItemMapper storageItemMapper;
+
+    public StorageItemServiceImpl(ProductRepository productRepository, StorageItemRepository storageItemRepository, StorageRepository storageRepository, StorageItemMapper storageItemMapper) {
+        this.productRepository = productRepository;
+        this.storageItemRepository = storageItemRepository;
+        this.storageRepository = storageRepository;
+        this.storageItemMapper = storageItemMapper;
+    }
 
     @Override
     @Transactional
@@ -41,7 +55,7 @@ public class StorageItemServiceImpl implements StorageItemService {
     public StorageItemResponse updateStorageItem(StorageItemRequest storageItemRequest, Long id) {
         StorageItem storageItem = storageItemRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Элемент склада с таким id не существует"));
-        storageItemMapper.update(storageItem, storageItemRequest);
+        storageItem.setQuantity(storageItemRequest.getQuantity()); // Обновление количества
         StorageItem updatedStorageItem = storageItemRepository.save(storageItem);
         return storageItemMapper.entityToResponse(updatedStorageItem);
     }
@@ -70,18 +84,32 @@ public class StorageItemServiceImpl implements StorageItemService {
     @Override
     @Transactional
     public void updateStock(UUID productId, Long storageId, int quantity) {
-        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
-                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
+        log.info("Attempting to update stock for productId: {}, storageId: {}, quantity: {}", productId, storageId, quantity);
+        try {
+            StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId, storageId)
+                    .orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));
 
-        int newQuantity = storageItem.getQuantity() + quantity;
-        if (newQuantity < 0) {
-            throw new IllegalArgumentException("Недостаточно товара на складе");
+            log.info("Current stock for productId: {}, storageId: {} is {}", productId, storageId, storageItem.getQuantity());
+            int newQuantity = storageItem.getQuantity() + quantity;
+            if (newQuantity < 0) {
+                throw new IllegalArgumentException("Недостаточно товара на складе");
+            }
+
+            storageItem.setQuantity(newQuantity);
+            StorageItem updatedItem = storageItemRepository.save(storageItem);
+            log.info("Updated stock for productId: {}, storageId: {} to {}", productId, storageId, updatedItem.getQuantity());
+        } catch (RecordNotFoundException e) {
+            // Создаем новый StorageItem если он не существует
+            StorageItem newItem = new StorageItem();
+            newItem.setProduct(productRepository.findById(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Товар с указанным ID не найден")));
+            newItem.setStorage(storageRepository.findById(storageId)
+                    .orElseThrow(() -> new IllegalArgumentException("Склад с указанным ID не найден")));
+            newItem.setQuantity(quantity);
+            storageItemRepository.save(newItem);
+            log.info("Created new storage item for productId: {}, storageId: {}, quantity: {}", productId, storageId, quantity);
         }
-
-        storageItem.setQuantity(newQuantity);
-        storageItemRepository.save(storageItem);
     }
-
 
     @Override
     @Transactional

@@ -146,9 +146,9 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Отправка SMS клиенту, если нужно
-         String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят. Номер накладной: %s",
-                 client.getName(),order.getTotalAmount(),order.getNumberNakladnoy());
-         twilioService.sendSms(client.getPhoneNumber(), messageBody);
+//         String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят. Номер накладной: %s",
+//                 client.getName(),order.getTotalAmount(),order.getNumberNakladnoy());
+//         twilioService.sendSms(client.getPhoneNumber(), messageBody);
 
         // Преобразуем сохраненный заказ в ответ
         return orderMapper.entityToResponse(savedOrder);

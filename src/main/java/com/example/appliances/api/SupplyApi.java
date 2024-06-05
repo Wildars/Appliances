@@ -46,6 +46,19 @@ public class SupplyApi {
         return new ResponseEntity<>(createdSupply, HttpStatus.CREATED);
     }
 
+
+    @PostMapping("/confirmDelivery/{id}")
+    public ResponseEntity<Void> confirmDelivery(@PathVariable Long id) {
+        supplyService.confirmDelivery(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reject/{id}")
+    public ResponseEntity<Void> rejectSupply(@PathVariable Long id) {
+        supplyService.rejectSupply(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
     public ResponseEntity<SupplyResponse> getProviderById(@PathVariable Long id) {
