@@ -30,7 +30,7 @@ public class StorageItemApi {
 
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<StorageItemResponse> createStorage(@RequestBody StorageItemRequest storageRequest) {
+    public ResponseEntity<StorageItemResponse> create(@RequestBody StorageItemRequest storageRequest) {
         StorageItemResponse createdSale = storageItemService.createStorageItem(storageRequest);
         return new ResponseEntity<>(createdSale, HttpStatus.CREATED);
     }
@@ -46,28 +46,28 @@ public class StorageItemApi {
 //    }
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<StorageItemResponse> getStorageById(@PathVariable Long id) {
+    public ResponseEntity<StorageItemResponse> getById(@PathVariable Long id) {
         StorageItemResponse sale = storageItemService.findById(id);
         return new ResponseEntity<>(sale, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<StorageItemResponse> updateStorage(@RequestBody StorageItemRequest storageRequest, @PathVariable Long id) {
+    public ResponseEntity<StorageItemResponse> update(@RequestBody StorageItemRequest storageRequest, @PathVariable Long id) {
         StorageItemResponse updatedSale = storageItemService.updateStorageItem(storageRequest, id);
         return new ResponseEntity<>(updatedSale, HttpStatus.OK);
     }
 
     @GetMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<List<StorageItemResponse>> getAllStorage() {
+    public ResponseEntity<List<StorageItemResponse>> getAll() {
         List<StorageItemResponse> sales = storageItemService.findAllStorageItems();
         return new ResponseEntity<>(sales, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<Void> deleteStorage(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         storageItemService.deleteStorageItemById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

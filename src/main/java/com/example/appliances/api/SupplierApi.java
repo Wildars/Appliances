@@ -32,21 +32,21 @@ public class SupplierApi {
 
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplierResponse> createProvider(@RequestBody SupplierRequest supplyRequest) {
+    public ResponseEntity<SupplierResponse> create(@RequestBody SupplierRequest supplyRequest) {
         SupplierResponse createdSaleItem = supplierService.create(supplyRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplierResponse> getProviderById(@PathVariable Long id) {
+    public ResponseEntity<SupplierResponse> getById(@PathVariable Long id) {
         SupplierResponse saleItem = supplierService.findById(id);
         return new ResponseEntity<>(saleItem, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplierResponse> updateProvider(@RequestBody SupplierRequest supplyRequest, @PathVariable Long id) {
+    public ResponseEntity<SupplierResponse> update(@RequestBody SupplierRequest supplyRequest, @PathVariable Long id) {
         SupplierResponse updatedSaleItem = supplierService.update(supplyRequest, id);
         return new ResponseEntity<>(updatedSaleItem, HttpStatus.OK);
     }
@@ -62,14 +62,14 @@ public class SupplierApi {
 
     @GetMapping("/supply_items")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<List<SupplierResponse>> getAllProviders() {
+    public ResponseEntity<List<SupplierResponse>> getAll() {
         List<SupplierResponse> saleItems = supplierService.findAll();
         return new ResponseEntity<>(saleItems, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteProvider(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         supplierService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

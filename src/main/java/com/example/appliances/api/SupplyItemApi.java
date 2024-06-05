@@ -31,14 +31,14 @@ public class SupplyItemApi {
 
     @PostMapping("/create")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplyItemResponse> createProvider(@RequestBody SupplyItemRequest supplyRequest) {
+    public ResponseEntity<SupplyItemResponse> create(@RequestBody SupplyItemRequest supplyRequest) {
         SupplyItemResponse createdSaleItem = supplyService.create(supplyRequest);
         return new ResponseEntity<>(createdSaleItem, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    public ResponseEntity<SupplyItemResponse> getProviderById(@PathVariable Long id) {
+    public ResponseEntity<SupplyItemResponse> getById(@PathVariable Long id) {
         SupplyItemResponse saleItem = supplyService.findById(id);
         return new ResponseEntity<>(saleItem, HttpStatus.OK);
     }

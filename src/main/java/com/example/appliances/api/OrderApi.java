@@ -96,57 +96,57 @@ public class OrderApi {
     }
 
 
-    @GetMapping("/order/{orderId}/pdf")
-    public ResponseEntity<byte[]> getOrderPdf(@PathVariable Long orderId) {
-        // Здесь вам нужно получить данные о заказе, например, из вашего сервиса заказов
-        Map<String, Object> orderData = getOrderDataById(orderId);
+//    @GetMapping("/order/{orderId}/pdf")
+//    public ResponseEntity<byte[]> getOrderPdf(@PathVariable Long orderId) {
+//        // Здесь вам нужно получить данные о заказе, например, из вашего сервиса заказов
+//        Map<String, Object> orderData = getOrderDataById(orderId);
+//
+//        // Проверяем, есть ли данные о заказе
+//        if (orderData == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        // Генерируем PDF
+//        byte[] pdfBytes = generateOrderPdf(orderData);
+//
+//        // Создаем HTTP-заголовки для ответа
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_PDF);
+//        headers.setContentDispositionFormData("filename", "order_" + orderId + ".pdf");
+//        headers.setContentLength(pdfBytes.length);
+//
+//        // Возвращаем PDF в ответе
+//        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+//    }
+//
+//    private Map<String, Object> getOrderDataById(Long orderId) {
+//        // Логика для получения данных о заказе по его идентификатору orderId
+//        // Замените это на вашу реализацию
+//        Map<String, Object> orderData = new HashMap<>();
+//        // Здесь должен быть ваш код для получения данных о заказе по orderId
+//        // Пример:
+//        orderData.put("id", orderId);
+//        orderData.put("clientName", "Иван Иванов");
+//        // Заполните остальные данные о заказе
+//        return orderData;
+//    }
 
-        // Проверяем, есть ли данные о заказе
-        if (orderData == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Генерируем PDF
-        byte[] pdfBytes = generateOrderPdf(orderData);
-
-        // Создаем HTTP-заголовки для ответа
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "order_" + orderId + ".pdf");
-        headers.setContentLength(pdfBytes.length);
-
-        // Возвращаем PDF в ответе
-        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-    }
-
-    private Map<String, Object> getOrderDataById(Long orderId) {
-        // Логика для получения данных о заказе по его идентификатору orderId
-        // Замените это на вашу реализацию
-        Map<String, Object> orderData = new HashMap<>();
-        // Здесь должен быть ваш код для получения данных о заказе по orderId
-        // Пример:
-        orderData.put("id", orderId);
-        orderData.put("clientName", "Иван Иванов");
-        // Заполните остальные данные о заказе
-        return orderData;
-    }
-
-    private byte[] generateOrderPdf(Map<String, Object> orderData) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Document document = new Document();
-        try {
-            PdfWriter.getInstance(document, byteArrayOutputStream);
-            document.open();
-            // Добавьте содержимое PDF-документа здесь
-            document.add(new com.itextpdf.text.Paragraph("Order ID: " + orderData.get("id")));
-            document.add(new com.itextpdf.text.Paragraph("Client Name: " + orderData.get("clientName")));
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } finally {
-            document.close();
-        }
-        return byteArrayOutputStream.toByteArray();
-    }
+//    private byte[] generateOrderPdf(Map<String, Object> orderData) {
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        Document document = new Document();
+//        try {
+//            PdfWriter.getInstance(document, byteArrayOutputStream);
+//            document.open();
+//            // Добавьте содержимое PDF-документа здесь
+//            document.add(new com.itextpdf.text.Paragraph("Order ID: " + orderData.get("id")));
+//            document.add(new com.itextpdf.text.Paragraph("Client Name: " + orderData.get("clientName")));
+//        } catch (DocumentException e) {
+//            e.printStackTrace();
+//        } finally {
+//            document.close();
+//        }
+//        return byteArrayOutputStream.toByteArray();
+//    }
 
 
     @GetMapping("/api/statistics/orders/count")

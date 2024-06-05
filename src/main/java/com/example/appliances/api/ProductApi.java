@@ -41,6 +41,7 @@ public class ProductApi {
         return productService.countAllProducts();
     }
 
+    //find all by page
     @GetMapping("/list")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")
     public Page<ProductResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
@@ -62,11 +63,7 @@ public class ProductApi {
     }
 
 
-    @PostMapping("/upload")
-//    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public Long uploadPhoto(@RequestBody ImageRequest imageRequest){
-        return imageService.uploadPhoto(imageRequest);
-    }
+
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
@@ -82,7 +79,7 @@ public class ProductApi {
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
-
+        //filters
     @GetMapping("/byId/category")
     public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(
             @RequestParam(required = false)Long categoryId,
@@ -97,10 +94,10 @@ public class ProductApi {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/findAl")
-    public List<ProductResponse> findAll(){
-        return productService.findAllProduct();
-    }
+//    @GetMapping("/findAl")
+//    public List<ProductResponse> findAll(){
+//        return productService.findAllProduct();
+//    }
     @GetMapping("findAll")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {

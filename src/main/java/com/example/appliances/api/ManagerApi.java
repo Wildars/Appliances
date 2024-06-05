@@ -30,13 +30,13 @@ public class ManagerApi {
     }
 
     @PostMapping
-    public ResponseEntity<ManagerResponse> createClient(@RequestBody ManagerRequest clientRequest) {
+    public ResponseEntity<ManagerResponse> create(@RequestBody ManagerRequest clientRequest) {
         ManagerResponse createdProduct = managerService.create(clientRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Manager> getClientById(@PathVariable Long id) {
+    public ResponseEntity<Manager> getById(@PathVariable Long id) {
         Manager product = managerService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
@@ -49,19 +49,19 @@ public class ManagerApi {
         return managerService.getAllClient(page, size, sortOrder, sortBy);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ManagerResponse> updateClient(@RequestBody ManagerRequest clientRequest, @PathVariable Long id) {
+    public ResponseEntity<ManagerResponse> update(@RequestBody ManagerRequest clientRequest, @PathVariable Long id) {
         ManagerResponse updatedProduct = managerService.update(clientRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<ManagerResponse>> getAllClients() {
+    public ResponseEntity<List<ManagerResponse>> getAll() {
         List<ManagerResponse> products = managerService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         managerService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

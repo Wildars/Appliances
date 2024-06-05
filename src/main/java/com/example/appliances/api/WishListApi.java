@@ -38,35 +38,35 @@ public class WishListApi {
     }
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<WishListResponse> createProductCategory(@RequestBody WishListRequest wishListRequest) {
+    public ResponseEntity<WishListResponse> create(@RequestBody WishListRequest wishListRequest) {
         WishListResponse createdProduct = wishListService.create(wishListRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<WishListResponse> getProductCategoryById(@PathVariable Long id) {
+    public ResponseEntity<WishListResponse> getById(@PathVariable Long id) {
         WishListResponse product = wishListService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<WishListResponse> updateProductCategory(@RequestBody WishListRequest wishListRequest, @PathVariable Long id) {
+    public ResponseEntity<WishListResponse> update(@RequestBody WishListRequest wishListRequest, @PathVariable Long id) {
         WishListResponse updatedProduct = wishListService.update(wishListRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping("/list")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<List<WishListResponse>> getAllProductsCategory() {
+    public ResponseEntity<List<WishListResponse>> getAll() {
         List<WishListResponse> products = wishListService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public ResponseEntity<Void> deleteProductCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         wishListService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

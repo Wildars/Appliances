@@ -33,31 +33,31 @@ public class FieldApi {
         return fieldCategoryService.getAll(page, size, sortOrder, sortBy);
     }
     @PostMapping("/create")
-    public ResponseEntity<FieldResponse> createProductCategory(@RequestBody FieldRequest fieldRequest) {
+    public ResponseEntity<FieldResponse> create(@RequestBody FieldRequest fieldRequest) {
         FieldResponse createdProduct = fieldCategoryService.create(fieldRequest);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FieldResponse> getProductCategoryById(@PathVariable Long id) {
+    public ResponseEntity<FieldResponse> getById(@PathVariable Long id) {
         FieldResponse product = fieldCategoryService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FieldResponse> updateProductCategory(@RequestBody FieldRequest fieldRequest, @PathVariable Long id) {
+    public ResponseEntity<FieldResponse> update(@RequestBody FieldRequest fieldRequest, @PathVariable Long id) {
         FieldResponse updatedProduct = fieldCategoryService.update(fieldRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<FieldResponse>> getAllProductsCategory() {
+    public ResponseEntity<List<FieldResponse>> getAll() {
         List<FieldResponse> products = fieldCategoryService.findAll();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         fieldCategoryService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

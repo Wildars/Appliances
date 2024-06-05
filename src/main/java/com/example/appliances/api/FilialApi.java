@@ -29,7 +29,7 @@ public class FilialApi {
         this.organizationsService = organizationsService;
     }
 
-
+//апишка для получения всех филиалов,в которых работает юзер
     @GetMapping("/getAllUserOrganizations")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<FilialResponse>> getAllUserOrganizations(@RequestParam String pin, @RequestParam String password) {
@@ -39,7 +39,7 @@ public class FilialApi {
 
     @PostMapping()
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<FilialResponse> saveOrganization(@Valid @RequestBody FilialRequest organizationModel) {
+    public ResponseEntity<FilialResponse> save(@Valid @RequestBody FilialRequest organizationModel) {
         FilialResponse save = organizationsService.saveOrganization(organizationModel);
         return new ResponseEntity<>(save, HttpStatus.CREATED);
     }
@@ -54,21 +54,21 @@ public class FilialApi {
     }
     @GetMapping("/{id}")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<FilialResponse> getOrganizationById(@PathVariable Long id) {
+    public ResponseEntity<FilialResponse> getById(@PathVariable Long id) {
         FilialResponse organizationById = organizationsService.getOrganizationById(id);
         return new ResponseEntity<>(organizationById, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<FilialResponse> updateOrganization(@Valid @RequestBody FilialRequest organizationModel, @PathVariable Long id) {
+    public ResponseEntity<FilialResponse> update(@Valid @RequestBody FilialRequest organizationModel, @PathVariable Long id) {
         FilialResponse update = organizationsService.updateOrganization(organizationModel, id);
         return new ResponseEntity<>(update, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteOrganization(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         organizationsService.deleteOrganizationById(id);
     }
 }
