@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -79,6 +80,21 @@ public class ProductApi {
     public ResponseEntity<ProductResponse> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable UUID id) {
         ProductResponse updatedProduct = productService.update(productRequest, id);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/byId/category")
+    public ResponseEntity<Page<ProductResponse>> getProductsByCategoryId(
+            @RequestParam(required = false)Long categoryId,
+            @RequestParam(required = false) List<Long> brandId,
+            @RequestParam(required = false) List<Long> producingCountryId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<ProductResponse> products = productService.getProductsByCategoryIdAndFilters(categoryId, brandId, producingCountryId, minPrice, maxPrice, page, size);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/findAl")

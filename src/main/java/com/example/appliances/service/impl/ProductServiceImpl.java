@@ -10,6 +10,7 @@ import com.example.appliances.model.response.ProductCategoryResponse;
 import com.example.appliances.model.response.ProductResponse;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.service.ProductService;
+import com.example.appliances.specification.ProductSpecifications;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -180,5 +183,16 @@ public class ProductServiceImpl implements ProductService {
         } catch (MalformedURLException e) {
             throw new FileNotFoundException("Malformed URL: " + e.getMessage());
         }
+    }
+
+
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Page<ProductResponse> getProductsByCategoryIdAndFilters(Long categoryId, List<Long> brandIds, List<Long> producingCountryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Product> specification = ProductSpecifications.withBrandIdsAndProducingCountryIdsAndCategoryIdAndPriceRange(brandIds, producingCountryIds, categoryId, minPrice, maxPrice);
+        Page<Product> productsPage = productRepository.findAll(specification, pageable);
+        return productsPage.map(productMapper::entityToResponse);
     }
 }

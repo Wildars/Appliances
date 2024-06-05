@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +33,8 @@ public interface ProductService {
 
      public void updateStock(UUID productId, int quantity) ;
      ProductResponse update(ProductRequest productRequest, UUID productId);
+
+     public Page<ProductResponse> getProductsByCategoryIdAndFilters(Long categoryId, List<Long> brandIds, List<Long> producingCountryIds, BigDecimal minPrice, BigDecimal maxPrice, int page, int size);
 
      List<ProductResponse> findAll();
 
