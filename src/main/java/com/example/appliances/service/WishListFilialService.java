@@ -16,9 +16,10 @@ public interface WishListFilialService {
     public WishListFilialResponse findById(Long id) ;
 
     public Page<WishListFilialResponse> getAllPage(int page,
-                                                               int size,
-                                                               Optional<Boolean> sortOrder,
-                                                               String sortBy);
+                                                   int size,
+                                                   Optional<Boolean> sortOrder,
+                                                   String sortBy,
+                                                   Optional<Long> filialId);
 
     public WishListFilialResponse update(WishListFilialRequest request, Long id);
 

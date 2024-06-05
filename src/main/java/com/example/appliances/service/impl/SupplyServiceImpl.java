@@ -192,6 +192,8 @@ ProductService productService;
                 .orElseThrow(() -> new IllegalArgumentException("WishList with ID " + wishListId + " not found"));
         log.info("Found wishlist: {}", wishList);
 
+        wishList.setIsServed(true);
+
         // Создаем объект поставки
         Supply supply = new Supply();
         supply.setStatus(SupplyStatus.SENT);  // Устанавливаем статус отправлено

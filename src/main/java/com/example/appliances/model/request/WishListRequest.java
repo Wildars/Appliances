@@ -13,7 +13,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishListRequest {
 
-    Boolean isServed;
     Long storageId;
      List<WishListItemRequest> wishListItems;
 }

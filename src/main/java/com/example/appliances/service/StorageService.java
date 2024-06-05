@@ -18,9 +18,10 @@ public interface StorageService {
      StorageResponse findById(Long id);
 
     public Page<StorageResponse> getAllStorage(int page,
-                                                 int size,
-                                                 Optional<Boolean> sortOrder,
-                                                 String sortBy);
+                                               int size,
+                                               Optional<Boolean> sortOrder,
+                                               String sortBy,
+                                               Optional<Long> storageId);
 
     public int getAvailableQuantity(UUID productId);
 

@@ -60,22 +60,34 @@ public class StorageServiceImpl implements StorageService {
     @Override
     @Transactional
     public Page<StorageResponse> getAllStorage(int page,
-                                                  int size,
-                                                  Optional<Boolean> sortOrder,
-                                                  String sortBy) {
-        Pageable paging = null;
+                                               int size,
+                                               Optional<Boolean> sortOrder,
+                                               String sortBy,
+                                               Optional<Long> storageId) {
+        Pageable paging;
 
-        if (sortOrder.isPresent()){
-            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+        // Если storageId задан, фильтруем по нему
+        if (storageId.isPresent()) {
+            Page<Storage> storagePage = storageRepository.findById(storageId.get(), PageRequest.of(page, size));
+            return storagePage.map(storageMapper::entityToResponse);
         }
-        Page<Storage> saleItemsPage = storageRepository.findAll(paging);
 
-        return saleItemsPage.map(storageMapper::entityToResponse);
+        // Если sortBy равен "id", мы хотим сортировать по ID
+        if ("id".equals(sortBy)) {
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, "id");
+        } else {
+            if (sortOrder.isPresent()) {
+                Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                paging = PageRequest.of(page, size, direction, sortBy);
+            } else {
+                paging = PageRequest.of(page, size);
+            }
+        }
+
+        Page<Storage> storagePage = storageRepository.findAll(paging);
+        return storagePage.map(storageMapper::entityToResponse);
     }
-
     @Override
     @Transactional
     public StorageResponse create(StorageRequest storageRequest) {

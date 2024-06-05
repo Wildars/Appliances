@@ -29,11 +29,13 @@ public class WishListFilialApi {
 
     @GetMapping("/page")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public Page<WishListFilialResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
-                                                               @RequestParam(required = false, defaultValue = "25") int size,
-                                                               @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                               @RequestParam(required = false) String sortBy) {
-        return wishListFilialService.getAllPage(page, size, sortOrder, sortBy);
+    public Page<WishListFilialResponse> findAllBySpecification(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "25") int size,
+            @RequestParam(required = false) Optional<Boolean> sortOrder,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Optional<Long> filialId) {
+        return wishListFilialService.getAllPage(page, size, sortOrder, sortBy, filialId);
     }
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")

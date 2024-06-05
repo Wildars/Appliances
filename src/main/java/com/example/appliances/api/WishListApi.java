@@ -30,11 +30,13 @@ public class WishListApi {
 
     @GetMapping("/page")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public Page<WishListResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
-                                                         @RequestParam(required = false, defaultValue = "25") int size,
-                                                         @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                         @RequestParam(required = false) String sortBy) {
-        return wishListService.getAllProductCategory(page, size, sortOrder, sortBy);
+    public Page<WishListResponse> findAllBySpecification(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "25") int size,
+            @RequestParam(required = false) Optional<Boolean> sortOrder,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Optional<Long> storageId) {
+        return wishListService.getAllByPage(page, size, sortOrder, sortBy, storageId);
     }
     @PostMapping
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")

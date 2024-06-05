@@ -2,6 +2,8 @@ package com.example.appliances.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +28,7 @@ public class WishList extends Audit<String> implements Serializable {
     @JoinColumn
     Storage storage;
 
-    @OneToMany(mappedBy = "wishList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "wishList", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<WishListItem> wishListItems = new ArrayList<>();
 }

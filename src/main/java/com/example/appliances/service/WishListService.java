@@ -15,10 +15,11 @@ public interface WishListService {
 
     public WishListResponse findById(Long id) ;
 
-    public Page<WishListResponse> getAllProductCategory(int page,
-                                                               int size,
-                                                               Optional<Boolean> sortOrder,
-                                                               String sortBy);
+    public Page<WishListResponse> getAllByPage(int page,
+                                               int size,
+                                               Optional<Boolean> sortOrder,
+                                               String sortBy,
+                                               Optional<Long> storageId);
 
     public WishListResponse update(WishListRequest wishListRequest, Long id);
 

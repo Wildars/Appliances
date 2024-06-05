@@ -35,13 +35,15 @@ public class StorageApi {
     }
 
 
-    @GetMapping("/list")
+    @GetMapping("/page")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
-    public Page<StorageResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
-                                                         @RequestParam(required = false, defaultValue = "25") int size,
-                                                         @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                         @RequestParam(required = false) String sortBy) {
-        return storageService.getAllStorage(page, size, sortOrder, sortBy);
+    public Page<StorageResponse> findAllBySpecification(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "25") int size,
+            @RequestParam(required = false) Optional<Boolean> sortOrder,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Optional<Long> storageId) {
+        return storageService.getAllStorage(page, size, sortOrder, sortBy, storageId);
     }
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")

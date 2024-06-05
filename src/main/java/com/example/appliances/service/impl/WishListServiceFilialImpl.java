@@ -43,22 +43,34 @@ public class WishListServiceFilialImpl implements WishListFilialService {
     }
     @Override
     public Page<WishListFilialResponse> getAllPage(int page,
-                                                              int size,
-                                                              Optional<Boolean> sortOrder,
-                                                              String sortBy) {
-        Pageable paging = null;
+                                                   int size,
+                                                   Optional<Boolean> sortOrder,
+                                                   String sortBy,
+                                                   Optional<Long> filialId) {
+        Pageable paging;
 
-        if (sortOrder.isPresent()){
-            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+        // Если filialId задан, фильтруем по нему
+        if (filialId.isPresent()) {
+            Page<WishListFilial> wishListFilialPage = wishListRepository.findByFilialId(filialId.get(), PageRequest.of(page, size));
+            return wishListFilialPage.map(wishListMapper::entityToResponse);
         }
-        Page<WishListFilial> saleItemsPage = wishListRepository.findAll(paging);
 
-        return saleItemsPage.map(wishListMapper::entityToResponse);
+        // Если sortBy равен "id", мы хотим сортировать по ID
+        if ("id".equals(sortBy)) {
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, "id");
+        } else {
+            if (sortOrder.isPresent()) {
+                Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                paging = PageRequest.of(page, size, direction, sortBy);
+            } else {
+                paging = PageRequest.of(page, size);
+            }
+        }
+
+        Page<WishListFilial> wishListFilialPage = wishListRepository.findAll(paging);
+        return wishListFilialPage.map(wishListMapper::entityToResponse);
     }
-
     @Override
     @Transactional
     public WishListFilialResponse create(WishListFilialRequest request) {

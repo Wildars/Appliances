@@ -43,21 +43,34 @@ public class WishListServiceImpl implements WishListService {
         this.productRepository = productRepository;
     }
     @Override
-    public Page<WishListResponse> getAllProductCategory(int page,
+    public Page<WishListResponse> getAllByPage(int page,
                                                         int size,
                                                         Optional<Boolean> sortOrder,
-                                                        String sortBy) {
-        Pageable paging = null;
+                                                        String sortBy,
+                                                        Optional<Long> storageId) {
+        Pageable paging;
 
-        if (sortOrder.isPresent()){
-            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+        // Если storageId задан, фильтруем по нему
+        if (storageId.isPresent()) {
+            Page<WishList> wishListPage = wishListRepository.findByStorageId(storageId.get(), PageRequest.of(page, size));
+            return wishListPage.map(wishListMapper::entityToResponse);
         }
-        Page<WishList> saleItemsPage = wishListRepository.findAll(paging);
 
-        return saleItemsPage.map(wishListMapper::entityToResponse);
+        // Если sortBy равен "id", мы хотим сортировать по ID
+        if ("id".equals(sortBy)) {
+            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+            paging = PageRequest.of(page, size, direction, "id");
+        } else {
+            if (sortOrder.isPresent()) {
+                Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+                paging = PageRequest.of(page, size, direction, sortBy);
+            } else {
+                paging = PageRequest.of(page, size);
+            }
+        }
+
+        Page<WishList> wishListPage = wishListRepository.findAll(paging);
+        return wishListPage.map(wishListMapper::entityToResponse);
     }
 
     @Override
@@ -65,6 +78,7 @@ public class WishListServiceImpl implements WishListService {
     public WishListResponse create(WishListRequest wishListRequest) {
         WishList wishList = wishListMapper.requestToEntity(wishListRequest);
 
+        wishList.setIsServed(false);
         // Validate and set storage
         Storage storage = storageRepository.findById(wishListRequest.getStorageId())
                 .orElseThrow(() -> new RecordNotFoundException("Storage not found"));
