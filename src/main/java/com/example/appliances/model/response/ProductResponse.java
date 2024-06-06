@@ -22,7 +22,7 @@ public class ProductResponse {
     String description;
     List<ProductCategoryResponse> categories;
     List<ProductFieldResponse> fields;
-    Status status;
+//    Status status;
     BrandResponse brand;
     ProducingCountryResponse producingCountry;
     List<String> photoPaths;

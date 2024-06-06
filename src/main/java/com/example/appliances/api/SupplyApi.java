@@ -81,8 +81,9 @@ public class SupplyApi {
                                                        @RequestParam(required = false) Optional<Boolean> sortOrder,
                                                        @RequestParam(required = false) String sortBy,
                                                        @RequestParam(required = false) Optional<Long> storageId,
-                                                       @RequestParam(required = false) Optional<SupplyStatus> status) {
-        return supplyService.getAllSuppliers(page, size, sortOrder, sortBy, storageId, status);
+                                                       @RequestParam(required = false) Optional<SupplyStatus> status,
+                                                       @RequestParam(required = false) Optional<Long> supplierId) {
+        return supplyService.getAllSuppliers(page, size, sortOrder, sortBy, storageId, status,supplierId);
     }
 
     @GetMapping("/supply_items")

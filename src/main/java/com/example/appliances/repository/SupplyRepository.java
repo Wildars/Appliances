@@ -1,5 +1,6 @@
 package com.example.appliances.repository;
 
+import com.example.appliances.entity.Supplier;
 import com.example.appliances.entity.Supply;
 import com.example.appliances.enums.SupplyStatus;
 import org.springframework.data.domain.Page;
@@ -14,4 +15,6 @@ public interface SupplyRepository extends JpaRepository<Supply,Long> {
     Page<Supply> findByStorageId(Long aLong, Pageable paging);
 
     Page<Supply> findByStatus(SupplyStatus supplyStatus, Pageable paging);
+
+    Page<Supply> findBySupplierId(Long aLong, Pageable paging);
 }

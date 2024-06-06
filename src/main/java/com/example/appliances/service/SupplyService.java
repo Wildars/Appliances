@@ -32,7 +32,8 @@ public interface SupplyService {
                                                  Optional<Boolean> sortOrder,
                                                  String sortBy,
                                                  Optional<Long> storageId,
-                                                 Optional<SupplyStatus> status) ;
+                                                 Optional<SupplyStatus> status,
+                                                 Optional<Long> supplierId) ;
 
      void deleteById(Long id);
      void confirmDelivery(Long supplyId);

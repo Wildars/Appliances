@@ -18,6 +18,7 @@ import com.example.appliances.service.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -90,7 +91,8 @@ ProductService productService;
                                                 Optional<Boolean> sortOrder,
                                                 String sortBy,
                                                 Optional<Long> storageId,
-                                                Optional<SupplyStatus> status) {
+                                                Optional<SupplyStatus> status,
+                                                Optional<Long> supplierId) {
         // Установим значение по умолчанию для sortBy, если оно пустое или null
         if (sortBy == null || sortBy.isEmpty()) {
             sortBy = "id"; // или любое другое поле по умолчанию
@@ -108,6 +110,8 @@ ProductService productService;
             suppliesPage = supplyRepository.findByStorageId(storageId.get(), paging);
         } else if (status.isPresent()) {
             suppliesPage = supplyRepository.findByStatus(status.get(), paging);
+        } else if (supplierId.isPresent()) {
+            suppliesPage = supplyRepository.findBySupplierId(supplierId.get(), paging);
         } else {
             suppliesPage = supplyRepository.findAll(paging);
         }
