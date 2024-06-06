@@ -107,17 +107,31 @@ public class FilialServiceImpl implements FilialService {
         return minFilialCode;
     }
     @Transactional
-    public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy) {
-        Pageable paging = null;
+    @Override
+    public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy, Optional<Long> id, Optional<String> filCode) {
+        Pageable paging;
 
-        if (sortOrder.isPresent()) {
-            Sort.Direction direction = sortOrder.get() ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+        // Установим значение по умолчанию для sortBy, если оно пустое или null
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "id"; // или любое другое поле по умолчанию
         }
 
-        Page<Filial> filialsPage = this.organizationsRepository.findAll(paging);
+        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        paging = PageRequest.of(page, size, direction, sortBy);
+
+        Page<Filial> filialsPage;
+
+        // Фильтрация на основе предоставленных параметров
+        if (id.isPresent() && filCode.isPresent()) {
+            filialsPage = organizationsRepository.findByIdAndFilCode(id.get(), filCode.get(), paging);
+        } else if (id.isPresent()) {
+            filialsPage = organizationsRepository.findById(id.get(), paging);
+        } else if (filCode.isPresent()) {
+            filialsPage = organizationsRepository.findByFilCode(filCode.get(), paging);
+        } else {
+            filialsPage = organizationsRepository.findAll(paging);
+        }
+
         return filialsPage.map(filialMapper::entityToResponse);
     }
 

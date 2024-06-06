@@ -46,11 +46,13 @@ public class FilialApi {
 
     @GetMapping("/getAllOrganization")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Page<FilialResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
-                                                  @RequestParam(required = false, defaultValue = "25") int size,
-                                                  @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                  @RequestParam(required = false) String sortBy) {
-        return organizationsService.getAllOrganizations(page, size, sortOrder, sortBy);
+    public Page<FilialResponse> findAllOrganizations(@RequestParam(required = false, defaultValue = "0") int page,
+                                                     @RequestParam(required = false, defaultValue = "25") int size,
+                                                     @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                     @RequestParam(required = false) String sortBy,
+                                                     @RequestParam(required = false) Optional<Long> id,
+                                                     @RequestParam(required = false) Optional<String> filCode) {
+        return organizationsService.getAllOrganizations(page, size, sortOrder, sortBy, id, filCode);
     }
     @GetMapping("/{id}")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")

@@ -13,8 +13,7 @@ public interface FilialService {
 
     FilialResponse saveOrganization(FilialRequest organizationModel);
 
-    public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy);
-
+    public Page<FilialResponse> getAllOrganizations(int page, int size, Optional<Boolean> sortOrder, String sortBy, Optional<Long> id, Optional<String> filCode);
     FilialResponse getOrganizationById(Long id);
 
     void deleteOrganizationById(Long id);
