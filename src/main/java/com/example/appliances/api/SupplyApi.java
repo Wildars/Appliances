@@ -1,6 +1,7 @@
 package com.example.appliances.api;
 
 import com.example.appliances.entity.Supply;
+import com.example.appliances.enums.SupplyStatus;
 import com.example.appliances.model.request.SupplyRequest;
 import com.example.appliances.model.response.StorageResponse;
 import com.example.appliances.model.response.SupplyItemResponse;
@@ -74,12 +75,14 @@ public class SupplyApi {
     }
 
 //    @PreAuthorize("hasAnyRole('ROLE_SUPPLIER','ROLE_ADMIN')")
-    @GetMapping("/list")
+    @GetMapping("/page")
     public Page<SupplyResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
-                                                        @RequestParam(required = false, defaultValue = "25") int size,
-                                                        @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                        @RequestParam(required = false) String sortBy) {
-        return supplyService.getAllSuppliers(page, size, sortOrder, sortBy);
+                                                       @RequestParam(required = false, defaultValue = "25") int size,
+                                                       @RequestParam(required = false) Optional<Boolean> sortOrder,
+                                                       @RequestParam(required = false) String sortBy,
+                                                       @RequestParam(required = false) Optional<Long> storageId,
+                                                       @RequestParam(required = false) Optional<SupplyStatus> status) {
+        return supplyService.getAllSuppliers(page, size, sortOrder, sortBy, storageId, status);
     }
 
     @GetMapping("/supply_items")

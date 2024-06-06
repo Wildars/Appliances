@@ -1,6 +1,7 @@
 package com.example.appliances.service;
 
 import com.example.appliances.entity.Supply;
+import com.example.appliances.enums.SupplyStatus;
 import com.example.appliances.model.request.SupplyRequest;
 import com.example.appliances.model.response.SupplyItemResponse;
 import com.example.appliances.model.response.SupplyResponse;
@@ -29,7 +30,9 @@ public interface SupplyService {
      public Page<SupplyResponse> getAllSuppliers(int page,
                                                  int size,
                                                  Optional<Boolean> sortOrder,
-                                                 String sortBy);
+                                                 String sortBy,
+                                                 Optional<Long> storageId,
+                                                 Optional<SupplyStatus> status) ;
 
      void deleteById(Long id);
      void confirmDelivery(Long supplyId);

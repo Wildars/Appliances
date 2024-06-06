@@ -1,6 +1,7 @@
 package com.example.appliances.api;
 
 import com.example.appliances.entity.Order;
+import com.example.appliances.entity.SaleStatus;
 import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
@@ -9,6 +10,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -57,14 +56,14 @@ public class OrderApi {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/filtered")
-    public List<Order> getAllOrders(
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
-            @RequestParam(required = false) Long status
-    ) {
-        return orderService.getAllFiltered(startDate, endDate, status);
-    }
+//    @GetMapping("/filtered")
+//    public List<Order> getAllOrders(
+//            @RequestParam(required = false) LocalDateTime startDate,
+//            @RequestParam(required = false) LocalDateTime endDate,
+//            @RequestParam(required = false) Long status
+//    ) {
+//        return orderService.getAllFiltered(startDate, endDate, status);
+//    }
 
 
     @PatchMapping("/{orderId}/verify")
@@ -82,8 +81,12 @@ public class OrderApi {
     public Page<OrderResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                       @RequestParam(required = false, defaultValue = "25") int size,
                                                       @RequestParam(required = false) Optional<Boolean> sortOrder,
-                                                      @RequestParam(required = false) String sortBy) {
-        return orderService.getAll(page, size, sortOrder, sortBy);
+                                                      @RequestParam(required = false) String sortBy,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<Date> dateDelivery,
+                                                      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<Date> creationDate,
+                                                      @RequestParam(required = false) Optional<Long> managerId,
+                                                      @RequestParam(required = false) Optional<SaleStatus> status) {
+        return orderService.getAll(page, size, sortOrder, sortBy, dateDelivery, creationDate, managerId, status);
     }
 
 

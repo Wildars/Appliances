@@ -3,6 +3,8 @@ package com.example.appliances.model.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -14,4 +16,6 @@ public class FilialResponse {
     String name;
 
     String filCode;
+
+    List<FilialItemResponse> filialItems;
 }

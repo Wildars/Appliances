@@ -86,20 +86,33 @@ ProductService productService;
     @Override
     @Transactional
     public Page<SupplyResponse> getAllSuppliers(int page,
-                                               int size,
-                                               Optional<Boolean> sortOrder,
-                                               String sortBy) {
-        Pageable paging = null;
-
-        if (sortOrder.isPresent()){
-            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+                                                int size,
+                                                Optional<Boolean> sortOrder,
+                                                String sortBy,
+                                                Optional<Long> storageId,
+                                                Optional<SupplyStatus> status) {
+        // Установим значение по умолчанию для sortBy, если оно пустое или null
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "id"; // или любое другое поле по умолчанию
         }
-        Page<Supply> saleItemsPage = supplyRepository.findAll(paging);
 
-        return saleItemsPage.map(supplyMapper::entityToResponse);
+        Pageable paging;
+        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        paging = PageRequest.of(page, size, direction, sortBy);
+
+        Page<Supply> suppliesPage;
+
+        if (storageId.isPresent() && status.isPresent()) {
+            suppliesPage = supplyRepository.findByStorageIdAndStatus(storageId.get(), status.get(), paging);
+        } else if (storageId.isPresent()) {
+            suppliesPage = supplyRepository.findByStorageId(storageId.get(), paging);
+        } else if (status.isPresent()) {
+            suppliesPage = supplyRepository.findByStatus(status.get(), paging);
+        } else {
+            suppliesPage = supplyRepository.findAll(paging);
+        }
+
+        return suppliesPage.map(supplyMapper::entityToResponse);
     }
 
     @Override

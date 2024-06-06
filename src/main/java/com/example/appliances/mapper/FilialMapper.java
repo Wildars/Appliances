@@ -15,7 +15,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
-                DefaultMapper.class
+                DefaultMapper.class,
+                FilialItemMapper.class
 
         }
 )

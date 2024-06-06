@@ -27,7 +27,8 @@ public class Filial extends Audit<String> implements Serializable {
 
 //    String address;
 
-    @OneToMany(mappedBy = "filial", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "filial", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
     private List<FilialItem> filialItems = new ArrayList<>();
 
 

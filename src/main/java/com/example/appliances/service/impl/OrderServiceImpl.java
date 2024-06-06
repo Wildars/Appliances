@@ -253,33 +253,81 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    @Transactional
-    public List<Order> getAllFiltered(LocalDateTime startDate, LocalDateTime endDate, Long status) {
-        return orderRepository.findAllFiltered(startDate, endDate, status);
-    }
+//    @Override
+//    @Transactional
+//    public List<Order> getAllFiltered(LocalDateTime startDate, LocalDateTime endDate, Long status) {
+//        return orderRepository.findAllFiltered(startDate, endDate, status);
+//    }
 
     @Override
+    @Transactional
     public Page<OrderResponse> getAll(int page,
                                       int size,
                                       Optional<Boolean> sortOrder,
-                                      String sortBy) {
-
-
-        Pageable paging = null;
-
-
-        if (sortOrder.isPresent()){
-            Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            paging = PageRequest.of(page, size, direction, sortBy);
-        } else {
-            paging = PageRequest.of(page, size);
+                                      String sortBy,
+                                      Optional<Date> dateDelivery,
+                                      Optional<Date> creationDate,
+                                      Optional<Long> managerId,
+                                      Optional<SaleStatus> status) {
+        // Установим значение по умолчанию для sortBy, если оно пустое или null
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "id"; // или любое другое поле по умолчанию
         }
-        Page<Order> saleItemsPage = orderRepository.findAll(paging);
 
-        return saleItemsPage.map(orderMapper::entityToResponse);
+        Pageable paging;
+        Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        paging = PageRequest.of(page, size, direction, sortBy);
+
+        Page<Order> ordersPage;
+
+        // Фильтрация на основе предоставленных параметров
+        if (dateDelivery.isPresent() && creationDate.isPresent() && managerId.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndCreationDateAndManagerIdAndStatus(
+                    dateDelivery.get(), creationDate.get(), managerId.get(), status.get(), paging);
+        } else if (dateDelivery.isPresent() && creationDate.isPresent() && managerId.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndCreationDateAndManagerId(
+                    dateDelivery.get(), creationDate.get(), managerId.get(), paging);
+        } else if (dateDelivery.isPresent() && creationDate.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndCreationDateAndStatus(
+                    dateDelivery.get(), creationDate.get(), status.get(), paging);
+        } else if (dateDelivery.isPresent() && managerId.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndManagerIdAndStatus(
+                    dateDelivery.get(), managerId.get(), status.get(), paging);
+        } else if (creationDate.isPresent() && managerId.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByCreationDateAndManagerIdAndStatus(
+                    creationDate.get(), managerId.get(), status.get(), paging);
+        } else if (dateDelivery.isPresent() && creationDate.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndCreationDate(
+                    dateDelivery.get(), creationDate.get(), paging);
+        } else if (dateDelivery.isPresent() && managerId.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndManagerId(
+                    dateDelivery.get(), managerId.get(), paging);
+        } else if (dateDelivery.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByDateDeliveryAndStatus(
+                    dateDelivery.get(), status.get(), paging);
+        } else if (creationDate.isPresent() && managerId.isPresent()) {
+            ordersPage = orderRepository.findByCreationDateAndManagerId(
+                    creationDate.get(), managerId.get(), paging);
+        } else if (creationDate.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByCreationDateAndStatus(
+                    creationDate.get(), status.get(), paging);
+        } else if (managerId.isPresent() && status.isPresent()) {
+            ordersPage = orderRepository.findByManagerIdAndStatus(
+                    managerId.get(), status.get(), paging);
+        } else if (dateDelivery.isPresent()) {
+            ordersPage = orderRepository.findByDateDelivery(dateDelivery.get(), paging);
+        } else if (creationDate.isPresent()) {
+            ordersPage = orderRepository.findByCreationDate(creationDate.get(), paging);
+        } else if (managerId.isPresent()) {
+            ordersPage = orderRepository.findByManagerId(managerId.get(), paging);
+        } else if (status.isPresent()) {
+            ordersPage = orderRepository.findByStatus(status.get(), paging);
+        } else {
+            ordersPage = orderRepository.findAll(paging);
+        }
+
+        return ordersPage.map(orderMapper::entityToResponse);
     }
-
 
     public String generateNextNakladnoy() {
         // Текущая дата в формате yyyyMMdd

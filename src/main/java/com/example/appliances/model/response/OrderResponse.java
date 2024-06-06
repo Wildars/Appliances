@@ -1,5 +1,6 @@
 package com.example.appliances.model.response;
 
+import com.example.appliances.entity.SaleStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -25,6 +26,7 @@ public class OrderResponse {
     String address;
     String phoneNumber;
 
+    SaleStatus status;
     Double totalAmount;
 
     Date creationDate;

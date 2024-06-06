@@ -2,12 +2,14 @@ package com.example.appliances.service;
 
 
 import com.example.appliances.entity.Order;
+import com.example.appliances.entity.SaleStatus;
 import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,14 +26,18 @@ public interface OrderService {
 
     public void deleteOrder(Long orderId) ;
 
-    public List<Order> getAllFiltered(LocalDateTime startDate, LocalDateTime endDate, Long status);
+//    public List<Order> getAllFiltered(LocalDateTime startDate, LocalDateTime endDate, Long status);
 
     public byte[] generateOrderPdf(Map<String, Object> orderData);
 
     public Page<OrderResponse> getAll(int page,
                                       int size,
                                       Optional<Boolean> sortOrder,
-                                      String sortBy);
+                                      String sortBy,
+                                      Optional<Date> dateDelivery,
+                                      Optional<Date> creationDate,
+                                      Optional<Long> managerId,
+                                      Optional<SaleStatus> status);
 
 
 
