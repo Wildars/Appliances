@@ -6,7 +6,6 @@ import com.example.appliances.enums.SaleStatusEnum;
 import com.example.appliances.exception.CustomError;
 import com.example.appliances.exception.CustomException;
 import com.example.appliances.exception.OrderNotFoundException;
-import com.example.appliances.exception.SaleItemNotFoundException;
 import com.example.appliances.mapper.OrderMapper;
 import com.example.appliances.model.request.OrderItemRequest;
 import com.example.appliances.model.request.OrderRequest;
@@ -23,27 +22,23 @@ import com.itextpdf.text.pdf.PdfWriter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityNotFoundException;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+//НЕ ДАЙ БОГ КТО ТО СЮДА ЗАГЛЯНЕТ, БЕГИ ГЛУПЕЕЕЕЦ
 public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderMapper orderMapper;
@@ -176,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
 //            UUID productId = orderItemRequest.getProductId();
 //            Integer quantity = orderItemRequest.getQuantity();
 //
-//            // Найдите товар (Product) по его идентификатору
+//            // Найдите (Product) по его идентификатору
 //            Product product = productService.getById(productId);
 //
 //            // Если товар найден, добавьте его стоимость к общей сумме заказа
@@ -188,6 +183,7 @@ public class OrderServiceImpl implements OrderService {
 //
 //        return totalAmount;
 //    }
+
 
     @Override
     @Transactional

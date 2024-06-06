@@ -93,12 +93,12 @@ ProductService productService;
                                                 Optional<Long> storageId,
                                                 Optional<SupplyStatus> status,
                                                 Optional<Long> supplierId) {
-        // Установим значение по умолчанию для sortBy, если оно пустое или null
         if (sortBy == null || sortBy.isEmpty()) {
-            sortBy = "id"; // или любое другое поле по умолчанию
+            sortBy = "id";
         }
 
         Pageable paging;
+
         Sort.Direction direction = sortOrder.orElse(true) ? Sort.Direction.ASC : Sort.Direction.DESC;
         paging = PageRequest.of(page, size, direction, sortBy);
 
