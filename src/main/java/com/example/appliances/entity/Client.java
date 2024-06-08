@@ -21,6 +21,7 @@ public class Client {
     String surname;
     String patronymic;
 
+    Integer age;
     String phoneNumber;
     @ManyToOne
     @JoinColumn(name = "discount_category_id")
@@ -29,4 +30,8 @@ public class Client {
     @ManyToOne
     @JoinColumn
     ClientType clientType;
+
+    @ManyToOne
+    @JoinColumn
+    Gender gender;
 }

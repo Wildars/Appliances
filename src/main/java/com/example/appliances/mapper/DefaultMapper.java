@@ -25,6 +25,13 @@ public interface DefaultMapper {
         else
             return Brand.builder().id(id).build();
     }
+    @Named("setGender")
+    default Gender setGender(Long id) {
+        if (id == null)
+            return null;
+        else
+            return Gender.builder().id(id).build();
+    }
 
     @Named("setWishListFilial")
     default WishListFilial setWishListFilial(Long id) {

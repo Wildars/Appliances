@@ -9,15 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClientResponse {
+public class GenderResponse {
     Long id;
     String name;
-    String surname;
-    String patronymic;
-    Integer age;
-    String phoneNumber;
-    DiscountCategoryResponse discountCategory;
-    ClientTypeResponse clientTypeId;
-
-    GenderResponse gender;
 }

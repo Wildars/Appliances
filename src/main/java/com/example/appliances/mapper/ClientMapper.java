@@ -15,7 +15,8 @@ import org.mapstruct.*;
         uses = {
                 DefaultMapper.class,
                 ClientTypeMapper.class,
-                DiscountCategoryMapper.class
+                DiscountCategoryMapper.class,
+                GenderMapper.class,
 
         }
 )
@@ -23,6 +24,7 @@ public interface ClientMapper {
     ClientResponse entityToResponse(Client entity);
 
     @Mapping(target = "clientType", source = "clientTypeId", qualifiedByName = "setClientType")
+    @Mapping(target = "gender", source = "genderId", qualifiedByName = "setGender")
     @Mapping(target = "discountCategory", source = "discountCategoryId", qualifiedByName = "setDiscountCategory")
     Client requestToEntity(ClientRequest request);
 
