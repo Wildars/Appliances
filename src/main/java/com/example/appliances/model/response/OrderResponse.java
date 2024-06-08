@@ -30,6 +30,7 @@ public class OrderResponse {
     Double totalAmount;
 
     Date creationDate;
+    Boolean isDelivery;
 
     ManagerResponse manager;
 

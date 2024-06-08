@@ -3,6 +3,7 @@ package com.example.appliances.api;
 import com.example.appliances.entity.Order;
 import com.example.appliances.entity.SaleStatus;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.OrderRequestDelivery;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.service.OrderService;
@@ -35,6 +36,11 @@ public class OrderApi {
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
         OrderResponse createdOrder = orderService.createOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
+    }
+    @PostMapping("/delivery")
+    public ResponseEntity<OrderResponse> createOrderDelivery(@RequestBody OrderRequestDelivery orderRequest) {
+        OrderResponse createdOrder = orderService.createOrderDelivery(orderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 

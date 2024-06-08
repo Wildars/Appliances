@@ -4,6 +4,7 @@ package com.example.appliances.service;
 import com.example.appliances.entity.Order;
 import com.example.appliances.entity.SaleStatus;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.OrderRequestDelivery;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public interface OrderService {
                                       Optional<Long> managerId,
                                       Optional<SaleStatus> status);
 
-
+    public OrderResponse createOrderDelivery(OrderRequestDelivery orderRequest);
 
     public Page<OrderResponse> getAllByUser(int page,
                                             int size,

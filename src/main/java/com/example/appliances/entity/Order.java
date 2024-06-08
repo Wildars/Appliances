@@ -46,6 +46,7 @@ public class Order extends Audit<String> {
     @Column(name = "total_amount")
     Double totalAmount;
 
+    Boolean isDelivery;
 
     String description;
     String numberNakladnoy;

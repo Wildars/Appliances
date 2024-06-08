@@ -13,10 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderRequest {
+public class OrderRequestDelivery {
 
     List<OrderItemRequest> orderItems;
 
+    Date dateDelivery;
     String address;
     String phoneNumber;
     String name;
@@ -25,6 +26,7 @@ public class OrderRequest {
     Long clientId;
 
     String numberNakladnoy;
+    LocalDateTime schedule;
 
     Double totalAmount;
 

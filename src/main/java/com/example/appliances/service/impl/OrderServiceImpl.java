@@ -9,6 +9,7 @@ import com.example.appliances.exception.OrderNotFoundException;
 import com.example.appliances.mapper.OrderMapper;
 import com.example.appliances.model.request.OrderItemRequest;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.OrderRequestDelivery;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.repository.OrderRepository;
@@ -79,6 +80,82 @@ public class OrderServiceImpl implements OrderService {
         // Преобразуем запрос в сущность Order
         Order order = orderMapper.requestToEntity(orderRequest);
 
+        order.setIsDelivery(false);
+        // Устанавливаем текущего пользователя
+        User currentUser = userService.getCurrentUser();
+        order.setUser(currentUser);
+
+        // Устанавливаем начальный статус заказа
+        SaleStatus status = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId())
+                .orElseThrow(() -> new RuntimeException("SaleStatus not found"));
+        order.setStatus(status);
+
+        // Перебираем элементы заказа из OrderRequest и устанавливаем им ссылку на заказ
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderItemRequest itemRequest : orderRequest.getOrderItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setQuantity(itemRequest.getQuantity());
+
+            // Проверяем наличие товара и обновляем количество товара на складе
+            filialItemService.checkProductAvailability(itemRequest.getFilialItemId(), itemRequest.getQuantity());
+            filialItemService.updateStockByProductId(itemRequest.getFilialItemId(), itemRequest.getQuantity());
+
+            // Получаем FilialItem и устанавливаем его в orderItem
+            FilialItem filialItem = filialItemService.getFilialItemById(itemRequest.getFilialItemId());
+            orderItem.setFilialItem(filialItem);
+
+            // Добавляем orderItem в список orderItems
+            orderItems.add(orderItem);
+        }
+        order.setOrderItems(orderItems);
+
+        // Получаем информацию о клиенте и его скидке
+        Client client = clientService.findById(orderRequest.getClientId());
+        order.setClient(client);
+
+        // Вычисляем общую сумму заказа
+        BigDecimal totalAmount = orderItems.stream()
+                .map(item -> {
+                    Product product = item.getFilialItem().getProduct();
+                    return product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setTotalAmount(totalAmount.doubleValue());
+
+        // Вычисляем итоговую стоимость с учетом скидки
+        double totalAmountWithDiscount = calculateTotalPriceWithDiscount(order);
+        order.setTotalAmount(totalAmountWithDiscount);
+
+        // Генерируем и устанавливаем номер накладной
+        String newScreen = generateNextNakladnoy();
+        order.setNumberNakladnoy(newScreen);
+
+        // Устанавливаем дополнительные поля заказа
+        order.setAddress(orderRequest.getAddress());
+        order.setPhoneNumber(orderRequest.getPhoneNumber());
+        order.setName(orderRequest.getName());
+        order.setComment(orderRequest.getComment());
+
+        // Сохраняем заказ
+        Order savedOrder = orderRepository.save(order);
+
+        // Отправка SMS клиенту, если нужно
+//         String messageBody = String.format("Здравствуйте, %s! Ваш заказ на сумму %.2f был успешно принят. Номер накладной: %s",
+//                 client.getName(),order.getTotalAmount(),order.getNumberNakladnoy());
+//         twilioService.sendSms(client.getPhoneNumber(), messageBody);
+
+        // Преобразуем сохраненный заказ в ответ
+        return orderMapper.entityToResponse(savedOrder);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse createOrderDelivery(OrderRequestDelivery orderRequest) {
+        // Преобразуем запрос в сущность Order
+        Order order = orderMapper.requestToEntityDelivery(orderRequest);
+
+        order.setIsDelivery(true);
         // Устанавливаем текущего пользователя
         User currentUser = userService.getCurrentUser();
         order.setUser(currentUser);
@@ -148,6 +225,7 @@ public class OrderServiceImpl implements OrderService {
         // Преобразуем сохраненный заказ в ответ
         return orderMapper.entityToResponse(savedOrder);
     }
+
 
 
     @Override

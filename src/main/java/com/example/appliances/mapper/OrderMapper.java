@@ -2,6 +2,7 @@ package com.example.appliances.mapper;
 
 import com.example.appliances.entity.Order;
 import com.example.appliances.model.request.OrderRequest;
+import com.example.appliances.model.request.OrderRequestDelivery;
 import com.example.appliances.model.response.OrderResponse;
 import com.example.appliances.model.response.SimpleOrderResponse;
 import org.mapstruct.Mapper;
@@ -26,6 +27,9 @@ public interface OrderMapper {
 
     @Mapping(target = "manager", source = "managerId", qualifiedByName = "setManager")
     Order requestToEntity(OrderRequest request);
+
+    @Mapping(target = "manager", source = "managerId", qualifiedByName = "setManager")
+    Order requestToEntityDelivery(OrderRequestDelivery request);
 
     void update(@MappingTarget Order entity, OrderRequest request);
 }
