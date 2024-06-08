@@ -42,7 +42,7 @@ public class ProductApi {
     }
 
     //find all by page
-    @GetMapping("/list")
+    @GetMapping("/page")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN')")
     public Page<ProductResponse> findAllBySpecification(@RequestParam(required = false, defaultValue = "0") int page,
                                                                 @RequestParam(required = false, defaultValue = "25") int size,

@@ -2,15 +2,20 @@ package com.example.appliances.statistics;
 
 import com.example.appliances.repository.OrderRepository;
 import com.example.appliances.repository.ProductRepository;
+import com.example.appliances.repository.StatisticRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
+
+    @Autowired
+    private StatisticRepository statisticsRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -49,6 +54,27 @@ public class StatisticsServiceImpl implements StatisticsService {
                 })
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    @Transactional
+    public Double getRevenueByPeriod(LocalDateTime startDate, LocalDateTime endDate) {
+        return statisticsRepository.findTotalRevenueByPeriod(startDate, endDate);
+    }
+
+    @Override
+    @Transactional
+    public Double getRevenueByFilial(Long filialId, LocalDateTime startDate, LocalDateTime endDate) {
+        return statisticsRepository.findTotalRevenueByFilial(filialId, startDate, endDate);
+    }
+
+    @Override
+    @Transactional
+    public Double getRevenueByCategory(Long categoryId, LocalDateTime startDate, LocalDateTime endDate) {
+        return statisticsRepository.findTotalRevenueByCategory(categoryId, startDate, endDate);
+    }
+
+
 
 
 }

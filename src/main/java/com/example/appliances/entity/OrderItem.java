@@ -22,7 +22,7 @@ public class OrderItem {
      Order order;
 
 
-    //TODO изменить продукт на filialItem
+
     @ManyToOne
     @JoinColumn(name = "filialItem_id")
      FilialItem filialItem;
