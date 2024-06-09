@@ -25,19 +25,23 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     @Transactional
-    public List<ProductStatisticsResponse> getTopSellingProducts() {
-        return null;
+    public List<ProductStatisticsResponse> getTopSellingProducts(Long filialId) {
+        List<Object[]> results = statisticsRepository.findTopSellingProductsByFilialId(filialId);
+
+        return results.stream()
+                .map(result -> {
+                    String productName = (String) result[0];
+                    Long totalQuantity = (Long) result[1];
+                    return new ProductStatisticsResponse(productName, totalQuantity);
+                })
+                .limit(5) // Ограничиваем результат до топ-5 продуктов
+                .collect(Collectors.toList());
     }
-//        List<Object[]> results = productRepository.findTopSellingProducts();
-//        return results.stream()
-//                .map(result -> new ProductStatisticsResponse((String) result[0], (Long) result[1]))
-//                .collect(Collectors.toList());
-//    }
 
     @Override
     @Transactional
-    public List<ManagerStatisticsResponse> getTopSellingManagers() {
-        List<Object[]> results = orderRepository.findTopSellingManagers();
+    public List<ManagerStatisticsResponse> getTopSellingManagers(Long filialId) {
+        List<Object[]> results = orderRepository.findTopSellingManagersByFilialId(filialId);
 
         // Считаем общий доход
         double totalRevenue = results.stream()

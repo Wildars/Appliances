@@ -21,8 +21,6 @@ public class OrderItem {
     @JsonIgnore
      Order order;
 
-
-
     @ManyToOne
     @JoinColumn(name = "filialItem_id")
      FilialItem filialItem;

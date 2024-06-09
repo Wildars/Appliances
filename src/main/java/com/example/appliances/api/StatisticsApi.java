@@ -26,13 +26,13 @@ public class StatisticsApi {
     private StatisticsService statisticsService;
 
     @GetMapping("/top-selling-products")
-    public List<ProductStatisticsResponse> getTopSellingProducts() {
-        return statisticsService.getTopSellingProducts();
+    public List<ProductStatisticsResponse> getTopSellingProducts(@RequestParam Long filialId) {
+        return statisticsService.getTopSellingProducts(filialId);
     }
 
     @GetMapping("/top-selling-managers")
-    public List<ManagerStatisticsResponse> getTopSellingManagers() {
-        return statisticsService.getTopSellingManagers();
+    public List<ManagerStatisticsResponse> getTopSellingManagers(@RequestParam Long filialId) {
+        return statisticsService.getTopSellingManagers(filialId);
     }
 
 

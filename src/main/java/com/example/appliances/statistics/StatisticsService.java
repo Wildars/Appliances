@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface StatisticsService {
 
-    public List<ProductStatisticsResponse> getTopSellingProducts();
+    public List<ProductStatisticsResponse> getTopSellingProducts(Long filialId);
 
-    public List<ManagerStatisticsResponse> getTopSellingManagers();
+    public List<ManagerStatisticsResponse> getTopSellingManagers(Long filialId);
 
     Double getRevenueByPeriod(LocalDateTime startDate, LocalDateTime endDate);
     Double getRevenueByFilial(Long filialId, LocalDateTime startDate, LocalDateTime endDate);
