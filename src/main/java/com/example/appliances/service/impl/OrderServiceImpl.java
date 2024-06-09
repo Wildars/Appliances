@@ -12,6 +12,7 @@ import com.example.appliances.model.request.OrderRequest;
 import com.example.appliances.model.request.OrderRequestDelivery;
 import com.example.appliances.model.request.SaleItemElementRequest;
 import com.example.appliances.model.response.OrderResponse;
+import com.example.appliances.repository.ManagerRepository;
 import com.example.appliances.repository.OrderRepository;
 import com.example.appliances.repository.SaleStatusRepository;
 import com.example.appliances.repository.UserRepository;
@@ -44,9 +45,11 @@ public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderMapper orderMapper;
 
+    ShiftScheduleService shiftScheduleService;
     ProductService productService;
     UserService userService;
 
+    ManagerRepository managerRepository;
     TwilioService twilioService;
 
     ClientService clientService;
@@ -59,11 +62,13 @@ public class OrderServiceImpl implements OrderService {
 
     SaleStatusRepository systemStatusRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ProductService productService, UserService userService, TwilioService twilioService, ClientService clientService, FilialItemService filialItemService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, ShiftScheduleService shiftScheduleService, ProductService productService, UserService userService, ManagerRepository managerRepository, TwilioService twilioService, ClientService clientService, FilialItemService filialItemService, SaleStatusRepository saleStatusRepository, UserRepository userRepository, StorageService storageService, SaleStatusRepository systemStatusRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
+        this.shiftScheduleService = shiftScheduleService;
         this.productService = productService;
         this.userService = userService;
+        this.managerRepository = managerRepository;
         this.twilioService = twilioService;
         this.clientService = clientService;
         this.filialItemService = filialItemService;
@@ -113,6 +118,15 @@ public class OrderServiceImpl implements OrderService {
         // Получаем информацию о клиенте и его скидке
         Client client = clientService.findById(orderRequest.getClientId());
         order.setClient(client);
+
+        Manager manager = managerRepository.findById(orderRequest.getManagerId())
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (!shiftScheduleService.isManagerWorking(manager.getId(), now)) {
+            throw new RuntimeException("Manager is not working at this time");
+        }
+        order.setManager(manager);
 
         // Вычисляем общую сумму заказа
         BigDecimal totalAmount = orderItems.stream()
@@ -197,6 +211,16 @@ public class OrderServiceImpl implements OrderService {
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(totalAmount.doubleValue());
+
+        // Устанавливаем менеджера и проверяем его занятость
+        Manager manager = managerRepository.findById(orderRequest.getManagerId())
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (!shiftScheduleService.isManagerWorking(manager.getId(), now)) {
+            throw new RuntimeException("Manager is not working at this time");
+        }
+        order.setManager(manager);
 
         // Вычисляем итоговую стоимость с учетом скидки
         double totalAmountWithDiscount = calculateTotalPriceWithDiscount(order);

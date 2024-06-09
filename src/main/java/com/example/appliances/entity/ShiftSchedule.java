@@ -4,8 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,22 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Manager {
+public class ShiftSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
-    String surname;
-    String patronymic;
 
-    String phoneNumber;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    Manager manager;
 
+    LocalDateTime shiftStart;
 
+    LocalDateTime shiftEnd;
 
     @ManyToOne
     @JoinColumn(name = "filial_id")
     Filial filial;
-
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<ShiftSchedule> shiftSchedules = new ArrayList<>();
 }

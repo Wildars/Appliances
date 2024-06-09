@@ -1,6 +1,7 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.Client;
+import com.example.appliances.entity.Filial;
 import com.example.appliances.entity.Manager;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.ClientMapper;
@@ -10,6 +11,7 @@ import com.example.appliances.model.request.ManagerRequest;
 import com.example.appliances.model.response.ClientResponse;
 import com.example.appliances.model.response.ManagerResponse;
 import com.example.appliances.repository.ClientRepository;
+import com.example.appliances.repository.FilialRepository;
 import com.example.appliances.repository.ManagerRepository;
 import com.example.appliances.service.ClientService;
 import com.example.appliances.service.ManagerService;
@@ -20,7 +22,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,18 +37,26 @@ public class ManagerServiceImpl implements ManagerService {
 
     ManagerRepository managerRepository;
 
-    public ManagerServiceImpl(ManagerMapper managerMapper, ManagerRepository managerRepository) {
+    FilialRepository filialRepository;
+
+    public ManagerServiceImpl(ManagerMapper managerMapper, ManagerRepository managerRepository, FilialRepository filialRepository) {
         this.managerMapper = managerMapper;
         this.managerRepository = managerRepository;
+        this.filialRepository = filialRepository;
     }
 
 
     @Override
+    @Transactional
     public ManagerResponse create(ManagerRequest request) {
-        Manager client = managerMapper.requestToEntity(request);
-        Manager save = managerRepository.save(client);
-        return managerMapper.entityToResponse(save);
+        Manager manager = managerMapper.requestToEntity(request);
+        Filial filial = filialRepository.findById(request.getFilialId())
+                .orElseThrow(() -> new EntityNotFoundException("Filial not found"));
+        manager.setFilial(filial);
+        Manager savedManager = managerRepository.save(manager);
+        return managerMapper.entityToResponse(savedManager);
     }
+
 
     @Override
     public Manager findById(Long id) {

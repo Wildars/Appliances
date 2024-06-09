@@ -1,7 +1,8 @@
 package com.example.appliances.model.request;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -9,10 +10,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ManagerRequest {
-    String name;
-    String surname;
-    String patronymic;
+public class ShiftScheduleRequest {
+    Long managerId;
     Long filialId;
-    String phoneNumber;
+    LocalDateTime shiftStart;
+    LocalDateTime shiftEnd;
 }
