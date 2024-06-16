@@ -40,7 +40,6 @@ import java.util.List;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-//НЕ ДАЙ БОГ КТО ТО СЮДА ЗАГЛЯНЕТ, БЕГИ ГЛУПЕЕЕЕЦ
 public class OrderServiceImpl implements OrderService {
     OrderRepository orderRepository;
     OrderMapper orderMapper;
@@ -91,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(currentUser);
 
         // Устанавливаем начальный статус заказа
-        SaleStatus status = saleStatusRepository.findById(SaleStatusEnum.ACCEPTED.getId())
+        SaleStatus status = saleStatusRepository.findById(SaleStatusEnum.DONE.getId())
                 .orElseThrow(() -> new RuntimeException("SaleStatus not found"));
         order.setStatus(status);
 

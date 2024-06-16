@@ -22,9 +22,10 @@ public interface StorageItemService {
 
     void updateStock(UUID productId, Long storageId, int quantity);
 
-    public void checkProductAvailability(UUID productId, int requestedQuantity);
+    public void checkProductAvailability(UUID productId,Long storageId, int requestedQuantity);
 
-    public void updateStockByProductId(UUID productId, int quantity);
+    public void updateStockByProductId(UUID productId,Long storageId , int quantity);
+
 
     public StorageItem findByProductIdAndStorageId(UUID productId, Long storageId);
 }

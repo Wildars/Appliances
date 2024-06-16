@@ -29,8 +29,9 @@ public interface StatisticRepository extends JpaRepository<Order,Long> {
             "JOIN oi.filialItem fi " +
             "JOIN fi.product p " +
             "JOIN fi.filial f " +
-            "WHERE f.id = :filialId " +
+            "WHERE f.id = :filialId AND o.schedule BETWEEN :startDate AND :endDate " +
             "GROUP BY p.id, p.name " +
             "ORDER BY totalQuantity DESC")
-    List<Object[]> findTopSellingProductsByFilialId(@Param("filialId") Long filialId);
+    List<Object[]> findTopSellingProductsByFilialIdAndDateRange(@Param("filialId") Long filialId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
 }

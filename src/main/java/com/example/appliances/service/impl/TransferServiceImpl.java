@@ -59,10 +59,11 @@ public class TransferServiceImpl implements TransferService {
             int quantity = request.getQuantity();
 
             // Проверка доступности товара на складе
-            storageItemService.checkProductAvailability(productId, quantity);
+
+            storageItemService.checkProductAvailability(productId,storageId, quantity);
 
             // Уменьшение количества товара на складе
-            storageItemService.updateStockByProductId(productId, quantity);
+            storageItemService.updateStockByProductId(productId,storageId, quantity);
 
             // Получение объектов Product, Storage и Filial из репозиториев
             Product product = productRepository.findById(productId)

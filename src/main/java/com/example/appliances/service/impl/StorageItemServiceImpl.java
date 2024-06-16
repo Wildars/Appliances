@@ -111,11 +111,12 @@ public class StorageItemServiceImpl implements StorageItemService {
         }
     }
 
+
     @Override
     @Transactional
-    public void checkProductAvailability(UUID productId, int requestedQuantity) {
+    public void checkProductAvailability(UUID productId,Long storageId, int requestedQuantity) {
         // Найдем запись StorageItem для заданного productId
-        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId,storageId).orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));;
 
         // Проверим, найден ли StorageItem
         if (storageItem == null) {
@@ -130,9 +131,9 @@ public class StorageItemServiceImpl implements StorageItemService {
 
     @Override
     @Transactional
-    public void updateStockByProductId(UUID productId, int quantity) {
+    public void updateStockByProductId(UUID productId,Long storageId ,int quantity) {
         // Получаем информацию о товаре на складе по productId
-        StorageItem storageItem = storageItemRepository.findByProductId(productId);
+        StorageItem storageItem = storageItemRepository.findByProductIdAndStorageId(productId,storageId).orElseThrow(() -> new RecordNotFoundException("Товар не найден на складе"));;;
 
         if (storageItem == null) {
             throw new ProductNotFoundException("Товар не найден на складе с ID: " + productId);
@@ -146,6 +147,7 @@ public class StorageItemServiceImpl implements StorageItemService {
         storageItem.setQuantity(newQuantity);
         storageItemRepository.save(storageItem);
     }
+
 
     // Реализация метода findByProductIdAndFilialId
     @Override

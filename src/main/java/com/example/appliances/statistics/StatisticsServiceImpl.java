@@ -25,8 +25,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     @Transactional
-    public List<ProductStatisticsResponse> getTopSellingProducts(Long filialId) {
-        List<Object[]> results = statisticsRepository.findTopSellingProductsByFilialId(filialId);
+    public List<ProductStatisticsResponse> getTopSellingProducts(Long filialId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> results = statisticsRepository.findTopSellingProductsByFilialIdAndDateRange(filialId, startDate, endDate);
 
         return results.stream()
                 .map(result -> {
@@ -40,8 +40,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     @Transactional
-    public List<ManagerStatisticsResponse> getTopSellingManagers(Long filialId) {
-        List<Object[]> results = orderRepository.findTopSellingManagersByFilialId(filialId);
+    public List<ManagerStatisticsResponse> getTopSellingManagers(Long filialId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> results = orderRepository.findTopSellingManagersByFilialIdAndDateRange(filialId, startDate, endDate);
 
         // Считаем общий доход
         double totalRevenue = results.stream()
@@ -79,6 +79,18 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
 
+    @Override
+    @Transactional
+    public StorePerformanceMetrics getStorePerformanceMetrics(Long filialId, LocalDateTime startDate, LocalDateTime endDate) {
+        Double averageCheck = orderRepository.findAverageCheckByFilialIdAndDateRange(filialId, startDate, endDate);
+        Long transactionCount = orderRepository.findTransactionCountByFilialIdAndDateRange(filialId, startDate, endDate);
+        Long visitorCount = orderRepository.findVisitorCountByFilialIdAndDateRange(filialId, startDate, endDate);
 
+        return StorePerformanceMetrics.builder()
+                .averageCheck(averageCheck != null ? averageCheck : 0)
+                .transactionCount(transactionCount != null ? transactionCount : 0)
+                .visitorCount(visitorCount != null ? visitorCount : 0)
+                .build();
+    }
 
 }

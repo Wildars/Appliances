@@ -1,9 +1,7 @@
 package com.example.appliances.api;
 
 import com.example.appliances.repository.StatisticRepository;
-import com.example.appliances.statistics.ManagerStatisticsResponse;
-import com.example.appliances.statistics.ProductStatisticsResponse;
-import com.example.appliances.statistics.StatisticsService;
+import com.example.appliances.statistics.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -20,21 +18,33 @@ import java.util.List;
 @RequestMapping("/api/statistics")
 public class StatisticsApi {
 
+    @Autowired
+    InventoryService inventoryService;
 
 
     @Autowired
     private StatisticsService statisticsService;
 
     @GetMapping("/top-selling-products")
-    public List<ProductStatisticsResponse> getTopSellingProducts(@RequestParam Long filialId) {
-        return statisticsService.getTopSellingProducts(filialId);
+    public List<ProductStatisticsResponse> getTopSellingProducts(
+            @RequestParam(required = false) Long filialId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return statisticsService.getTopSellingProducts(filialId, startDate, endDate);
     }
 
     @GetMapping("/top-selling-managers")
-    public List<ManagerStatisticsResponse> getTopSellingManagers(@RequestParam Long filialId) {
-        return statisticsService.getTopSellingManagers(filialId);
+    public List<ManagerStatisticsResponse> getTopSellingManagers(
+            @RequestParam(required = false) Long filialId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return statisticsService.getTopSellingManagers(filialId, startDate, endDate);
     }
 
+    @GetMapping("/statistics")
+    public InventoryStatisticsResponse getInventoryStatistics(@RequestParam Long storageId) {
+        return inventoryService.getInventoryStatistics(storageId);
+    }
 
     @GetMapping("/revenue-by-period")
     public ResponseEntity<Double> getRevenueByPeriod(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -57,6 +67,14 @@ public class StatisticsApi {
                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         Double revenue = statisticsService.getRevenueByCategory(categoryId, startDate, endDate);
         return new ResponseEntity<>(revenue, HttpStatus.OK);
+    }
+
+    @GetMapping("/metrics")
+    public StorePerformanceMetrics getStorePerformanceMetrics(
+            @RequestParam(required = false) Long filialId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return statisticsService.getStorePerformanceMetrics(filialId, startDate, endDate);
     }
 }
 

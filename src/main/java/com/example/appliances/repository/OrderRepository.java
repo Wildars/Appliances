@@ -52,11 +52,22 @@ public interface OrderRepository extends JpaRepository<Order,Long> , JpaSpecific
             "JOIN oi.filialItem fi " +
             "JOIN fi.filial f " +
             "JOIN o.manager m " +
-            "WHERE f.id = :filialId " +
+            "WHERE f.id = :filialId AND o.schedule BETWEEN :startDate AND :endDate " +
             "GROUP BY m.id, m.name, m.surname " +
             "ORDER BY revenue DESC")
-    List<Object[]> findTopSellingManagersByFilialId(@Param("filialId") Long filialId);
-    
+    List<Object[]> findTopSellingManagersByFilialIdAndDateRange(@Param("filialId") Long filialId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT AVG(o.totalAmount) FROM Order o JOIN o.orderItems oi JOIN oi.filialItem fi WHERE fi.filial.id = :filialId AND o.schedule BETWEEN :startDate AND :endDate")
+    Double findAverageCheckByFilialIdAndDateRange(@Param("filialId") Long filialId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(o) FROM Order o JOIN o.orderItems oi JOIN oi.filialItem fi WHERE fi.filial.id = :filialId AND o.schedule BETWEEN :startDate AND :endDate")
+    Long findTransactionCountByFilialIdAndDateRange(@Param("filialId") Long filialId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT o.client.id) FROM Order o JOIN o.orderItems oi JOIN oi.filialItem fi WHERE fi.filial.id = :filialId AND o.schedule BETWEEN :startDate AND :endDate")
+    Long findVisitorCountByFilialIdAndDateRange(@Param("filialId") Long filialId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
     Page<Order> findByDateDeliveryAndCreationDateAndManagerIdAndStatus(Date date, Date date1, Long aLong, SaleStatus saleStatus, Pageable paging);
 
     Page<Order> findByDateDeliveryAndCreationDateAndManagerId(Date date, Date date1, Long aLong, Pageable paging);
