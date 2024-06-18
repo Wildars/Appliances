@@ -1,6 +1,8 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.*;
+import com.example.appliances.enums.SaleStatusEnum;
+import com.example.appliances.enums.WishListStatusEnum;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.WishListFilialMapper;
 import com.example.appliances.mapper.WishListMapper;
@@ -75,7 +77,8 @@ public class WishListServiceFilialImpl implements WishListFilialService {
     @Transactional
     public WishListFilialResponse create(WishListFilialRequest request) {
         WishListFilial wishList = wishListMapper.requestToEntity(request);
-
+        wishList.setStatus(WishListStatusEnum.CREATED);
+        wishList.setIsServed(false);
         // Validate and set filial
         Filial storage = filialRepository.findById(request.getFilialId())
                 .orElseThrow(() -> new RecordNotFoundException("Filial not found"));
@@ -98,6 +101,18 @@ public class WishListServiceFilialImpl implements WishListFilialService {
         WishListFilial savedWishList = wishListRepository.save(wishList);
         return wishListMapper.entityToResponse(savedWishList);
     }
+
+    @Override
+    @Transactional
+    public void returnWishList(Long orderId) {
+        WishListFilial wishListFilial = wishListRepository.findById(orderId).orElseThrow(() -> new RuntimeException("wishListFilial not found"));
+
+        // Меняем статус заказа на RETURNED
+        wishListFilial.setStatus(WishListStatusEnum.RETURNED);
+
+        wishListRepository.save(wishListFilial);
+    }
+    
     @Override
     @Transactional
     public WishListFilialResponse findById(Long id) {

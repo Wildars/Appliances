@@ -4,7 +4,9 @@ public enum WishListStatusEnum {
     CREATED(1L),
     RETURNED(2L),
     ACCEPTED(3L),
-    REJECTED(4L);
+    REJECTED(4L),
+    RECIEVED(5L),
+    REFUSE(6L);
 
     WishListStatusEnum(Long  id) {
         this.id = id;

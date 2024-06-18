@@ -51,6 +51,15 @@ public class WishListFilialApi {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
+    @PatchMapping("/return/{orderId}")
+    public ResponseEntity<String> returnWishList(@PathVariable Long orderId) {
+        try {
+            wishListFilialService.returnWishList(orderId);
+            return ResponseEntity.ok("WishList returned successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during returning WishList: " + e.getMessage());
+        }
+    }
     @PutMapping("/{id}")
 //    @PreAuthorize("hasAnyRole('ROLE_SALEMAN', 'ROLE_ADMIN') ")
     public ResponseEntity<WishListFilialResponse> update(@RequestBody WishListFilialRequest wishListRequest, @PathVariable Long id) {

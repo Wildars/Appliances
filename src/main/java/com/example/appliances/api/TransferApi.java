@@ -56,4 +56,28 @@ public class TransferApi {
         List<TransferItemResponse> transfers = transferService.findAllransfersItem();
         return new ResponseEntity<>(transfers, HttpStatus.OK);
     }
+
+
+
+    @PostMapping("/create/transfer/wishlist")
+    public ResponseEntity<String> transferProductsFromWishList(@RequestParam Long wishListFilialId, @RequestParam Long storageId) {
+        try {
+            transferService.transferProductsFromWishList(wishListFilialId, storageId);
+            return ResponseEntity.ok("Products transferred successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during product transfer: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/reject/transfer/wishlist")
+    public ResponseEntity<String> transferProductsFromWishList(@RequestParam Long wishListFilialId) {
+        try {
+            transferService.rejectTranserFromWishList(wishListFilialId);
+            return ResponseEntity.ok("Products transferred successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during product transfer: " + e.getMessage());
+        }
+    }
+
+
 }

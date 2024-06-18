@@ -26,4 +26,5 @@ public interface WishListFilialService {
     public List<WishListFilialResponse> findAll();
 
     public void deleteById(Long id) ;
+    public void returnWishList(Long orderId);
 }

@@ -19,4 +19,9 @@ public interface TransferService {
     public TransferItemResponse findByIdransfersItem(Long id);
 
     public List<TransferResponse> findAllTransfers();
+
+    public void transferProductsFromWishList(Long wishListFilialId, Long storageId);
+
+
+    public void rejectTranserFromWishList(Long wishListFilialId);
 }

@@ -1,6 +1,7 @@
 package com.example.appliances.service.impl;
 
 import com.example.appliances.entity.*;
+import com.example.appliances.enums.WishListStatusEnum;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.TransferItemMapper;
 import com.example.appliances.mapper.TransferMapper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 public class TransferServiceImpl implements TransferService {
 
+    private final WishListFilialRepository wishListFilialRepository;
     private final StorageItemService storageItemService;
     private final FilialItemService filialItemService;
     private final TransferRepository transferRepository;
@@ -34,10 +37,11 @@ public class TransferServiceImpl implements TransferService {
     private final TransferItemMapper transferItemMapper;
     private final TransferMapper transferMapper;
 
-    public TransferServiceImpl(StorageItemService storageItemService, FilialItemService filialItemService,
+    public TransferServiceImpl(WishListFilialRepository wishListFilialRepository, StorageItemService storageItemService, FilialItemService filialItemService,
                                TransferRepository transferRepository, TransferItemRepository transferItemRepository,
                                ProductRepository productRepository, FilialRepository filialRepository,
                                StorageRepository storageRepository, TransferItemMapper transferItemMapper, TransferMapper transferMapper) {
+        this.wishListFilialRepository = wishListFilialRepository;
         this.storageItemService = storageItemService;
         this.filialItemService = filialItemService;
         this.transferRepository = transferRepository;
@@ -101,9 +105,87 @@ public class TransferServiceImpl implements TransferService {
                 filialItem.setQuantity(quantity);
                 filialItemService.create(filialItem);
             }
+
+//            WishListFilial wishListFilial = wishListFilialRepository.findByFilialId(filialId)
+//                    .orElseThrow(() -> new IllegalArgumentException("WishListFilial not found for the specified filial"));
+//            wishListFilial.setStatus(WishListStatusEnum.ACCEPTED);
+//            wishListFilial.setIsServed(true);
+//            wishListFilialRepository.save(wishListFilial);
         }
     }
+    @Override
+    @Transactional
+    public void transferProductsFromWishList(Long wishListFilialId, Long storageId) {
+        // Получаем WishListFilial по ID
+        WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
+                .orElseThrow(() -> new RecordNotFoundException("WishListFilial not found"));
 
+        // Получаем Filial из WishListFilial
+        Filial filial = wishListFilial.getFilial();
+
+        // Получаем все WishListItemFilial из WishListFilial
+        List<WishListItemFilial> wishListItems = wishListFilial.getWishListItemFilials();
+
+        // Создаем новый Transfer
+        Transfer transfer = new Transfer();
+        transfer.setTransferDate(LocalDateTime.now());
+        transfer.setFromStorage(storageRepository.findById(storageId)
+                .orElseThrow(() -> new RecordNotFoundException("Storage not found"))); // Определяем склад
+        transfer.setToFilial(filial);
+        List<TransferItem> transferItems = new ArrayList<>();
+
+        // Перебираем все WishListItemFilial и выполняем трансфер для каждого товара
+        for (WishListItemFilial wishListItem : wishListItems) {
+            Product product = wishListItem.getProduct();
+            int quantity = wishListItem.getQuantity();
+
+            // Проверяем доступность товара на складе и уменьшаем количество на складе
+            storageItemService.checkProductAvailability(product.getId(), storageId, quantity);
+            storageItemService.updateStockByProductId(product.getId(), storageId, quantity);
+
+            // Создаем TransferItem и добавляем его в Transfer
+            TransferItem transferItem = new TransferItem();
+            transferItem.setProduct(product);
+            transferItem.setQuantity(quantity);
+            transferItem.setTransfer(transfer);
+            transferItems.add(transferItem);
+
+            // Обновляем количество товара в филиале
+            try {
+                FilialItem filialItem = filialItemService.findByProductIdAndFilialId(product.getId(), filial.getId());
+                filialItem.setQuantity(filialItem.getQuantity() + quantity);
+                filialItemService.updateEntity(filialItem);
+            } catch (RecordNotFoundException e) {
+                FilialItem filialItem = new FilialItem();
+                filialItem.setProduct(product);
+                filialItem.setFilial(filial);
+                filialItem.setQuantity(quantity);
+                filialItemService.create(filialItem);
+            }
+        }
+
+        // Сохраняем Transfer и TransferItems
+        transfer.setTransferItems(transferItems);
+        transferRepository.save(transfer);
+
+        // Устанавливаем статус ACCEPTED для WishListFilial и сохраняем его
+        wishListFilial.setStatus(WishListStatusEnum.ACCEPTED);
+        wishListFilialRepository.save(wishListFilial);
+    }
+
+
+    @Override
+    @Transactional
+    public void rejectTranserFromWishList(Long wishListFilialId) {
+        WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
+                .orElseThrow(() -> new RecordNotFoundException("WishListFilial not found"));
+
+//        Transfer transfer = new Transfer();
+        wishListFilial.setStatus(WishListStatusEnum.REJECTED);
+
+        wishListFilialRepository.save(wishListFilial);
+
+    }
 
 
 
