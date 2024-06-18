@@ -14,9 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransferResponse {
-//    private ProductResponse product;
-    private StorageResponse storage;
-    private FilialResponse filial;
+    private StorageResponse fromStorage;
+    private FilialResponse toFilial;
     private int quantity;
     LocalDateTime transferDate;
 
