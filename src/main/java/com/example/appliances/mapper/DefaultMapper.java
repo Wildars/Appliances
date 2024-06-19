@@ -112,13 +112,6 @@ public interface DefaultMapper {
             return ProductCategory.builder().id(id).build();
     }
 
-    @Named("setStatus")
-    default Status setStatus(Long id) {
-        if (id == null)
-            return null;
-        else
-            return Status.builder().id(id).build();
-    }
 
     @Named("setProduct")
     default Product setProduct(UUID id) {
@@ -197,13 +190,7 @@ public interface DefaultMapper {
             return Storage.builder().id(id).build();
     }
 
-    @Named("setImage")
-    default Image setImage(Long id) {
-        if (id == null)
-            return null;
-        else
-            return Image.builder().id(id).build();
-    }
+
 
     @Named("setRole")
     default Role setRole(Long id) {
@@ -226,18 +213,7 @@ public interface DefaultMapper {
         return result;
     }
 
-    @Named("setPermissions")
-    default List<Permission> setPermissions(List<Short> ids) {
-        if (ids == null)
-            return null;
-        if (ids.isEmpty())
-            return new ArrayList<>();
 
-        List<Permission> result = new ArrayList<>();
-        for (var i : ids)
-            result.add(Permission.builder().id(i).build());
-        return result;
-    }
 
     @Named("setRoles")
     default List<Role> setRoles(List<Long> ids) {

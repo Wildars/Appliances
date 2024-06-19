@@ -16,5 +16,4 @@ public interface RoleService {
     public List<RoleResponse> findAll() ;
     void deleteById(Long id);
 
-    List<PermissionCategory> getPermissions();
 }

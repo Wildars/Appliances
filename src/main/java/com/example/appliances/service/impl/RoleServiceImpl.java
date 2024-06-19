@@ -6,7 +6,6 @@ import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.RoleMapper;
 import com.example.appliances.model.request.RoleRequest;
 import com.example.appliances.model.response.RoleResponse;
-import com.example.appliances.repository.PermissionCategoryRepository;
 import com.example.appliances.repository.RoleRepository;
 import com.example.appliances.service.RoleService;
 import lombok.AccessLevel;
@@ -22,15 +21,12 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
     RoleRepository roleRepository;
     RoleMapper roleMapper;
-    PermissionCategoryRepository permissionCategoryRepository;
 
     @Autowired
     public RoleServiceImpl(RoleRepository roleRepository,
-                           RoleMapper roleMapper,
-                           PermissionCategoryRepository permissionCategoryRepository) {
+                           RoleMapper roleMapper) {
         this.roleRepository = roleRepository;
         this.roleMapper = roleMapper;
-        this.permissionCategoryRepository = permissionCategoryRepository;
     }
 
     @Override
@@ -72,8 +68,4 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.deleteById(id);
     }
 
-    @Override
-    public List<PermissionCategory> getPermissions() {
-        return permissionCategoryRepository.findAll();
-    }
 }

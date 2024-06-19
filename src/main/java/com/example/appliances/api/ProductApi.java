@@ -3,7 +3,6 @@ package com.example.appliances.api;
 import com.example.appliances.model.request.ImageRequest;
 import com.example.appliances.model.request.ProductRequest;
 import com.example.appliances.model.response.ProductResponse;
-import com.example.appliances.service.ImageService;
 import com.example.appliances.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -27,12 +26,10 @@ import java.util.UUID;
 @RequestMapping("/api/products")
 public class ProductApi {
 
-    private final ImageService imageService;
     private final ProductService productService;
 
     @Autowired
-    public ProductApi(ImageService imageService, ProductService productService) {
-        this.imageService = imageService;
+    public ProductApi( ProductService productService) {
         this.productService = productService;
     }
 

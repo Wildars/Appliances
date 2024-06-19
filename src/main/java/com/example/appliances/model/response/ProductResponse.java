@@ -1,7 +1,5 @@
 package com.example.appliances.model.response;
 
-import com.example.appliances.entity.Image;
-import com.example.appliances.entity.Status;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

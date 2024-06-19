@@ -1,6 +1,5 @@
 package com.example.appliances.mapper;
 
-import com.example.appliances.entity.Permission;
 import com.example.appliances.entity.Product;
 import com.example.appliances.model.request.PermissionRequest;
 import com.example.appliances.model.request.ProductRequest;

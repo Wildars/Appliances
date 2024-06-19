@@ -31,9 +31,7 @@ public class Product extends Audit<String> implements Serializable {
 
     String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    Status status;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)

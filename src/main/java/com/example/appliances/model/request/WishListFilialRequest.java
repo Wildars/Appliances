@@ -14,7 +14,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishListFilialRequest {
 
-    Boolean isServed;
+
     Long filialId;
      List<WishListItemFilialRequest> wishListItemFilials;
 }

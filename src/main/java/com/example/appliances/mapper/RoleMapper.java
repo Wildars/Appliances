@@ -13,13 +13,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {
                 DefaultMapper.class,
-                PermissionsMapper.class
         }
 )
 public interface RoleMapper {
     RoleResponse entityToResponse(Role entity);
 
-    @Mapping(target = "permissions", source = "permissionIds", qualifiedByName = "setPermissions")
     Role requestToEntity(RoleRequest request);
 
     void update(@MappingTarget Role entity, RoleRequest request);

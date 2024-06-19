@@ -60,9 +60,5 @@ public class RoleApi {
         roleService.deleteById(id);
     }
 
-    @GetMapping("/permissions")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<PermissionCategory> getPermissions(){
-        return roleService.getPermissions();
-    }
+
 }
