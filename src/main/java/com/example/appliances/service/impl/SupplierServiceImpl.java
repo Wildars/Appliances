@@ -1,9 +1,6 @@
 package com.example.appliances.service.impl;
 
-import com.example.appliances.entity.Supplier;
-import com.example.appliances.entity.Supply;
-import com.example.appliances.entity.SupplyItem;
-import com.example.appliances.entity.WishList;
+import com.example.appliances.entity.*;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.SupplierMapper;
 import com.example.appliances.mapper.SupplyItemMapper;
@@ -105,7 +102,9 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier supply = supplierMapper.requestToEntity(request);
         supply.setPassword(passwordEncoder.encode(request.getPassword()));
         supply.setIsActive(true);
-
+        Role role = new Role();
+        role.setId(4L);
+        supply.setRole(role);
         Supplier savedSupply = supplierRepository.save(supply);
 
         return supplierMapper.entityToResponse(savedSupply);
