@@ -20,7 +20,6 @@ public class UserRequest {
     String surname;
     String name;
     String patronymic;
-    String position;
     List<Long> filialIds;
     String phone;
     @Email(message = "Провертье правильность Email")

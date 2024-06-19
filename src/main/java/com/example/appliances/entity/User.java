@@ -30,8 +30,7 @@ public class User extends Audit<String> implements Serializable {
     String name;
     @Column
     String patronymic;
-    @Column
-    String position;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -51,10 +50,7 @@ public class User extends Audit<String> implements Serializable {
     Boolean isActive;
 
     String address;
-    @Column(name = "procent_skidki")
-    Integer procentSkidki;
-    @Column(name = "type_client")
-    Boolean typeClient;
+
 
 
 

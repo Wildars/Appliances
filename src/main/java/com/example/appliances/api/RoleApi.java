@@ -1,6 +1,5 @@
 package com.example.appliances.api;
 
-import com.example.appliances.entity.PermissionCategory;
 import com.example.appliances.model.request.RoleRequest;
 import com.example.appliances.model.response.RoleResponse;
 import com.example.appliances.service.RoleService;

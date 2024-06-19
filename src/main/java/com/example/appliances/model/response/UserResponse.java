@@ -20,7 +20,6 @@ public class UserResponse {
     String surname;
     String name;
     String patronymic;
-    String position;
     List<FilialResponse> filials;
     String phone;
     @Email(message = "Провертье правильность Email")

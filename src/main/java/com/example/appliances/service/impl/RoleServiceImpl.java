@@ -1,6 +1,5 @@
 package com.example.appliances.service.impl;
 
-import com.example.appliances.entity.PermissionCategory;
 import com.example.appliances.entity.Role;
 import com.example.appliances.exception.RecordNotFoundException;
 import com.example.appliances.mapper.RoleMapper;

@@ -98,9 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         HashSet<String> authorities = new HashSet<>();
         for (var role : user.getRoles()) {
-            for (var permission : role.getPermissions()) {
-                authorities.add(permission.getName());
-            }
+
         }
 
         String jwt = jwtUtil.generateToken(authRequest.getPin(), authRequest.getFilCode());
@@ -118,16 +116,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .jwtToken(jwt)
                 .organizations(organizationResponse)
                 .roles(user.getRoles())
-                .permissions(authorities.stream().collect(Collectors.toList()))
                 .build();
     }
 
     private AuthenticationModel generateTokenForSuperAdmin(User user) {
         HashSet<String> authorities = new HashSet<>();
         for (var role : user.getRoles()) {
-            for (var permission : role.getPermissions()) {
-                authorities.add(permission.getName());
-            }
+
         }
 
         String jwt = jwtUtil.generateToken(user.getPin(), null);
@@ -142,7 +137,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(user.getEmail())
                 .jwtToken(jwt)
                 .roles(user.getRoles())
-                .permissions(authorities.stream().collect(Collectors.toList()))
                 .build();
     }
 

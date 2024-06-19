@@ -29,7 +29,5 @@ public class Role extends Audit<String> implements Serializable {
     String name;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
-    List<Permission> permissions = new ArrayList<>();
+
 }
