@@ -25,7 +25,6 @@ public interface StorageItemService {
     public void checkProductAvailability(UUID productId,Long storageId, int requestedQuantity);
 
     public void updateStockByProductId(UUID productId,Long storageId , int quantity);
-
-
+    public void updateStockInFilial(UUID productId, Long filialId, int quantity);
     public StorageItem findByProductIdAndStorageId(UUID productId, Long storageId);
 }

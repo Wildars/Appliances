@@ -1,5 +1,6 @@
 package com.example.appliances.service.impl;
 
+import com.example.appliances.entity.FilialItem;
 import com.example.appliances.entity.Storage;
 import com.example.appliances.entity.StorageItem;
 import com.example.appliances.exception.ProductNotAvailableException;
@@ -9,6 +10,7 @@ import com.example.appliances.mapper.StorageItemMapper;
 import com.example.appliances.model.request.StorageItemRequest;
 import com.example.appliances.model.response.StorageItemResponse;
 import com.example.appliances.model.response.StorageResponse;
+import com.example.appliances.repository.FilialItemRepository;
 import com.example.appliances.repository.ProductRepository;
 import com.example.appliances.repository.StorageItemRepository;
 import com.example.appliances.repository.StorageRepository;
@@ -28,6 +30,7 @@ public class StorageItemServiceImpl implements StorageItemService {
 
     private final ProductRepository productRepository;
 
+    private final FilialItemRepository filialItemRepository;
     @Autowired
     private final StorageItemRepository storageItemRepository;
     @Autowired
@@ -35,8 +38,9 @@ public class StorageItemServiceImpl implements StorageItemService {
     @Autowired
     private final StorageItemMapper storageItemMapper;
 
-    public StorageItemServiceImpl(ProductRepository productRepository, StorageItemRepository storageItemRepository, StorageRepository storageRepository, StorageItemMapper storageItemMapper) {
+    public StorageItemServiceImpl(ProductRepository productRepository, FilialItemRepository filialItemRepository, StorageItemRepository storageItemRepository, StorageRepository storageRepository, StorageItemMapper storageItemMapper) {
         this.productRepository = productRepository;
+        this.filialItemRepository = filialItemRepository;
         this.storageItemRepository = storageItemRepository;
         this.storageRepository = storageRepository;
         this.storageItemMapper = storageItemMapper;
@@ -148,6 +152,22 @@ public class StorageItemServiceImpl implements StorageItemService {
         storageItemRepository.save(storageItem);
     }
 
+
+    @Override
+    @Transactional
+    public void updateStockInFilial(UUID productId, Long filialId, int quantity) {
+        // Получаем информацию о товаре на филиале по productId и filialId
+        FilialItem filialItem = filialItemRepository.findByProductIdAndFilialId(productId, filialId)
+                .orElseThrow(() -> new RecordNotFoundException("Товар не найден на филиале с ID: " + productId));
+
+        // Проверяем, что количество на филиале достаточно для выполнения операции
+        int newFilialQuantity = filialItem.getQuantity() - quantity;
+        if (newFilialQuantity < 0) {
+            throw new IllegalArgumentException("Недостаточно товара на филиале");
+        }
+        filialItem.setQuantity(newFilialQuantity);
+        filialItemRepository.save(filialItem);
+    }
 
     // Реализация метода findByProductIdAndFilialId
     @Override

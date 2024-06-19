@@ -116,79 +116,136 @@ public class TransferServiceImpl implements TransferService {
     @Override
     @Transactional
     public void transferProductsFromWishList(Long wishListFilialId, Long storageId) {
-        // Получаем WishListFilial по ID
         WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
-                .orElseThrow(() -> new RecordNotFoundException("WishListFilial not found"));
+                .orElseThrow(() -> new RuntimeException("WishListFilial not found"));
 
-        // Получаем Filial из WishListFilial
-        Filial filial = wishListFilial.getFilial();
+        if (wishListFilial.getStatus() != WishListStatusEnum.CREATED) {
+            throw new IllegalStateException("WishListFilial must be in CREATED status to transfer products");
+        }
 
-        // Получаем все WishListItemFilial из WishListFilial
-        List<WishListItemFilial> wishListItems = wishListFilial.getWishListItemFilials();
+        List<WishListItemFilial> items = wishListFilial.getWishListItemFilials();
+        for (WishListItemFilial item : items) {
+            UUID productId = item.getProduct().getId();
+            int quantity = item.getQuantity();
 
-        // Создаем новый Transfer
-        Transfer transfer = new Transfer();
-        transfer.setTransferDate(LocalDateTime.now());
-        transfer.setFromStorage(storageRepository.findById(storageId)
-                .orElseThrow(() -> new RecordNotFoundException("Storage not found"))); // Определяем склад
-        transfer.setToFilial(filial);
-        List<TransferItem> transferItems = new ArrayList<>();
+            storageItemService.checkProductAvailability(productId, storageId, quantity);
+            storageItemService.updateStockByProductId(productId, storageId, quantity);
 
-        // Перебираем все WishListItemFilial и выполняем трансфер для каждого товара
-        for (WishListItemFilial wishListItem : wishListItems) {
-            Product product = wishListItem.getProduct();
-            int quantity = wishListItem.getQuantity();
+            Product product = item.getProduct();
+            Filial filial = wishListFilial.getFilial();
+            Storage storage = storageRepository.findById(storageId)
+                    .orElseThrow(() -> new RuntimeException("Storage not found"));
 
-            // Проверяем доступность товара на складе и уменьшаем количество на складе
-            storageItemService.checkProductAvailability(product.getId(), storageId, quantity);
-            storageItemService.updateStockByProductId(product.getId(), storageId, quantity);
+            Transfer transfer = new Transfer();
+            transfer.setTransferDate(LocalDateTime.now());
+            transfer.setFromStorage(storage);
+            transfer.setToFilial(filial);
+            Transfer savedTransfer = transferRepository.save(transfer);
 
-            // Создаем TransferItem и добавляем его в Transfer
             TransferItem transferItem = new TransferItem();
             transferItem.setProduct(product);
             transferItem.setQuantity(quantity);
-            transferItem.setTransfer(transfer);
-            transferItems.add(transferItem);
+            transferItem.setTransfer(savedTransfer);
+            transferItemRepository.save(transferItem);
+        }
 
-            // Обновляем количество товара в филиале
+        wishListFilial.setStatus(WishListStatusEnum.ACCEPTED);
+        wishListFilialRepository.save(wishListFilial);
+    }
+    @Override
+    @Transactional
+    public void returnWishList(Long orderId) {
+        WishListFilial wishListFilial = wishListFilialRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("WishListFilial not found"));
+
+        if (wishListFilial.getStatus() != WishListStatusEnum.CREATED) {
+            throw new IllegalStateException("Only WishLists in CREATED status can be returned");
+        }
+
+        wishListFilial.setStatus(WishListStatusEnum.RETURNED);
+        wishListFilialRepository.save(wishListFilial);
+    }
+    @Override
+    @Transactional
+    public void rejectWishList(Long wishListFilialId) {
+        WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
+                .orElseThrow(() -> new RuntimeException("WishListFilial not found"));
+
+        if (wishListFilial.getStatus() != WishListStatusEnum.CREATED) {
+            throw new IllegalStateException("Only WishLists in CREATED status can be rejected");
+        }
+
+        wishListFilial.setStatus(WishListStatusEnum.REJECTED);
+        wishListFilialRepository.save(wishListFilial);
+    }
+    @Override
+    @Transactional
+    public void receiveProductsFromWishList(Long wishListFilialId) {
+        WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
+                .orElseThrow(() -> new RuntimeException("WishListFilial not found"));
+
+        if (wishListFilial.getStatus() != WishListStatusEnum.ACCEPTED) {
+            throw new IllegalStateException("Only WishLists in ACCEPTED status can be received");
+        }
+
+        List<WishListItemFilial> items = wishListFilial.getWishListItemFilials();
+        for (WishListItemFilial item : items) {
+            UUID productId = item.getProduct().getId();
+            int quantity = item.getQuantity();
+
             try {
-                FilialItem filialItem = filialItemService.findByProductIdAndFilialId(product.getId(), filial.getId());
+                FilialItem filialItem = filialItemService.findByProductIdAndFilialId(productId, wishListFilial.getFilial().getId());
                 filialItem.setQuantity(filialItem.getQuantity() + quantity);
                 filialItemService.updateEntity(filialItem);
             } catch (RecordNotFoundException e) {
                 FilialItem filialItem = new FilialItem();
-                filialItem.setProduct(product);
-                filialItem.setFilial(filial);
+                filialItem.setProduct(item.getProduct());
+                filialItem.setFilial(wishListFilial.getFilial());
                 filialItem.setQuantity(quantity);
                 filialItemService.create(filialItem);
             }
         }
 
-        // Сохраняем Transfer и TransferItems
-        transfer.setTransferItems(transferItems);
-        transferRepository.save(transfer);
-
-        // Устанавливаем статус ACCEPTED для WishListFilial и сохраняем его
-        wishListFilial.setStatus(WishListStatusEnum.ACCEPTED);
+        wishListFilial.setStatus(WishListStatusEnum.RECIEVED);
         wishListFilialRepository.save(wishListFilial);
     }
-
-
     @Override
     @Transactional
-    public void rejectTranserFromWishList(Long wishListFilialId) {
+    public void refuseProductsFromWishList(Long wishListFilialId) {
+        // Найти WishListFilial по ID или бросить исключение, если не найден
         WishListFilial wishListFilial = wishListFilialRepository.findById(wishListFilialId)
-                .orElseThrow(() -> new RecordNotFoundException("WishListFilial not found"));
+                .orElseThrow(() -> new RuntimeException("WishListFilial not found"));
 
-//        Transfer transfer = new Transfer();
-        wishListFilial.setStatus(WishListStatusEnum.REJECTED);
+        // Проверить, что статус WishListFilial равен ACCEPTED, иначе бросить исключение
+        if (wishListFilial.getStatus() != WishListStatusEnum.ACCEPTED) {
+            throw new IllegalStateException("Only WishLists in ACCEPTED status can be refused");
+        }
 
+        // Найти все трансферы по филиалу
+        List<Transfer> transfers = transferRepository.findByToFilial(wishListFilial.getFilial());
+        if (transfers.isEmpty()) {
+            throw new RuntimeException("No transfers found for the given filial");
+        }
+
+        // Предположим, что нужно обработать все трансферы (если требуется только один, уточните логику)
+        for (Transfer transfer : transfers) {
+            Long storageId = transfer.getFromStorage().getId();
+
+            // Получить список товаров из WishListFilial
+            List<WishListItemFilial> items = wishListFilial.getWishListItemFilials();
+            for (WishListItemFilial item : items) {
+                UUID productId = item.getProduct().getId();
+                int quantity = item.getQuantity();
+
+                // Обновить количество товара на складе
+                storageItemService.updateStockByProductId(productId, storageId, quantity);
+            }
+        }
+
+        // Обновить статус WishListFilial на REFUSE
+        wishListFilial.setStatus(WishListStatusEnum.REFUSE);
         wishListFilialRepository.save(wishListFilial);
-
     }
-
-
-
 
 
     @Override

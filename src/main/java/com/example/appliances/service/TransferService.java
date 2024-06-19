@@ -23,5 +23,13 @@ public interface TransferService {
     public void transferProductsFromWishList(Long wishListFilialId, Long storageId);
 
 
-    public void rejectTranserFromWishList(Long wishListFilialId);
+//    public void rejectTranserFromWishList(Long wishListFilialId);
+
+    public void returnWishList(Long orderId);
+
+    public void rejectWishList(Long wishListFilialId);
+
+    public void receiveProductsFromWishList(Long wishListFilialId);
+    public void refuseProductsFromWishList(Long wishListFilialId);
+
 }

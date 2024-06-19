@@ -69,15 +69,56 @@ public class TransferApi {
         }
     }
 
-    @PatchMapping("/reject/transfer/wishlist")
-    public ResponseEntity<String> transferProductsFromWishList(@RequestParam Long wishListFilialId) {
+
+//
+//    @PostMapping("/transfer/{wishListFilialId}")
+//    public ResponseEntity<String> transferProductsFromWishList(@PathVariable Long wishListFilialId) {
+//        try {
+//            wishListService.transferProductsFromWishList(wishListFilialId, fixedStorageId);
+//            return ResponseEntity.ok("Products transferred successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during product transfer: " + e.getMessage());
+//        }
+//    }
+
+    @PatchMapping("/return/{orderId}")
+    public ResponseEntity<String> returnWishList(@PathVariable Long orderId) {
         try {
-            transferService.rejectTranserFromWishList(wishListFilialId);
-            return ResponseEntity.ok("Products transferred successfully");
+            transferService.returnWishList(orderId);
+            return ResponseEntity.ok("WishList returned successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during product transfer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during returning WishList: " + e.getMessage());
         }
     }
 
+    @PatchMapping("/reject/{wishListFilialId}")
+    public ResponseEntity<String> rejectWishList(@PathVariable Long wishListFilialId) {
+        try {
+            transferService.rejectWishList(wishListFilialId);
+            return ResponseEntity.ok("WishList rejected successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during rejecting WishList: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/receive/{wishListFilialId}")
+    public ResponseEntity<String> receiveProductsFromWishList(@PathVariable Long wishListFilialId) {
+        try {
+            transferService.receiveProductsFromWishList(wishListFilialId);
+            return ResponseEntity.ok("Products received successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during receiving products: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/refuse/transfer/wishlist")
+    public ResponseEntity<String> refuseProductsFromWishList(@RequestParam Long wishListFilialId) {
+        try {
+            transferService.refuseProductsFromWishList(wishListFilialId);
+            return ResponseEntity.ok("Products refused successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred during product refusal: " + e.getMessage());
+        }
+    }
 
 }

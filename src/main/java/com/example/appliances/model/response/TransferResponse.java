@@ -16,7 +16,7 @@ import java.util.UUID;
 public class TransferResponse {
     private StorageResponse fromStorage;
     private FilialResponse toFilial;
-    private int quantity;
+//    private int quantity;
     LocalDateTime transferDate;
 
 }
