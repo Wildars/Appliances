@@ -22,7 +22,7 @@ public class SupplierRequest {
 
     String password;
     String pin;
-    Boolean isActive;
+//    Boolean isActive;
 
    Long roleId;
 

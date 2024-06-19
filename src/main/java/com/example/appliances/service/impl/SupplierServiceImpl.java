@@ -103,7 +103,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Transactional
     public SupplierResponse create(SupplierRequest request) {
         Supplier supply = supplierMapper.requestToEntity(request);
-
+        supply.setPassword(passwordEncoder.encode(request.getPassword()));
+        supply.setIsActive(true);
 
         Supplier savedSupply = supplierRepository.save(supply);
 
